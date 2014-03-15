@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="post_findSize" parameterClass="mngPostForm" resultClass="java.lang.Integer">
+		select count(1) from mng_post t   
+		where
+		    t.post_sisdel = '0'
+			<isNotEmpty prepend="and" property="searchA">
+			    t.post_sno like '%'||#searchA#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+				t.post_sname like '%'||#searchB#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchC">
+				t.post_nlevel like '%'||#searchC#||'%'
+			</isNotEmpty>
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="post_findPage" parameterClass="mngPostForm" resultClass="mngPost">
+		$pageSQLA$
+		select t.* from mng_post t 
+				where
+		    t.post_sisdel = '0'
+			<isNotEmpty prepend="and" property="searchA">
+			    t.post_sno like '%'||#searchA#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+				t.post_sname like '%'||#searchB#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchC">
+				t.post_nlevel like '%'||#searchC#||'%'
+			</isNotEmpty>
+			order by t.post_sno
+	    $pageSQLB$
+  	</select>
+  	<!-- 查询出 所有等级-->
+  	<select id="post_findnlevel" parameterClass="mngPostForm" resultClass="mngPost">
+     select distinct  t.post_nlevel from mng_post t
+       where t.post_sisdel='0'order by post_nlevel
+  	</select>
+  	
+    <!-- 新增 -->
+	<insert id="post_add" parameterClass="mngPostForm">
+		<selectKey keyProperty="post_sno" resultClass="java.lang.String">
+	   		select #post_sno# from dual
+		</selectKey>
+		<![CDATA[ 	
+			insert into mng_post (post_sno,post_sname,post_nresarea,post_noffarea,post_nhousmoney,post_nheatmoney,post_nlevel,
+			post_sisdel,post_sisvalid,post_sreplyby,post_dreplydate,post_sdef1)
+			values (#post_sno#,#post_sname#,#post_nresarea#,#post_noffarea#,#post_nhousmoney#,#post_nheatmoney#,#post_nlevel#,
+			'0',#post_sisvalid#,#post_sreplyby#,current_date,#post_sdef1#)
+		]]>
+	</insert>
+	
+	<!-- 根据ID查询信息  -->
+	<select id="post_findByID" parameterClass="java.lang.String" resultClass="mngPost">
+		select t.*  from mng_post t  where  t.post_sno = #id#
+  	</select>
+  	
+  	<!-- 修改  -->
+	<update id="post_update" parameterClass="mngPostForm">
+		update mng_post t set 
+		post_sno=#post_sno#,
+		post_sname=#post_sname#,
+		post_nresarea=#post_nresarea#,
+		post_nhousmoney=#post_nhousmoney#,
+		post_nheatmoney=#post_nheatmoney#,
+		post_nlevel=#post_nlevel#,
+		post_salterby=#post_salterby#,
+		post_dalterdate=current_date,
+		post_sdef1=#post_sdef1#
+		where t.post_sno=#post_sno#
+    </update>
+    
+    <!-- 逻辑删除  -->
+	<update id="post_delete" parameterClass="java.lang.String">
+		update mng_post t set t.post_sisdel = '1'
+		where t.post_sno =#id#
+    </update>
+    
+    <!-- 更新状态  -->
+	<update id="post_changeValid" parameterClass="java.lang.String">
+		update mng_post t set t.post_sisvalid = 1-t.post_sisvalid
+		where t.post_sno =#id#
+    </update>
+    <!-- 查询名字唯一性 -->
+    <select id="post_checkOnly" parameterClass="mngPostForm" resultClass="java.lang.Integer">
+      select count(*) from mng_post  where post_sisdel='0'
+             
+			<isNotEmpty prepend="and" property="post_sname">
+			 post_sname=#post_sname#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchD">
+			 post_sno!=#searchD#
+			</isNotEmpty>
+		
+      
+      
+     
+    
+    </select>
+    
+</sqlMap>

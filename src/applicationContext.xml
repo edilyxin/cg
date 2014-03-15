@@ -1,0 +1,438 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	
+ 
+	<bean id="dataSource"  class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" /> 
+    	<!-- 基本属性 url、user、password -->
+    	<property name="url" value="jdbc:oracle:thin:@192.168.1.120:1521:orcl" />
+    	<property name="username" value="cg" />
+    	<property name="password" value="cg" />
+    	<!-- 配置初始化大小、最小、最大 -->
+    	<property name="initialSize" value="1" />
+    	<property name="minIdle" value="1" /> 
+    	<property name="maxActive" value="20" />
+ 		<!-- 配置获取连接等待超时的时间 -->
+    	<property name="maxWait" value="60000" />
+ 		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+    	<property name="timeBetweenEvictionRunsMillis" value="60000" />
+ 		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+    	<property name="minEvictableIdleTimeMillis" value="300000" />
+  
+    	<property name="validationQuery" value="SELECT 'x'" />
+    	<property name="testWhileIdle" value="true" />
+    	<property name="testOnBorrow" value="false" />
+    	<property name="testOnReturn" value="false" />
+    	<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+    	<property name="poolPreparedStatements" value="true" />
+    	<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+ 		<!-- 配置监控统计拦截的filters -->
+    	<property name="filters" value="stat" /> <!-- 监控统计，通过StatFilter能够统计每个SQL的执行情况，包括执行时间等 -->
+		<!-- 关闭长时间不使用的连接 -->
+    	<property name="removeAbandoned" value="true" /> <!-- 打开removeAbandoned功能 -->
+		<property name="removeAbandonedTimeout" value="1800" /> <!-- 1800秒，也就是30分钟 -->
+		<property name="logAbandoned" value="true" /> <!-- 关闭abanded连接时输出错误日志 -->
+ 
+	</bean>
+ 
+	 
+	
+	<!-- SqlMap setup for iBATIS Database Layer -->	
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+		<property name="configLocation" value="classpath:Sql-Map-Config.xml" />
+	</bean>
+	
+<!-- 放大镜 -->	
+	<bean id="treeDAO" class="com.rc.sys.dao.TreeDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 登录 -->	
+	<bean id="loginDAO" class="com.rc.sys.dao.LoginDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 系统集成信息表 -->	
+	<bean id="sysintDAO" class="com.rc.sys.dao.SysintDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 功能信息表 -->	  
+	<bean id="rightDAO" class="com.rc.sys.dao.RightDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 操作信息表 -->
+	<bean id="operDAO" class="com.rc.sys.dao.OperDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 数据权限表 -->      
+	<bean id="dboperDAO" class="com.rc.sys.dao.DboperDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 参数信息表 -->
+	<bean id="parmDAO" class="com.rc.sys.dao.ParmDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 角色信息表 -->	
+	<bean id="roleDAO" class="com.rc.sys.dao.RoleDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 用户表 -->
+	<bean id="userDAO" class="com.rc.sys.dao.UserDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 字典表 -->
+	<bean id="dictDAO" class="com.rc.sys.dao.DictDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 日志信息表 -->    
+	<bean id="logDAO" class="com.rc.sys.dao.LogDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 编码信息表 -->    
+	<bean id="sequenceDAO" class="com.rc.sys.dao.SequenceDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 校区信息表 -->
+	<bean id="schoolDAO" class="com.rc.base.dao.SchoolDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 单位部门表 -->
+	<bean id="unitDepartDAO" class="com.rc.base.dao.UnitDepartDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 岗位信息表 -->
+	<bean id="jobDAO" class="com.rc.base.dao.JobDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 职称信息表 -->    
+	<bean id="postDAO" class="com.rc.base.dao.PostDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+<!-- 职工信息表 -->    
+	<bean id="empDAO" class="com.rc.base.dao.EmpDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+
+
+
+
+<!-- 初申报项目表-->
+	
+    <bean id="ckCheckDAO" class="com.rc.project.dao.CkCheckDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+     <bean id="epAccessoryDAO" class="com.rc.project.dao.EpAccessoryDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epBidDAO" class="com.rc.project.dao.EpBidDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epBidWinDAO" class="com.rc.project.dao.EpBidWinDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epContractDAO" class="com.rc.project.dao.EpContractDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+
+ 	<bean id="epEntrancecDAO" class="com.rc.project.dao.EpEntrancecDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+	<bean id="epEntrancepDAO" class="com.rc.project.dao.EpEntrancepDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epFormworkDAO" class="com.rc.project.dao.EpFormworkDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epMailDAO" class="com.rc.project.dao.EpMailDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epPackageDAO" class="com.rc.project.dao.EpPackageDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epPackageListDAO" class="com.rc.project.dao.EpPackageListDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epPayMoneyDAO" class="com.rc.project.dao.EpPayMoneyDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epPersonDAO" class="com.rc.project.dao.EpPersonDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epProcessDAO" class="com.rc.project.dao.EpProcessDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epProjectDAO" class="com.rc.project.dao.EpProjectDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epProjectDetailDAO" class="com.rc.project.dao.EpProjectDetailDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="epSettingDAO" class="com.rc.project.dao.EpSettingDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="rpFileDAO" class="com.rc.project.dao.RpFileDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="rpMiddleDAO" class="com.rc.project.dao.RpMiddleDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="rpReportBeginDAO" class="com.rc.project.dao.RpReportBeginDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+    
+    <bean id="rpReportDAO" class="com.rc.project.dao.RpReportDAO">
+    <property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
+
+
+
+
+
+
+
+<!-- 放大镜 -->
+    <bean id="treeService" class="com.rc.sys.service.impl.TreeServiceImpl">
+		<property name="treeDAO">
+			<ref bean="treeDAO" />
+		</property>
+	</bean>
+<!-- 登录管理 -->
+    <bean id="loginService" class="com.rc.sys.service.impl.LoginServiceImpl">
+		<property name="loginDAO">
+			<ref bean="loginDAO" />
+		</property>
+	</bean>
+<!-- 系统集成管理 -->
+    <bean id="sysintService" class="com.rc.sys.service.impl.SysintServiceImpl">
+		<property name="sysintDAO">
+			<ref bean="sysintDAO" />
+		</property>
+	</bean>
+<!-- 功能管理 -->	
+	<bean id="rightService" class="com.rc.sys.service.impl.RightServiceImpl">
+		<property name="rightDAO">
+			<ref bean="rightDAO" />
+		</property>
+	</bean>
+<!-- 操作管理 -->
+	<bean id="operService" class="com.rc.sys.service.impl.OperServiceImpl">
+		<property name="operDAO">
+			<ref bean="operDAO" />
+		</property>
+	</bean>
+<!-- 数据权限管理 -->
+	<bean id="dboperService" class="com.rc.sys.service.impl.DboperServiceImpl">
+		<property name="dboperDAO">
+			<ref bean="dboperDAO" />
+		</property>
+	</bean>
+<!-- 参数管理 -->
+	<bean id="parmService" class="com.rc.sys.service.impl.ParmServiceImpl">
+		<property name="parmDAO">
+			<ref bean="parmDAO" />
+		</property>
+	</bean>
+<!-- 角色管理 -->	
+	<bean id="roleService" class="com.rc.sys.service.impl.RoleServiceImpl">
+		<property name="roleDAO">
+			<ref bean="roleDAO" />
+		</property>
+	</bean>
+<!-- 用户管理 -->
+	<bean id="userService" class="com.rc.sys.service.impl.UserServiceImpl">
+		<property name="userDAO">
+			<ref bean="userDAO" />
+		</property>
+	</bean>
+<!-- 字典管理 -->
+	<bean id="dictService" class="com.rc.sys.service.impl.DictServiceImpl">
+		<property name="dictDAO">
+			<ref bean="dictDAO" />
+		</property>
+	</bean>
+<!-- 日志管理 -->
+	<bean id="logService" class="com.rc.sys.service.impl.LogServiceImpl">
+		<property name="logDAO">
+			<ref bean="logDAO" />
+		</property>
+	</bean>
+<!-- 编码管理 -->
+	<bean id="sequenceService" class="com.rc.sys.service.impl.SequenceServiceImpl">
+		<property name="sequenceDAO">
+			<ref bean="sequenceDAO" />
+		</property>
+	</bean>
+<!-- 校区管理 -->
+	<bean id="schoolService" class="com.rc.base.service.impl.SchoolServiceImpl">
+		<property name="schoolDAO">
+			<ref bean="schoolDAO" />
+		</property>
+	</bean>
+<!-- 单位部门管理 -->
+	<bean id="unitDepartService" class="com.rc.base.service.impl.UnitDepartServiceImpl">
+		<property name="unitDepartDAO">
+			<ref bean="unitDepartDAO" />
+		</property>
+	</bean>
+<!-- 岗位管理 -->
+	<bean id="jobService" class="com.rc.base.service.impl.JobServiceImpl">
+		<property name="jobDAO">
+			<ref bean="jobDAO" />
+		</property>
+	</bean>
+<!-- 职称管理 -->
+	<bean id="postService" class="com.rc.base.service.impl.PostServiceImpl">
+		<property name="postDAO">
+			<ref bean="postDAO" />
+		</property>
+	</bean>
+<!-- 职工管理 -->
+	<bean id="empService" class="com.rc.base.service.impl.EmpServiceImpl">
+		<property name="empDAO">
+			<ref bean="empDAO" />
+		</property>
+	</bean>
+ 
+	
+	
+	
+	 
+</beans>	
+
+	

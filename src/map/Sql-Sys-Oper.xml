@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="oper_findSize" parameterClass="mngOperForm" resultClass="java.lang.Integer">
+		select count(1) from mng_oper s2 
+       left join mng_right s1 on s1.right_sno=s2.right_sno and s1.sysint_sno = s2.sysint_sno and s1.right_nmorb='1'
+       left join mng_sysint s3 on s3.sysint_sno=s1.sysint_sno
+       left join mng_dict di on di.dict_sisdel='0' and di.dict_sisvalid='0' and di.dict_sname ='oper_stype'
+        left join mng_dictitem  d1  on  di.dict_sno=d1.dict_sno and  d1.ditem_svalue = s2.oper_stype
+       where s2.oper_sisdel='0' 
+       
+		<isNotEmpty prepend="and" property="sysint_sno">
+			s2.sysint_sno=#sysint_sno#
+			</isNotEmpty>
+	<isNotEmpty prepend="and" property="searchA">
+			s2.oper_sno like '%'||#searchA#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+			 s2.oper_sname like '%'||#searchB#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchC">
+			s1.right_sname like '%'||#searchC#||'%'
+			</isNotEmpty>
+			<!-- 根据功能编号查询操作信息 -->
+			<isNotEmpty property="right_sno" prepend=" and ">s2.right_sno='$right_sno$'</isNotEmpty>
+			order by s2.oper_sno
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="oper_findPage" parameterClass="mngOperForm" resultClass="mngOper">
+		$pageSQLA$
+		select s2.*,s1.right_sname,s3.sysint_sname,d1.ditem_sname from mng_oper s2 
+       left join mng_right s1 on s1.right_sno=s2.right_sno and s1.sysint_sno = s2.sysint_sno and s1.right_nmorb='1'
+       left join mng_sysint s3 on s3.sysint_sno=s1.sysint_sno
+       left join mng_dict di on di.dict_sisdel='0' and di.dict_sisvalid='0' and di.dict_sname ='oper_stype'
+        left join mng_dictitem  d1  on  di.dict_sno=d1.dict_sno and  d1.ditem_svalue = s2.oper_stype
+       where s2.oper_sisdel='0' 
+			<isNotEmpty prepend="and" property="sysint_sno">
+			s2.sysint_sno=#sysint_sno#
+			</isNotEmpty>
+	<isNotEmpty prepend="and" property="searchA">
+			s2.oper_sno like '%'||#searchA#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+			 s2.oper_sname like '%'||#searchB#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchC">
+			s1.right_sname like '%'||#searchC#||'%'
+			</isNotEmpty>
+			<!-- 根据功能编号查询操作信息 -->
+			<isNotEmpty property="right_sno" prepend=" and ">s2.right_sno='$right_sno$'</isNotEmpty>
+			 order by s2.oper_sno
+	    $pageSQLB$
+  	</select>
+  	
+    <!-- 新增 -->
+	<insert id="oper_add" parameterClass="mngOperForm">
+		<selectKey keyProperty="oper_sno" resultClass="java.lang.String">
+	   		select #oper_sno# from dual
+		</selectKey>
+		<![CDATA[ 	
+			insert into mng_oper (oper_sno,sysint_sno,right_sno,oper_sname,oper_sdesc,oper_stype,
+			oper_sisuse,oper_nmorb,oper_simg,oper_sisdel,oper_sisvalid,oper_sreplyby,oper_dreplydate,oper_ndef1)
+			values (#oper_sno#,#sysint_sno#,#right_sno#,#oper_sname#,#oper_sdesc#,#oper_stype#,
+			#oper_sisuse#,#oper_nmorb#,#oper_simg#,'0',#oper_sisvalid#,#oper_sreplyby#,current_date,1
+			)
+		]]>
+	</insert>
+	
+	<!-- 根据ID查询信息  -->
+	<select id="oper_findByID" parameterClass="mngOperForm" resultClass="mngOper">
+ select s1.right_sname, s2.*
+   from mng_oper s2
+   left join  mng_right s1 on s1.right_sno = s2.right_sno
+                        and s1.sysint_sno = s2.sysint_sno		
+where  s2.oper_sno = #oper_sno# and s2.sysint_sno =#sysint_sno#
+  	</select>
+  	
+  	<!-- 修改  -->
+	<update id="oper_update" parameterClass="mngOperForm">
+		update mng_oper t set oper_sname=#oper_sname#,oper_sdesc=#oper_sdesc#,oper_stype=#oper_stype#,
+		oper_sisuse=#oper_sisuse#,oper_nmorb=#oper_nmorb#,oper_simg=#oper_simg#,oper_sisvalid=#oper_sisvalid#,oper_salterby=#oper_salterby#,
+		oper_dalterdate=current_date
+		where t.oper_sno=#oper_sno# and t.sysint_sno=#sysint_sno#
+    </update>
+    
+    <!-- 逻辑删除  -->
+	<update id="oper_delete" parameterClass="mngOperForm">
+		update mng_oper t 
+		set t.oper_sisdel = '1'
+		<!--delete from mng_oper t  -->
+		where t.oper_sno =#oper_sno# and t.sysint_sno=#sysint_sno#
+   </update>
+    
+    <!-- 更新状态  -->
+	<update id="oper_changeValid" parameterClass="mngOperForm">
+		update mng_oper t set t.oper_sisvalid = 1-t.oper_sisvalid
+		where t.oper_sno =#oper_sno# and t.sysint_sno=#sysint_sno#
+    </update>
+    <!-- 遍历所有根据right_sno遍历所有的oper  -->
+    <select id="oper_findOperByRight" parameterClass="java.util.HashMap" resultClass="mngOper">
+	select * from mng_oper where right_sno=#right_sno# and sysint_sno=#sysint_sno#
+	</select>
+	<!-- 遍历功能表的  -->
+	<select id="oper_findAllsysint_sname"  resultClass="mngRight">
+		select distinct  s1.sysint_sname,s1.sysint_sno 
+		from mng_sysint s1 
+		left join  mng_right s2 on s1.sysint_sno=s2.sysint_sno 
+		where s2.right_sisdel='0' and s1.sysint_sstate ='0'  
+		order by s1.sysint_sno
+	</select>
+	<!-- 根据ID查询信息 (暂时无用) -->
+	<select id="oper_findByID1" parameterClass="java.lang.String" resultClass="mngRight">
+		select t.*  from mng_right t  where  t.right_sno = #id#
+  	</select>
+  	<!-- 根据单位编号遍历所有的操作名称 -->
+    <select id="oper_findAllSname" parameterClass="mngOperForm" resultClass="mngOper">
+    select oper_sname from mng_oper where sysint_sno=#sysint_sno# and oper_SISDEL='0' and oper_sname=#oper_sname# and right_sno=#right_sno#
+    </select>
+    
+     <select id="oper_findname" parameterClass="mngOperForm" resultClass="java.lang.Integer">
+    	select count(1) from mng_oper 
+    	<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="oper_sname">
+			 oper_sname=#oper_sname#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="sysint_sno">
+			 sysint_sno=#sysint_sno#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="right_sno">
+			 right_sno=#right_sno#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchE">
+			 oper_sno!=#searchE#
+			</isNotEmpty>
+		</dynamic>
+		and oper_sisdel='0'
+    </select>
+    
+</sqlMap>

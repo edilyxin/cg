@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="school_findSize" parameterClass="mngSchoolForm" resultClass="java.lang.Integer">
+		select count(1) from mng_school t where t.SH_SISDEL='0'
+		<isNotEmpty prepend="and" property="searchA">
+			t.sh_sname like '%'||#searchA#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchB">
+			t.sh_ssname like '%'||#searchB#||'%' 
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchC">
+			t.sh_stype like '%'||#searchC#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchD">
+			t.sh_sisuse like '%'||#searchD#||'%' 
+		</isNotEmpty>   
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="school_findPage" parameterClass="mngSchoolForm" resultClass="mngSchool">
+		$pageSQLA$
+		select t.* from mng_school t where t.SH_SISDEL='0'
+		<isNotEmpty prepend="and" property="searchA">
+			t.sh_sname like '%'||#searchA#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchB">
+			t.sh_ssname like '%'||#searchB#||'%' 
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchC">
+			t.sh_stype like '%'||#searchC#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchD">
+			t.sh_sisuse like '%'||#searchD#||'%' 
+		</isNotEmpty>
+		order by t.SH_SNO 
+	    $pageSQLB$
+  	</select>
+  	
+    <!-- 新增 -->
+	<insert id="school_add" parameterClass="mngSchoolForm">
+		<selectKey keyProperty="sh_sno" resultClass="java.lang.String">
+	   		select #sh_sno# from dual
+		</selectKey>
+		<![CDATA[ 	
+			insert into mng_school (sh_sno,sh_sname,sh_ssname,sh_sadder,sh_narea,
+			td_sno,sh_sisuse,sh_stype,sh_sisdel,sh_sisvalid,sh_sreplyby,sh_dreplydate)
+			values (#sh_sno#,#sh_sname#,#sh_ssname#,#sh_sadder#,#sh_narea#,
+			#td_sno#,#sh_sisuse#,#sh_stype#,'0','0',#sh_sreplyby#,sysdate)
+		]]>
+	</insert>
+	
+	<!-- 校区名称唯一  -->	
+	<select id="school_findByName" parameterClass="mngSchoolForm" resultClass="java.lang.Integer">
+  		select count(1) from mng_school where sh_sisdel='0'
+  		
+			<isNotEmpty prepend="and" property="sh_sname">
+			 sh_sname=#sh_sname#
+			</isNotEmpty>			
+			<isNotEmpty prepend="and" property="searchE">
+			 sh_sname!=#searchE#
+			</isNotEmpty>
+		
+  		 
+	</select>
+	
+	
+	
+	
+	<!-- 根据ID查询信息  -->
+	<select id="school_findByID" parameterClass="java.lang.String" resultClass="mngSchool">
+		select t.*  from mng_school t  where  t.sh_sno = #id#
+  	</select>
+  	
+  	<!-- 修改  -->
+	<update id="school_update" parameterClass="mngSchoolForm">
+		update mng_school t set 
+		sh_sname=#sh_sname#,sh_ssname=#sh_ssname#,sh_sadder=#sh_sadder#,sh_narea=#sh_narea#,
+		td_sno=#td_sno#,sh_sisuse=#sh_sisuse#,sh_stype=#sh_stype#
+		where t.sh_sno=#sh_sno#
+    </update>
+    
+    <!-- 逻辑删除  -->
+	<update id="school_delete" parameterClass="java.lang.String">
+		update mng_school t set t.sh_sisdel = '1'
+		where t.sh_sno =#id#
+    </update>
+    
+    <!-- 更新状态  -->
+	<update id="school_changeValid" parameterClass="java.lang.String">
+		update mng_school t set t.sh_sisvalid = 1-t.sh_sisvalid
+		where t.sh_sno =#id#
+    </update>
+    
+    <!-- 查询所有校区信息 -->
+    <select id="school_findAll" resultClass="mngSchool">
+    	select * from MNG_SCHOOL where SH_SISDEL='0' and SH_SISVALID='0' order by SH_SNO
+    </select>
+</sqlMap>

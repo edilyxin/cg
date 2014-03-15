@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" 
+"http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts> 
+<!-- 系统管理 -->
+<package name="error" namespace="/" extends="struts-default" >
+        <global-results>
+            <result name="exception-error">/jsp/error.jsp</result>
+        </global-results>
+        <global-exception-mappings>
+            <exception-mapping result="exception-error" exception="java.lang.Exception"></exception-mapping>
+        </global-exception-mappings>    
+</package>
+  </struts>

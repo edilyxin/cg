@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="right_findSize" parameterClass="mngRightForm" resultClass="java.lang.Integer">
+		<![CDATA[
+		select count(1) from MNG_RIGHT r 
+		left join MNG_SYSINT s on r.SYSINT_SNO = s.SYSINT_SNO
+		left join MNG_RIGHT r1 on r.RIGHT_SPARENTNO=r1.RIGHT_SNO and r1.sysint_sno=r.sysint_sno
+		where r.RIGHT_SISDEL='0' and s.SYSINT_SSTATE='0'
+		]]>
+		<isNotEmpty property="searchA" prepend=" and ">s.SYSINT_SNO=#searchA#</isNotEmpty>
+		<isNotEmpty property="searchB" prepend=" and ">r.RIGHT_SNAME like '%'||#searchB#||'%'</isNotEmpty>
+		<isNotEmpty property="searchC" prepend=" and ">r1.RIGHT_SNAME like '%'||#searchC#||'%'</isNotEmpty>
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="right_findPage" parameterClass="mngRightForm" resultClass="mngRight">
+		<![CDATA[ 
+		$pageSQLA$
+		select s.SYSINT_SNAME sysint_sname, r1.RIGHT_SNAME right_sparentname, r.* from MNG_RIGHT r 
+		left join MNG_SYSINT s on r.SYSINT_SNO = s.SYSINT_SNO
+		left join MNG_RIGHT r1 on r.RIGHT_SPARENTNO=r1.RIGHT_SNO and r1.sysint_sno=r.sysint_sno
+		where r.RIGHT_SISDEL='0' and s.SYSINT_SSTATE='0'
+		]]>
+		<isNotEmpty property="searchA" prepend=" and ">s.SYSINT_SNO=#searchA#</isNotEmpty>
+		<isNotEmpty property="searchB" prepend=" and ">r.RIGHT_SNAME like '%'||#searchB#||'%'</isNotEmpty>
+		<isNotEmpty property="searchC" prepend=" and ">r1.RIGHT_SNAME like '%'||#searchC#||'%'</isNotEmpty>
+		<![CDATA[
+		order by r.SYSINT_SNO, r.RIGHT_SNO, r.RIGHT_SPARENTNO
+	    $pageSQLB$
+	    ]]>
+  	</select>
+  	
+  	<!-- 查询系统信息 -->
+  	<select id="right_findSysIntList" resultClass="mngSysint">
+  		select * from MNG_SYSINT where SYSINT_SSTATE='0'
+  	</select>
+  	
+  	<!-- 查询功能级别 -->
+  	<select id="right_findRightNumList" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+  		select distinct RIGHT_Ndef1 from MNG_RIGHT where RIGHT_SISDEL='0' and RIGHT_NMORB=0 and SYSINT_SNO=#sysint_sno# order by RIGHT_Ndef1
+  	</select>
+  	
+  	<!-- 根据功能级别，查询上级功能列表 -->
+  	<select id="right_findSparentList" parameterClass="mngRightForm" resultClass="mngRight">
+  		select * from MNG_RIGHT where RIGHT_SISDEL='0' and RIGHT_NDEF1=(#right_ndef1# - 1) and RIGHT_NMORB=0 and SYSINT_SNO=#sysint_sno# order by RIGHT_NORDER
+  	</select>
+  	
+  	<!-- 查询某个系统功能级别为1级的菜单，包括已删除的，否则在生成主键时会冲突 -->
+  	<select id="right_findMenu" parameterClass="java.lang.String" resultClass="mngRight">
+  		select * from MNG_RIGHT where RIGHT_SISDEL='0' and RIGHT_NDEF1=1 and SYSINT_SNO=#sysint_sno# order by RIGHT_NORDER
+  	</select>
+  	
+  	<!-- 查询功能级别为1级的菜单的最大排序值 -->
+  	<select id="right_findMaxMenuOrdval" parameterClass="mngRightForm" resultClass="java.lang.Integer">
+  		select MAX(RIGHT_NORDER) from MNG_RIGHT where RIGHT_NDEF1=1 and SYSINT_SNO=#sysint_sno#
+  	</select>
+  	
+	<!-- 查询子功能列表 -->
+	<select id="right_findSubList" parameterClass="mngRightForm" resultClass="mngRight">
+		<![CDATA[
+		select * from MNG_RIGHT where RIGHT_SISDEL='0' and RIGHT_NDEF1 > #right_ndef1# and RIGHT_SPARENTNO like '$right_sno$%'
+		 and SYSINT_SNO=#sysint_sno# order by RIGHT_NORDER
+		]]>
+	</select>
+	  	
+  	<!-- 根据上级功能编号查询子功能数，包括已删除的，否则在生成主键时会冲突 -->
+  	<select id="right_findSubSize" parameterClass="mngRightForm" resultClass="java.lang.Integer">
+  		select count(1) from MNG_RIGHT where RIGHT_SPARENTNO=#right_sparentno# and SYSINT_SNO=#sysint_sno#
+  	</select>
+  	
+  	<!-- 根据上级功能编号查询子功能里最大的排序值 -->
+  	<select id="right_findMaxOrdval" parameterClass="mngRightForm" resultClass="java.lang.Integer">
+  		select MAX(RIGHT_NORDER) from MNG_RIGHT where RIGHT_SPARENTNO=#right_sparentno# and SYSINT_SNO=#sysint_sno#
+  	</select>
+  	
+    <!-- 新增 -->
+	<insert id="right_add" parameterClass="mngRightForm">
+		<selectKey keyProperty="right_sno" resultClass="java.lang.String">
+	   		select #right_sno# from dual
+		</selectKey>
+		insert into MNG_RIGHT(RIGHT_SNO, SYSINT_SNO, RIGHT_SPARENTNO,  RIGHT_SNAME, RIGHT_SDESC, RIGHT_SISEND, RIGHT_SMENUURL, 
+		RIGHT_NMENULENGTH, RIGHT_SISUSE, RIGHT_NMORB, RIGHT_SIMG, RIGHT_NORDER, RIGHT_SISCHILD, RIGHT_SFATHER, RIGHT_SPOSITION, 
+		RIGHT_SISDEL, RIGHT_SISVALID, RIGHT_SREPLYBY, RIGHT_DREPLYDATE, RIGHT_NDEF1)
+		values (#right_sno#, #sysint_sno#, #right_sparentno#,  #right_sname#, #right_sdesc#, #right_sisend#, #right_smenuurl#, 
+		#right_nmenulength#, #right_sisuse#, #right_nmorb#, #right_simg#, #right_norder#, #right_sischild#, #right_sfather#, #right_sposition#, 
+		#right_sisdel#, #right_sisvalid#, #right_sreplyby#, sysdate, #right_ndef1#)
+	</insert>
+	
+	<!-- 根据ID查询信息  -->
+	<select id="right_findByID" parameterClass="mngRightForm" resultClass="mngRight">
+		select s.SYSINT_SNAME sysint_sname, r1.RIGHT_SNAME right_sparentname, r.* from MNG_RIGHT r 
+		left join MNG_SYSINT s on r.SYSINT_SNO = s.SYSINT_SNO
+		left join MNG_RIGHT r1 on r.RIGHT_SPARENTNO=r1.RIGHT_SNO  AND r1.SYSINT_SNO=r.SYSINT_SNO
+		where r.RIGHT_SISDEL='0' and s.SYSINT_SSTATE='0' and r.RIGHT_SNO=#right_sno# and r.SYSINT_SNO=#sysint_sno#
+  	</select>
+  	
+  	<select id="right_findByID2" parameterClass="mngRightForm" resultClass="mngRight">
+  		 select * from MNG_RIGHT where RIGHT_SISDEL='0' and RIGHT_SNO=#right_sno# and SYSINT_SNO=#sysint_sno#
+  	</select>
+  	
+  	<!-- 修改  -->
+	<update id="right_update" parameterClass="mngRightForm">
+		update MNG_RIGHT set RIGHT_SNAME=#right_sname#, RIGHT_NMORB=#right_nmorb#,
+		RIGHT_SMENUURL=#right_smenuurl#, RIGHT_SISEND=#right_sisend#, 
+		RIGHT_SPOSITION=#right_sposition#, RIGHT_SIMG=#right_simg#, RIGHT_SISVALID=#right_sisvalid#,
+		RIGHT_SDESC=#right_sdesc#, RIGHT_SALTERBY=#right_salterby#, RIGHT_DALTERDATE=sysdate
+		where right_sno=#right_sno# and sysint_sno=#sysint_sno#
+    </update>
+    
+    <!-- 逻辑删除  -->
+	<update id="right_delete" parameterClass="mngRightForm">
+		update MNG_RIGHT set RIGHT_SISDEL='1' where RIGHT_SNO=#right_sno# and SYSINT_SNO=#sysint_sno#
+    </update>
+    
+    <!-- 根据功能编号作物理删除 -->
+    <update id="right_delByRightNO" parameterClass="java.lang.String">
+    	delete from MNG_RIGHT where RIGHT_SNO=#right_sno#
+    </update>
+    <!-- 更新状态  -->
+	<update id="right_changeValid" parameterClass="mngRightForm">
+		update mng_right t set t.right_sisvalid = 1-t.right_sisvalid
+		where t.RIGHT_SNO=#right_sno# and t.SYSINT_SNO=#sysint_sno#
+    </update>
+    <!-- 保存排序值 -->
+    <update id="right_saveOrderValue" parameterClass="mngRightForm">
+    	update MNG_RIGHT set RIGHT_DALTERDATE=sysdate
+    	<isNotEmpty property="right_norder" prepend=", ">RIGHT_NORDER=#right_norder#</isNotEmpty>
+    	<isNotEmpty property="right_salterby" prepend=", ">RIGHT_SALTERBY=#right_salterby#</isNotEmpty>
+    	where RIGHT_SNO=#right_sno#
+    </update>
+    
+    <!-- 判断某个功能是否有子功能 -->
+    <select id="right_hasSub" parameterClass="mngRightForm" resultClass="java.lang.Integer">
+    	select count(1) from MNG_RIGHT where RIGHT_SPARENTNO=#right_sno# 
+    	and SYSINT_SNO=#sysint_sno# and RIGHT_SISVALID='0' and RIGHT_SISDEL='0'
+    </select>
+    
+    <!-- 判断该功能是否有有效的操作 -->
+    <select id="right_hasOper" parameterClass="mngRightForm" resultClass="java.lang.Integer">
+    	select count(1) from MNG_OPER where SYSINT_SNO=#sysint_sno# and RIGHT_SNO=#right_sno# 
+    	and OPER_SISVALID='0' and OPER_SISDEL='0'
+    </select>
+    
+    <!-- 查询该功能对应的角色是否有效 -->
+    <select id="right_isRoleRightValid" parameterClass="mngRightForm" resultClass="java.lang.Integer">
+    	select count(1) from MNG_ROLERIGHT rr
+		left join MNG_ROLE r on rr.role_sno = r.role_sno
+		where rr.right_sno=#right_sno# and rr.rr_sdef1=#sysint_sno#
+		and r.role_sisdel='0' and r.role_sisvalid='0'
+    </select>
+    
+    <!-- 检查功能名称唯一性 -->
+    <select id="right_isRightnameValid" parameterClass="mngRightForm" resultClass="java.lang.Integer">
+    	select COUNT(1) from MNG_RIGHT where SYSINT_SNO=#sysint_sno#
+    	<isNotEmpty property="right_sparentno" prepend=" and ">RIGHT_SPARENTNO=#right_sparentno#</isNotEmpty>
+    	<isEmpty property="right_sparentno" prepend=" and ">RIGHT_SPARENTNO='0'</isEmpty>
+    	<isNotEmpty property="right_sname" prepend=" and ">RIGHT_SNAME=Trim(#right_sname#)</isNotEmpty>
+    </select>
+</sqlMap>

@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="emp_findSize" parameterClass="mngEmpForm" resultClass="java.lang.Integer">
+		select count(1) from  mng_emp e
+     left join mng_school sc on sc.sh_sno = e.sh_sno
+                           and sc.sh_sisdel = '0'
+                           and sc.sh_sisvalid = '0'
+    left join mng_post p on p.post_sno = e.post_sno
+    left join mng_job j on j.job_sno = e.job_sno
+    left join mng_dict di on di.dict_sname = 'emp_nlevel'
+                         and di.dict_sisdel = '0'
+                         and di.dict_sisvalid = '0'
+    left join mng_dictitem d1 on d1.ditem_svalue = to_char(e.emp_nlevel)
+                             and di.dict_sno = d1.dict_sno
+    left join mng_dict di1 on di1.dict_sname = 'emp_sstype'
+                          and di1.dict_sisdel = '0'
+                          and di1.dict_sisvalid = '0'
+    left join mng_dictitem d2 on d2.ditem_svalue = e.emp_sstype
+                             and di1.dict_sno = d2.dict_sno
+
+      <dynamic prepend="where"> 
+  	   e.emp_sisdel='0'
+	  		<isNotEmpty  property="searchA">
+	  			 and e.ud_sno=#searchA#
+	  		</isNotEmpty>
+	  	
+	  		 <isNotEmpty  property="searchB">
+	  			 and e.ud_sno1 =#searchB#
+	  		</isNotEmpty>
+	  		
+	  		<isNotEmpty   property="searchC">
+	  			  and e.sh_sno like '%'||#searchC#||'%'
+	  			</isNotEmpty>
+	  		<isNotEmpty  property="searchE">
+	  			 and e.ud_sno2 =#searchE#
+	  		</isNotEmpty>
+	  		<isNotEmpty  property="searchD">
+	  			 and e.emp_sname like '%'||#searchD#||'%'
+	  		</isNotEmpty>
+	  		</dynamic>
+	  		order by e.emp_sno
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="emp_findPage" parameterClass="mngEmpForm" resultClass="mngEmp">
+		    $pageSQLA$
+		  select d2.ditem_sname as xlsname,
+         d1.ditem_sname as lvesname,
+         sc.sh_sname,
+         p.post_sname,
+         j.job_sname,
+         e.*
+    from mng_emp e
+    left join mng_school sc on sc.sh_sno = e.sh_sno
+                           and sc.sh_sisdel = '0'
+                           and sc.sh_sisvalid = '0'
+    left join mng_post p on p.post_sno = e.post_sno
+    left join mng_job j on j.job_sno = e.job_sno
+    left join mng_dict di on di.dict_sname = 'emp_nlevel'
+                         and di.dict_sisdel = '0'
+                         and di.dict_sisvalid = '0'
+    left join mng_dictitem d1 on d1.ditem_svalue = to_char(e.emp_nlevel)
+                             and di.dict_sno = d1.dict_sno
+    left join mng_dict di1 on di1.dict_sname = 'emp_sstype'
+                          and di1.dict_sisdel = '0'
+                          and di1.dict_sisvalid = '0'
+    left join mng_dictitem d2 on d2.ditem_svalue = e.emp_sstype
+                             and di1.dict_sno = d2.dict_sno
+
+		<dynamic prepend="where"> 
+  	   e.emp_sisdel='0'
+	  		<isNotEmpty  property="searchA">
+	  			 and e.ud_sno =#searchA#
+	  		</isNotEmpty>
+	  	
+	  		 <isNotEmpty  property="searchB">
+	  			 and e.ud_sno1 =#searchB#
+	  		</isNotEmpty>
+	  		<isNotEmpty  property="searchE">
+	  			 and e.ud_sno2 =#searchE#
+	  		</isNotEmpty>
+	  		
+	  		<isNotEmpty   property="searchC">
+	  			  and e.sh_sno like '%'||#searchC#||'%'
+	  			</isNotEmpty>
+	  		
+	  		<isNotEmpty  property="searchD">
+	  			 and e.emp_sname like '%'||#searchD#||'%'
+	  		</isNotEmpty>
+	  		</dynamic>
+	  		
+	  			order by e.emp_sno
+	    $pageSQLB$
+  	</select>
+  	
+  	
+    <!-- 新增 -->
+	<insert id="emp_add" parameterClass="mngEmpForm">
+		<selectKey keyProperty="emp_nid" resultClass="java.lang.Long">
+	   		select nvl(max(emp_nid),0)+1 from mng_emp
+		</selectKey>
+		<![CDATA[ 	
+			insert into mng_emp (emp_nid,
+        ud_sno,     sh_sno ,
+        emp_sno,  emp_sname,  emp_sename,
+        emp_nstate,  emp_stele,  emp_steleinner,
+        ud_sno1,ud_sno2,
+        ud_sname,ud_sname1,ud_sname2,
+        emp_steleout,  emp_semail,  emp_sgender,
+        emp_sfax,  job_sno,  post_sno,
+        emp_nlevel,  emp_dintime,  emp_dbirthday,
+        
+        emp_sstype,  emp_school,  emp_scity,
+        emp_nlenght,  emp_sadder,  emp_sisyf,
+        emp_sisdsz,  emp_sishz,  emp_sftype,
+        
+        emp_sisfsdw,  emp_sfno,  emp_sfname,
+        emp_siszrbdw,  emp_szrno,  emp_sisgjrc,
+        emp_nworknum,  emp_sfbtype,  emp_nfbsum,
+        
+        emp_dfbdate,  emp_nsum,  emp_nfblevel,
+        emp_dsbddate,  emp_nybsum,  emp_sfjno,
+        emp_nprice,  emp_shwtype,  emp_sgltype,
+        
+        emp_nglprice,  emp_nwysum,  emp_scardcode,
+       emp_smem,    emp_smem1,         
+        emp_sisdel,  emp_sisvalid,    emp_sreplyby ,     
+        emp_dreplydate
+      
+      )
+      
+      values (#emp_nid#,
+        #ud_sno#,     #sh_sno#,
+        #emp_sno#,  #emp_sname#,  #emp_sename#,
+        #emp_nstate#,  #emp_stele#,  #emp_steleinner#,
+        #ud_sno1#,#ud_sno2#,
+        #ud_sname#,#ud_sname1#,#ud_sname2#,
+        #emp_steleout#,  #emp_semail#,  #emp_sgender#,
+        #emp_sfax#,  #job_sno#,  #post_sno#,
+        #emp_nlevel# ,  to_date(#emp_dintime#,'YYYY-MM-DD'), to_date(#emp_dbirthday#,'YYYY-MM-DD'),
+       
+        #emp_sstype#,  #emp_school#,  #emp_scity#,
+        #emp_nlenght#  ,  #emp_sadder#,  #emp_sisyf#,
+        #emp_sisdsz#,  #emp_sishz#,  #emp_sftype#,
+        
+        #emp_sisfsdw#,  #emp_sfno#,  #emp_sfname#,
+        #emp_siszrbdw# ,  #emp_szrno#,  #emp_sisgjrc# ,
+        #emp_nworknum#,  #emp_sfbtype#,  #emp_nfbsum# ,
+        
+        to_date( #emp_dfbdate#,'YYYY-MM-DD'),  #emp_nsum# ,  #emp_nfblevel#,
+        to_date( #emp_dsbddate#,'YYYY-MM-DD') ,  #emp_nybsum#,  #emp_sfjno#,
+       #emp_nprice#,  #emp_shwtype#,  #emp_sgltype# ,
+        #emp_nglprice#,  #emp_nwysum#,  #emp_scardcode#,
+        
+         #emp_smem#,    #emp_smem1#,    
+          #emp_sisdel#,  #emp_sisvalid#,    #emp_sreplyby#,     
+        current_date  
+      
+      )
+			
+		]]>
+	</insert>
+	
+	<!-- 根据ID查询信息  -->
+	<select id="emp_findByID" parameterClass="java.lang.String" resultClass="mngEmp">
+		select sc.sh_sname, p.post_sname,j.job_sname,e.* from mng_emp e
+        left join mng_school    sc on sc.sh_sno=e.sh_sno  and sc.sh_sisdel='0' and sc.sh_sisvalid='0'
+        left join mng_post p on p.post_sno=e.post_sno 
+        left join mng_job j on j.job_sno=e.job_sno
+		  where  e.emp_nid = #id#
+  	</select>
+  	
+  	<!-- 修改  -->
+	<update id="emp_update" parameterClass="mngEmpForm">
+		update mng_emp t set 
+		ud_sno=#ud_sno#,   
+		sh_sno=#sh_sno#,
+        emp_sno=#emp_sno#,
+        emp_sname=#emp_sname#,
+       emp_sename =#emp_sename#,
+        emp_nstate=#emp_nstate#,
+        emp_stele=#emp_stele#, 
+       emp_steleinner =#emp_steleinner#,
+        
+        emp_steleout=#emp_steleout#,
+       emp_semail =#emp_semail#,
+       emp_sgender =#emp_sgender#,
+       emp_sfax =#emp_sfax#, 
+        job_sno=#job_sno#, 
+       post_sno =#post_sno#,
+        emp_nlevel=#emp_nlevel# , 
+        emp_dintime=to_date(#emp_dintime#,'YYYY-MM-DD'), 
+        emp_dbirthday=to_date(#emp_dbirthday#,'YYYY-MM-DD'),
+       
+        emp_sstype=#emp_sstype#, 
+        emp_school=#emp_school#, 
+        emp_scity=#emp_scity#,
+        emp_nlenght=#emp_nlenght#, 
+        emp_sadder=#emp_sadder#, 
+        emp_sisyf=#emp_sisyf#,
+        emp_sisdsz=#emp_sisdsz#, 
+        emp_sishz=#emp_sishz#,
+        emp_sftype=#emp_sftype#,
+        
+        emp_sisfsdw=#emp_sisfsdw#, 
+        emp_sfno=#emp_sfno#, 
+        emp_sfname=#emp_sfname#,
+        emp_siszrbdw=#emp_siszrbdw# ,
+        emp_szrno=#emp_szrno#,  
+        emp_sisgjrc=#emp_sisgjrc# ,
+        emp_nworknum=#emp_nworknum#,
+        emp_sfbtype=#emp_sfbtype#, 
+        emp_nfbsum=#emp_nfbsum# ,
+        
+        emp_dfbdate=to_date( #emp_dfbdate#,'YYYY-MM-DD'), 
+        emp_nsum=#emp_nsum# ,  
+        emp_nfblevel=#emp_nfblevel#,
+        emp_dsbddate=to_date( #emp_dsbddate#,'YYYY-MM-DD') ,
+        emp_nybsum=#emp_nybsum#,
+       emp_sfjno =#emp_sfjno#,
+        emp_nprice=#emp_nprice#, 
+        emp_shwtype=#emp_shwtype#,  
+        emp_sgltype=#emp_sgltype# ,
+        emp_nglprice=#emp_nglprice#, 
+        emp_nwysum=#emp_nwysum#, 
+       emp_scardcode =#emp_scardcode#,
+        
+       emp_smem =#emp_smem#,   
+       emp_smem1 =#emp_smem1#,    
+        emp_sisdel='0',
+       emp_sisvalid ='0', 
+       emp_salterby =#emp_salterby#,     
+        emp_dalterdate=current_date 
+		
+		
+		where t.emp_nid=#emp_nid#
+    </update>
+    
+    <!-- 逻辑删除  -->
+	<update id="emp_delete" parameterClass="java.lang.String">
+		update mng_emp t set t.emp_sisdel = '1'
+		where t.emp_nid =#id#
+    </update>
+    
+    <!-- 更新状态  -->
+	<update id="emp_changeValid" parameterClass="java.lang.String">
+		update mng_emp t set t.emp_sisvalid = 1-t.emp_sisvalid
+		where t.emp_nid =#id#
+    </update>
+    <!-- 查询校区信息 -->
+    
+    <select id="emp_school1" parameterClass="java.lang.String" resultClass="com.rc.base.vo.MngSchool" >
+       select sc.* from mng_school sc where sc.sh_sno in($sh_sno$)
+   </select>
+ 
+   
+   
+   <!-- 查询所有用户 -->
+   <select id="select_user" parameterClass="mngEmpForm" resultClass="com.rc.sys.vo.MngUser">
+         select eu.emp_sno,eu.userid, u.* from mng_user u
+  			left join Mng_empUser eu on eu.userid=u.userid
+  			left join mng_emp e on e.emp_sno=eu.emp_sno 
+ 		 where u.status='0'
+   </select>
+   
+   
+   
+   <!-- 查询职工用户对照表记录数 -->
+   <select id="emp_userfindsize" parameterClass="com.rc.base.form.MngEmpForm" resultClass="java.lang.Integer">
+    select count(1)  from mng_user u
+      left join mng_empuser eu on u.userid=eu.userid
+      left join mng_emp e on eu.emp_sno=e.emp_sno 
+    where status='0' and e.emp_sno=#emp_sno#  order by u.userid
+  
+   </select>
+   <!-- 查询职工用户对照表结果数 -->
+   <select id="emp_userfindpage" parameterClass="com.rc.base.form.MngEmpForm" resultClass="com.rc.base.vo.MngEmpUser" >
+   $pageSQLA$
+    select u.*,e.emp_sno,e.emp_sname  from mng_user u
+     left join mng_empuser eu on u.userid=eu.userid
+     left join mng_emp e on eu.emp_sno=e.emp_sno 
+    where status='0' and e.emp_sno=#emp_sno#  order by u.userid
+   $pageSQLB$
+   </select>
+   <!-- 删除用户职工对照 -->
+    
+    <delete id="emp_empuserupdate" parameterClass="com.rc.base.form.MngEmpUserForm">
+    delete from mng_empuser t 
+    where 1=1
+     <isNotEmpty  property="userid">
+	  			 and t.userid =#userid#
+	  	</isNotEmpty> 
+     </delete>
+     <delete id="emp_empuserupdate1" parameterClass="java.lang.String">
+    delete from mng_empuser t 
+    where  t.userid =#userid#
+	 
+     </delete>
+      <!-- 分配用户 -->
+    <insert id="emp_empuseradd"  parameterClass="com.rc.base.form.MngEmpUserForm">
+    	 insert into mng_empuser (emp_sno,userid)
+    	 values(#emp_sno#,#userid#)
+    </insert>
+   
+   <select id="emp_empuserfind1" parameterClass="com.rc.base.form.MngEmpUserForm" resultClass="com.rc.base.vo.MngEmpUser" >
+     select u.* from mng_user u  
+     left join  mng_empuser eu on eu.userid=u.userid
+     left join mng_emp e on e.emp_sno=eu.emp_sno
+     where u.status='0'
+   </select>
+   
+   
+    
+    
+ 
+    
+    
+   <!-- 根据职工编号和用户id来查询 -->
+   <select id="emp_empuserfind" parameterClass="com.rc.base.form.MngEmpUserForm" resultClass="com.rc.base.vo.MngEmpUser">
+   select * from mng_empuser where emp_sno=#emp_sno# and   userid=#userid#
+   
+   </select>
+   <!-- 根据职工新增用户信息 -->
+    <insert id="insert_user"   parameterClass="com.rc.sys.form.MngUserForm" >
+     <selectKey keyProperty="userid" resultClass="java.lang.String">
+	   		select nvl(max(userid),0)+1 from mng_user
+		</selectKey>
+		<![CDATA[ 	
+			insert into mng_user (userid, screenname, password, email, firstname, lastname, status)
+			values (#userid#, #screenname#, #password#, #email#, #firstname#, #lastname#,0)
+		]]>
+	</insert>
+	
+       <!-- 查询单位部门菜单树列表 -->
+    <select id="ud_tree" parameterClass="mngUnitDepartForm" resultClass="mngUnitDepart">
+    	select u.*,u1.ud_sno as ud_sno1 ,u1.ud_sname as ud_sname1,
+      		 u2.ud_sno as ud_sno2,u2.ud_sname as ud_sname2,
+      		 u3.ud_sno as ud_sno3,u3.ud_sname as ud_sname3 
+      	from mng_unitdepart u
+	  		left join mng_unitdepart u1 on u.ud_stopno=u1.ud_sno
+	      	left join mng_unitdepart u2 on u1.ud_stopno=u2.ud_sno
+	        left join mng_unitdepart u3 on u2.ud_stopno=u3.ud_sno   
+  	  where u.ud_sisdel='0' and u.ud_sisvalid='0' order by u.ud_sno
+    </select>
+    <!-- 根据隶属单位编号来查询所属单位  -->
+   <select id="ud_treestopno" parameterClass="mngUnitDepartForm" resultClass="mngUnitDepart">
+   		select u.*,u1.ud_sno as ud_sno1 ,u1.ud_sname as ud_sname1,
+      		 u2.ud_sno as ud_sno2,u2.ud_sname as ud_sname2,
+      		 u3.ud_sno as ud_sno3,u3.ud_sname as ud_sname3 
+      	from mng_unitdepart u
+	  		left join mng_unitdepart u1 on u.ud_stopno=u1.ud_sno
+	      	left join mng_unitdepart u2 on u1.ud_stopno=u2.ud_sno
+	        left join mng_unitdepart u3 on u2.ud_stopno=u3.ud_sno  
+	     where u.ud_sisdel='0' and u.ud_sisvalid='0' and u.ud_stopno=#ud_stopno#
+   
+   
+   </select>
+   <select id="tree_findUDnum" parameterClass="mngUnitDepartForm" resultClass="java.lang.Integer">
+  			select max(ud_nnumber) from mng_unitdepart
+ </select>
+     
+</sqlMap>

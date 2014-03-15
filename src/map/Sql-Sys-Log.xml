@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="log_findSize" parameterClass="mngLogForm" resultClass="java.lang.Integer">
+		select count(1) from mng_log l  left join mng_user u on l.userid = u.userid
+			WHERE l.log_sisdel ='0' and l.log_sisvalid='0'
+			<isNotEmpty prepend="and" property="searchA">
+			l.log_soptype like '%'||#searchA#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+			l.log_sreplyby like '%'||#searchB#||'%' 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="beginDate">
+			<![CDATA[
+			l.log_ttime >= to_date('$beginDate$ $beginTime$','yyyy-mm-dd hh24:mi:ss') 
+			]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="endDate">
+			<![CDATA[
+			l.log_ttime <= to_date('$endDate$ $endTime$','yyyy-mm-dd hh24:mi:ss') 
+			]]>
+			</isNotEmpty> 
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="log_findPage" parameterClass="mngLogForm" resultClass="mngLog">
+		$pageSQLA$
+		select l.*,u.screenname from mng_log l left join mng_user u on l.userid = u.userid
+			WHERE l.log_sisdel ='0' and l.log_sisvalid='0'
+			<isNotEmpty prepend="and" property="searchA">
+			l.log_soptype like '%'||#searchA#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+			l.log_sreplyby like '%'||#searchB#||'%' 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="beginDate">
+			<![CDATA[
+			l.log_ttime >= to_date('$beginDate$ $beginTime$','yyyy-mm-dd hh24:mi:ss') 
+			]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="endDate">
+			<![CDATA[
+			l.log_ttime <= to_date('$endDate$ $endTime$','yyyy-mm-dd hh24:mi:ss') 
+			]]>
+			</isNotEmpty>
+			order by l.log_ttime desc
+	    $pageSQLB$
+  	</select>
+
+  	
+    <!-- 新增 -->
+	<insert id="log_add" parameterClass="mngLogForm">
+		<selectKey keyProperty="log_nid" resultClass="java.lang.Long">
+	   		select nvl(max(log_nid),0)+1 from mng_log
+		</selectKey>
+		<![CDATA[ 	
+			insert into mng_log (log_nid, userid, log_soptype, log_stable, log_ttime, log_scontent, log_sip, log_sisdel, log_sisvalid, log_sreplyby, log_dreplydate,
+			log_salterby,log_dalterdate)
+			values (#log_nid#,#userid#,#log_soptype#,#log_stable#,current_date,#log_scontent#,#log_sip#,'0','0',#log_sreplyby#,current_date,
+			#log_salterby#,to_date(#log_dalterdate#,'yyyy-mm-dd hh24:mi:ss'))		
+		]]>
+	</insert>
+	 
+  	
+ 
+
+    
+</sqlMap>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="unitDepart_findSize" parameterClass="mngUnitDepartForm" resultClass="java.lang.Integer">
+		select COUNT(1) from MNG_UNITDEPART d
+		left join MNG_UNITDEPART t on d.UD_STOPNO=t.UD_SNO
+		left join mng_dict di on di.dict_sname = 'ud_nnumber' and di.dict_sisdel = '0' and di.dict_sisvalid = '0'
+    	left join mng_dictitem d1 on d1.ditem_svalue = to_char(d.ud_nnumber) and di.dict_sno = d1.dict_sno
+    	left join mng_dict di2 on di2.dict_sname = 'ud_stype' and di2.dict_sisdel = '0' and di2.dict_sisvalid = '0'
+    	left join mng_dictitem d2 on d2.ditem_svalue = to_char(d.ud_stype) and d2.dict_sno = di2.dict_sno
+    	left join mng_dict di3 on di3.dict_sname = 'ud_smunidep' and di3.dict_sisdel = '0' and di3.dict_sisvalid = '0'
+    	left join mng_dictitem d3 on d3.ditem_svalue = to_char(d.ud_smunidep) and d3.dict_sno = di3.dict_sno
+    	left join mng_dict di4 on di4.dict_sname = 'ud_nnumber' and di4.dict_sisdel = '0' and di4.dict_sisvalid = '0'
+    	left join mng_dictitem d4 on d4.ditem_svalue = to_char(d.UD_STOP) and d4.dict_sno = di4.dict_sno
+		where d.Ud_Sisdel='0'
+		<isNotEmpty property="searchA" prepend=" and ">d.UD_SNAME like '%'||#searchA#||'%'</isNotEmpty>
+		<isNotEmpty property="searchB" prepend=" and ">t.UD_SNAME like '%'||#searchB#||'%'</isNotEmpty>
+		<isNotEmpty property="searchC" prepend=" and ">d.UD_NNUMBER=#searchC#</isNotEmpty>
+		<isNotEmpty property="searchD" prepend=" and ">d.UD_NNUMBER>=#searchD#</isNotEmpty>
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="unitDepart_findPage" parameterClass="mngUnitDepartForm" resultClass="mngUnitDepart">
+		$pageSQLA$
+		select t.UD_SNAME AS UD_STOPNAME, d1.ditem_sname AS ditem_sname1,
+		d2.ditem_sname AS ditem_sname2, d3.ditem_sname AS ditem_sname3,
+		d4.ditem_sname AS ditem_sname4, d.* from MNG_UNITDEPART d
+		left join MNG_UNITDEPART t on d.UD_STOPNO=t.UD_SNO
+		left join mng_dict di on di.dict_sname = 'ud_nnumber' and di.dict_sisdel = '0' and di.dict_sisvalid = '0'
+    	left join mng_dictitem d1 on d1.ditem_svalue = to_char(d.ud_nnumber) and di.dict_sno = d1.dict_sno
+    	left join mng_dict di2 on di2.dict_sname = 'ud_stype' and di2.dict_sisdel = '0' and di2.dict_sisvalid = '0'
+    	left join mng_dictitem d2 on d2.ditem_svalue = to_char(d.ud_stype) and d2.dict_sno = di2.dict_sno
+    	left join mng_dict di3 on di3.dict_sname = 'ud_smunidep' and di3.dict_sisdel = '0' and di3.dict_sisvalid = '0'
+    	left join mng_dictitem d3 on d3.ditem_svalue = to_char(d.ud_smunidep) and d3.dict_sno = di3.dict_sno
+    	left join mng_dict di4 on di4.dict_sname = 'ud_nnumber' and di4.dict_sisdel = '0' and di4.dict_sisvalid = '0'
+    	left join mng_dictitem d4 on d4.ditem_svalue = to_char(d.UD_STOP) and d4.dict_sno = di4.dict_sno
+		where d.Ud_Sisdel='0'
+		<isNotEmpty property="searchA" prepend=" and ">d.UD_SNAME like '%'||#searchA#||'%'</isNotEmpty>
+		<isNotEmpty property="searchB" prepend=" and ">t.UD_SNAME like '%'||#searchB#||'%'</isNotEmpty>
+		<isNotEmpty property="searchC" prepend=" and ">d.UD_NNUMBER=#searchC#</isNotEmpty>
+		<isNotEmpty property="searchD" prepend=" and ">d.UD_NNUMBER>=#searchD#</isNotEmpty>
+		order by d.UD_SNO, d.UD_STOPNO
+	    $pageSQLB$
+  	</select>
+  	
+  	<!-- 查询单位部门信息 -->
+  	<select id="unitDepart_findAll" resultClass="mngUnitDepart">
+  		select * from MNG_UNITDEPART where UD_SISDEL='0' and UD_SISVALID='0'
+  	</select>
+  	
+  	<!-- 根据隶属单位和单位名称查询 -->
+  	<select id="unitDepart_findByName" parameterClass="mngUnitDepartForm" resultClass="java.lang.Integer">
+  		select count(1) from MNG_UNITDEPART where UD_SNAME=Trim(#ud_sname#) 
+  		<isNotEmpty property="ud_stopno" prepend=" and ">UD_STOPNO=#ud_stopno#</isNotEmpty>
+  	</select>
+  	
+    <!-- 新增 -->
+	<insert id="unitDepart_add" parameterClass="mngUnitDepartForm">
+		<selectKey keyProperty="ud_sno" resultClass="java.lang.String">
+	   		select #ud_sno# from dual
+		</selectKey>
+		insert into MNG_UNITDEPART(UD_SNO, UD_SNAME, UD_SSNAME, UD_STOP, UD_STOPNO,
+		UD_NNUMBER, UD_NISUSE, UD_SDEF5, UD_SBRIGHTPWD, UD_SPWD, UD_NTIMES, UD_TLOGIN, UD_SSYNCHRO, UD_SOLDNAME, UD_SDEALSIGN,
+		UD_SMANNAME,UD_TMANTIME, UD_SADDR, UD_STELE, UD_SPOSTCODE, UD_SMAIL, UD_STYPE, UD_SBANK, UD_SDUTY, UD_SLINKMAN,
+		UD_SLEGALMAN, UD_SASSETSIZE, UD_SMANNUM, UD_SSCHOOLNUM, UD_SFINANCE, UD_SAPTITUDE, UD_SMUNIDEP, UD_SBRIEFCODE, UD_SWHEELMAN, UD_SISDEL,
+		UD_SISVALID, UD_SREPLYBY, UD_DREPLYDATE,UD_NISTRUE)
+		values(#ud_sno#, #ud_sname#, #ud_ssname#, #ud_stop#, #ud_stopno#,
+		#ud_nnumber#, #ud_nisuse#, #ud_sdef5#, #ud_sbrightpwd#, #ud_spwd#, #ud_ntimes#,TO_DATE(#ud_tlogin#, 'yyyy-mm-dd hh24:mi:ss'), #ud_ssynchro#, #ud_soldname#, #ud_sdealsign#,
+		#ud_smanname#, TO_DATE(#ud_tmantime#, 'yyyy-mm-dd hh24:mi:ss') , #ud_saddr#, #ud_stele#, #ud_spostcode#, #ud_smail#, #ud_stype#, #ud_sbank#, #ud_sduty#, #ud_slinkman#,
+		#ud_slegalman#, #ud_sassetsize#, #ud_smannum#, #ud_sschoolnum#, #ud_sfinance#, #ud_saptitude#, #ud_smunidep#, #ud_sbriefcode#, #ud_swheelman#, #ud_sisdel#,
+		#ud_sisvalid#, #ud_sreplyby#, sysdate,'0')
+	</insert>
+	
+	<!-- 根据ID查询信息  -->
+	<select id="unitDepart_findByID" parameterClass="java.lang.String" resultClass="mngUnitDepart">
+		select * from MNG_UNITDEPART where UD_SISDEL='0' and UD_SNO=#ud_sno#
+  	</select>
+  	
+  	<!-- 修改  -->
+	<update id="unitDepart_update" parameterClass="mngUnitDepartForm">
+		update MNG_UNITDEPART set ud_sname=#ud_sname#, ud_ssname=#ud_ssname#, ud_stop=#ud_stop#, ud_stopno=#ud_stopno#,
+		ud_nnumber=#ud_nnumber#, ud_sdef5=#ud_sdef5#, ud_sbrightpwd=#ud_sbrightpwd#, ud_spwd=#ud_spwd#, ud_ssynchro=#ud_ssynchro#,
+		ud_soldname=#ud_soldname#, ud_sdealsign=#ud_sdealsign#, ud_smanname=#ud_smanname#, ud_tmantime=TO_DATE(#ud_tmantime#, 'yyyy-mm-dd hh24:mi:ss'), ud_saddr=#ud_saddr#,
+		ud_stele=#ud_stele#, ud_spostcode=#ud_spostcode#, ud_smail=#ud_smail#, ud_stype=#ud_stype#, ud_sbank=#ud_sbank#, ud_sduty=#ud_sduty#,
+		ud_slinkman=#ud_slinkman#, ud_slegalman=#ud_slegalman#, ud_sassetsize=#ud_sassetsize#, ud_smannum=#ud_smannum#, ud_sschoolnum=#ud_sschoolnum#,
+		ud_sfinance=#ud_sfinance#, ud_saptitude=#ud_saptitude#, ud_smunidep=#ud_smunidep#, ud_sbriefcode=#ud_sbriefcode#, ud_swheelman=#ud_swheelman#,
+		ud_sisvalid=#ud_sisvalid#, ud_salterby=#ud_salterby#, ud_dalterdate=sysdate
+		where ud_sno=#ud_sno#
+    </update>
+    
+    <!-- 逻辑删除  -->
+	<update id="unitDepart_delete" parameterClass="java.lang.String">
+		update mng_unitDepart t set t.ud_sisdel = '1'
+		where t.ud_sno =#id#
+    </update>
+    
+    <!-- 更新状态  -->
+	<update id="unitDepart_changeValid" parameterClass="java.lang.String">
+		update mng_unitDepart t set t.ud_sisvalid = 1-t.ud_sisvalid
+		where t.ud_sno =#id#
+    </update>
+    
+    <!-- 查询单位部门菜单树列表 -->
+    <select id="unitDepart_findTreeList" resultClass="mngUnitDepart">
+    	select t.UD_SNAME UD_STOPNAME, t.ud_ssname UD_STOPSNAME, d.* from MNG_UNITDEPART d
+  		left join MNG_UNITDEPART t on d.UD_STOPNO=t.UD_SNO      
+  		where d.Ud_Sisdel='0' and  d.ud_sisvalid='0'   order by d.UD_NNUMBER, d.UD_STOP
+    </select>
+    
+    <!-- 根据单位层次查询可用隶属单位列表 -->
+    <select id="unitDepart_findTopList" parameterClass="java.lang.Long" resultClass="mngUnitDepart">
+    	select t.UD_SNAME UD_STOPNAME, t.ud_ssname UD_STOPSNAME, 
+    	d1.DITEM_SNAME AS ditem_sname,
+    	d.* from MNG_UNITDEPART d
+  		left join MNG_UNITDEPART t on d.UD_STOPNO=t.UD_SNO
+  		left join mng_dict di on di.dict_sname = 'ud_nnumber' and di.dict_sisdel = '0' and di.dict_sisvalid = '0'
+    	left join mng_dictitem d1 on d1.ditem_svalue = to_char(d.ud_nnumber) and di.dict_sno = d1.dict_sno
+  		where d.Ud_Sisdel='0' and d.UD_NNUMBER=(#ud_nnumber#-1) order by  t.ud_ndef1,t.ud_sno
+    </select>
+    
+    <!-- 保存单位校区对照信息 -->
+    <insert id="unitDepart_saveSchool" parameterClass="com.rc.base.form.MngSchoolDepartForm">
+    	insert into MNG_SCHOOLDEPART(SH_SNO, UD_SNO, SUD_STYPE)
+    	values(#sh_sno#, #ud_sno#, #sud_stype#)
+    </insert>
+    
+    <!-- 根据单位编号删除单位校区信息 -->
+    <delete id="unitDepart_delSD" parameterClass="com.rc.base.form.MngSchoolDepartForm">
+    	delete from MNG_SCHOOLDEPART where UD_SNO=#ud_sno#
+    </delete>
+    
+    <!-- 根据单位编号查询所对应校区，返回校区编号 -->
+    <select id="unitDepart_findByUDNo" parameterClass="com.rc.base.form.MngSchoolDepartForm" resultClass="java.lang.String">
+    	select SH_SNO from MNG_SCHOOLDEPART where UD_SNO=#ud_sno#
+    </select>
+    
+    <!-- 根据单位编号查询所对应校区，返回单位校区对照表对象 -->
+    <select id="unitDepart_findByUDForObj" parameterClass="com.rc.base.form.MngSchoolDepartForm" resultClass="com.rc.base.vo.MngSchoolDepart">
+    	select * from MNG_SCHOOLDEPART where UD_SNO=#ud_sno#
+    </select>
+    
+    <!-- 根据上级部门编号和层次查询 -->
+    <select id="unitDepart_findByLevel" parameterClass="mngUnitDepartForm" resultClass="java.lang.Integer">
+    	select COUNT(1) from MNG_UNITDEPART d
+		where d.UD_NNUMBER=#ud_nnumber#
+		<isNotEmpty property="ud_stopno" prepend=" and ">d.UD_STOPNO=#ud_stopno#</isNotEmpty>
+    </select>
+    
+    <!-- 查询是否有单位层次为学校的记录 -->
+    <select id="unitDepart_canAddSchool" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+    	select COUNT(1) from MNG_UNITDEPART d
+		where d.UD_SISDEL='0' and d.UD_NNUMBER=1
+    </select>
+    
+    <select id="unitDepart_hasSub" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+    	select COUNT(1) from MNG_UNITDEPART d
+		left join MNG_UNITDEPART t on d.UD_SNO=t.UD_STOPNO
+		where t.ud_sisdel='0' and t.ud_sisvalid='0'
+		and d.ud_sno=#ud_sno#
+    </select>
+</sqlMap>

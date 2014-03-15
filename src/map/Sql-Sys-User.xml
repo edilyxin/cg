@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="user_findSize" parameterClass="mngUserForm" resultClass="java.lang.Integer">
+		select count(1) from mng_user u   
+		<dynamic prepend="where">
+		<isNotEmpty prepend="and" property="searchA">
+			u.screenname like '%'||#searchA#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchB">
+			u.firstname||u.lastname like '%'||#searchB#||'%' 
+		</isNotEmpty>
+		</dynamic>
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="user_findPage" parameterClass="mngUserForm" resultClass="mngUser">
+		$pageSQLA$
+		select u.* from mng_user u 
+		<dynamic prepend="where">
+		<isNotEmpty prepend="and" property="searchA">
+			u.screenname like '%'||#searchA#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchB">
+			u.firstname||u.lastname like '%'||#searchB#||'%' 
+		</isNotEmpty>
+		</dynamic>
+		order by u.userid
+	    $pageSQLB$
+  	</select>
+  	
+    <!-- 新增 -->
+	<insert id="user_add" parameterClass="mngUserForm">
+		 <selectKey keyProperty="userid" resultClass="java.lang.String">
+	   		select nvl(max(userid),0)+1 from mng_user
+		</selectKey>
+		<![CDATA[ 	
+			insert into mng_user (userid, screenname, password, email, firstname, lastname, status)
+			values (#userid#, #screenname#, #password#, #email#, #firstname#, #lastname#,0)
+		]]>
+	</insert>
+	
+	<!-- 根据ID查询信息  -->
+	<select id="user_findByID" parameterClass="java.lang.String" resultClass="mngUser">
+		select u.*  from mng_user u  
+		<dynamic prepend="where">
+		<isNotEmpty prepend="and" >
+			 u.userid=#id#
+		</isNotEmpty>
+		</dynamic>	   
+  	</select>
+  	
+  	<!-- 查询一个用户操作权限 -->
+ 	<select id="useroper_find" parameterClass="java.lang.String"
+		resultClass="com.rc.sys.form.MngOperForm">
+		 select a.*,a.right_sno
+		 from mng_oper a ,mng_useroper b   
+		 where a.oper_sno=b.oper_sno 
+		 and a.sysint_sno=b.sysint_sno
+		 and a.right_sno=b.right_sno
+		 and a.oper_sisdel='0' and a.oper_sisvalid='0'
+		 and b.userid = #userId#
+		 order by a.sysint_sno,a.right_sno,a.oper_sno
+ 	</select>
+ 	
+ 	<!-- 查询用户已有数据权限 -->
+ 	<select id="dboper_find" parameterClass="java.lang.String"
+		resultClass="com.rc.sys.form.MngDboperForm">
+		 select b.*
+     	from mng_dboper a ,mng_userdboper b   
+     	where a.dboper_sno=b.dboper_sno 
+     	and a.sysint_sno=b.sysint_sno
+     	and a.right_sno=b.right_sno
+		and b.usersid = #userId#
+		order by 
+			b.sysint_sno,
+			b.right_sno,
+			b.dboper_sno
+
+		
+ 	</select>
+ 	
+ 	<!-- 查询所有数据权限 -->
+	<select id="dballoper_find" 
+		resultClass="com.rc.sys.form.MngDboperForm">
+		select r.*,a.right_sname from mng_right a
+		right join (select * from mng_dboper where dboper_sisdel='0') r on r.right_sno = a.right_sno and a.sysint_sno=r.sysint_sno
+        where a.right_sisdel = '0'
+        order by  a.sysint_sno,a.RIGHT_SNO ,r.DBOPER_SNO
+ 	</select>
+  	
+  	<!-- 修改  -->
+	<update id="user_update" parameterClass="mngUserForm">
+		update mng_user set
+		screenname=#screenname#,
+		password = #password#,
+		email = #email#,
+		firstname = #firstname#,
+		lastname = #lastname#
+		where userid=#userid#
+    </update>
+    <!-- begin新增用户特权权限 -->
+    <insert id="userright_insert" parameterClass="java.util.HashMap">
+    	insert into mng_userright(userid,right_sno,sysint_sno)
+    	 values(#userid#,trim(#right_sno#),trim(#sysint_sno#))
+    </insert>
+    <!-- end新增用户特权权限 -->
+    <!-- begin删除用户特权权限 -->
+    <delete id="userright_delete" parameterClass="mngUserForm">
+ 		 delete from mng_userright
+ 		  where USERID=#userid#
+ 		  <isNotEmpty prepend="and" property="right_sno">
+ 		  	right_sno=#right_sno#
+ 		  </isNotEmpty>
+ 		  <isNotEmpty prepend="and" property="sysint_sno">
+ 		  	sysint_sno=#sysint_sno#
+ 		  </isNotEmpty>
+ 	</delete>
+ 	<!-- end删除用户特权权限 -->
+    <!-- 操作权限删除所有  -->
+ 	<delete id="useroper_delete" parameterClass="java.lang.String">
+ 		 delete from mng_USEROPER 
+ 		 where USERID=#userId#
+ 	</delete>
+ 	
+ 	<!-- 数据权限删除所有  -->
+ 	<delete id="dbuseroper_delete" parameterClass="java.lang.String">
+ 		 delete from mng_USERDBOPER where USERSID=#userId#
+ 	</delete>
+ 	
+ 	<!-- 操作权限保存 -->
+ 	<insert id="useroper_insert" parameterClass="com.rc.sys.vo.MngUserOper">
+ 	<selectKey keyProperty="oper_sno" resultClass="java.lang.String">
+	   		select #oper_sno# from dual
+		</selectKey>
+ 		<![CDATA[
+		insert into mng_USEROPER(OPER_SNO,USERID,RIGHT_SNO,sysint_sno) values(#oper_sno#,trim(#userid#),trim(#right_sno#),trim(#sysint_sno#))
+		]]>
+	</insert>
+	<!-- 操作权限保存 -->
+ 	<insert id="dboper_insert" parameterClass="com.rc.sys.vo.MngUserDboper">
+ 	<selectKey keyProperty="dboper_sno" resultClass="java.lang.String">
+	   		select #dboper_sno# from dual
+		</selectKey>
+ 		<![CDATA[
+		insert into mng_USERDBOPER(DBOPER_SNO,USERSID,RIGHT_SNO,sysint_sno) values(#dboper_sno#,trim(#usersid#),trim(#right_sno#),trim(#sysint_sno#))
+		]]>
+	</insert>
+    
+    <!-- 删除  -->
+	<delete id="user_delete" parameterClass="java.lang.String">
+		delete mng_user u 
+		where u.userid =#userid#
+    </delete>
+    
+    <!-- 更新状态  -->
+	<update id="user_changeValid" parameterClass="java.lang.String">
+		update mng_user u set u.status = 1-u.status
+		where u.userid =#userid#
+    </update>
+    
+    <!-- 修改当前用户密码  -->
+	<update id="user_updatePwd" parameterClass="mngUserForm">
+		update mng_user u set
+		password = #password#
+		where u.userid =#userid#
+    </update>
+    <!-- 根据用户id查询该用户的用户名，员工名。员工编号 -->
+    <select id="user_findEmp" resultClass="mngRole" parameterClass="mngUserForm">
+		select t.*,e.emp_sno,e.emp_sname from mng_user t
+		left join mng_empuser eu on eu.userid=t.userid
+		left join mng_emp e on e.emp_sno=eu.emp_sno
+		where t.userid=#userid# and t.STATUS='0'
+  	</select>
+    <!-- 查询所有的角色  -->
+	<select id="user_findRoles" resultClass="mngRole">
+		select t.* from mng_role t where t.role_sisdel='0' and t.role_sisvalid='0'
+  	</select>
+  	<!-- 查询所有代理人与被代理人  -->
+	<select id="user_findPersonLook" resultClass="mngRole">
+		select DISTINCT  e.emp_sname,e1.emp_sname emp_snameby  from mng_userdlright t
+ 		left join mng_emp e on e.emp_sno=t.emp_sno
+ 		left join mng_emp e1 on e1.emp_sno=t.emp_snoby
+  	</select>
+  	
+  	<!-- 根据给定的用户id号查询用户已拥有的角色  -->
+	<select id="user_findUserRoles" parameterClass="mngUserForm" resultClass="mngRole">
+		select r.* from mng_role r where r.role_sno in
+		(select ur.role_sno from mng_userrole ur,mng_user u 
+		where ur.userid=u.userid and u.userid=#userid#)
+		and r.role_sisdel='0' and r.role_sisvalid='0'
+		order by r.role_sno
+  	</select>
+ 
+  	<!-- 保存给用户分配的角色-->
+	<insert id="user_addUserRoles" parameterClass="java.util.HashMap">
+		<selectKey keyProperty="userid" resultClass="java.lang.Integer">
+	   		select #userid# from dual
+		</selectKey>
+		insert into mng_userrole ur(userid,role_sno,ur_sdef1)
+		values(#userid#,#roleNo#,#ur_sdef1#)
+	</insert>
+	
+	<!-- 注销用户角色  -->
+	<delete id="user_cancelUserRoles" parameterClass="java.util.HashMap">
+		delete mng_userrole ur where userid=#userid# and role_sno=#roleNo#
+    </delete>
+    <!-- 注销该用户的所有角色 -->
+    <delete id="user_cancelUserAllRoles" parameterClass="mngRole">
+		delete mng_userrole ur where 1=1
+		<isNotEmpty prepend="and" property="userid">
+			ur.userid=#userid#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="role_sno">
+			ur.role_sno=#role_sno#
+		</isNotEmpty>
+    </delete>
+    <!-- 根据给定的用户id号查询用户已拥有的权限  -->
+	<select id="user_findUserRights" parameterClass="mngUserForm" resultClass="mngRight">
+	 select r.right_sno as id,
+          case r.right_sparentno when '0' then r.sysint_sno else r.right_sparentno end as pId,
+          r.right_sname as name,
+          r.sysint_sno,
+          '0' as myChecked
+     from mng_user u 
+     left join  mng_userrole ur on ur.userid = u.userid
+     left join  mng_roleright rr on rr.role_sno = ur.role_sno  
+     left join  mng_right r on r.right_sno = rr.right_sno and rr.rr_sdef1 = r.sysint_sno 
+    where r.right_sisdel = '0' 
+      and r.right_sisvalid = '0'
+      <isNotEmpty prepend="and" property="userid">
+     	  u.userid = #userid#
+      </isNotEmpty>
+      <isNotEmpty prepend="and" property="sysint_sno">
+     	  r.sysint_sno = #sysint_sno#
+      </isNotEmpty>
+    order by r.right_sparentno,r.right_norder
+  	</select>
+  	<!-- 查询用户所有的权限 -->
+  	<select id="">
+  		select ur.right_sno as id,case rt.right_sparentno   
+   			when '0'  then  rt.sysint_sno   
+             else rt.right_sparentno        
+              end as pId,rt.right_sname as name,rt.sysint_sno,'0' as myChecked 
+              from mng_userright ur
+  	</select>
+  	<select id="user_findRightByEmp" parameterClass="mngUserForm" resultClass="mngRight">
+  		select distinct
+  		r.right_sno as id,case r.right_sparentno   
+         when '0'  then  r.sysint_sno   
+            else r.right_sparentno   end as pId,
+            r.right_sname as name,r.sysint_sno,'0' as myChecked
+			from mng_right r 
+			left join mng_roleright rr  on rr.right_sno=r.right_sno   and rr.rr_sdef1=r.sysint_sno
+			where rr.role_sno in (
+			select ud.role_sno from mng_userrole ud where ud.userid in (
+			select eu.userid from mng_empuser eu where eu.emp_sno=#emp_sno#
+			) 
+			)
+			<isNotEmpty prepend="and" property="sysint_sno">
+				r.sysint_sno=#sysint_sno#
+			</isNotEmpty>
+  		      order by sysint_sno,ID
+  	</select>
+  	<!-- 查询出所有的系统 -->
+	<select id="user_findSysint" parameterClass="mngUserForm" resultClass="mngRight">
+		 select rt.sysint_sno as id,rt.sysint_sname as pId,rt.sysint_sname as name,rt.sysint_sno ,'0' as checked  from mng_sysint rt 
+		where rt.sysint_sstate='0'
+		order by rt.sysint_sno
+  	</select>
+    <!-- 查询所有的权限  -->
+	<select id="user_findRights" resultClass="mngRight">
+		select rt.right_sno as id,rt.right_sparentno as pId,rt.right_sname as name from mng_right rt 
+		where rt.right_sisdel='0' and rt.right_sisvalid='0'
+		order by rt.sysint_sno, rt.right_sno
+  	</select>
+  	
+    <!-- 根据代理人和被代理人工号查询相关的代理权限  -->
+	<select id="user_findDlRights" parameterClass="java.util.HashMap" resultClass="mngRight">
+		select udr.right_sno from mng_userdlright udr where udr.emp_sno=#empNO# and udr.emp_snoby=#empNOBy#
+  		and udr.userid=#userId#
+  		<isNotEmpty prepend="and" property="sysint_sno">
+  		udr.sysint_sno=#sysint_sno#
+  		</isNotEmpty>
+  		  order by udr.sysint_sno
+  	</select>
+  	
+  	<!-- 保存代理权限-->
+	<insert id="user_saveDlRight" parameterClass="java.util.HashMap">
+		<selectKey keyProperty="right_sno" resultClass="java.lang.String">
+	   		select #right_sno# from dual
+		</selectKey>
+		insert into mng_userdlright udr(userid,right_sno,emp_sno,emp_snoby,sysint_sno)
+		values(#userid#,#right_sno#,#empNo#,#empNoBy#,#sysint_sno#)
+	</insert>
+    <!-- 删除用户的代理权限 -->
+    <delete id="user_deleteDlRight" parameterClass="mngUserForm"> 
+    delete from MNG_USERDLRIGHT where USERID=#userid#</delete>
+    <!-- 查询某个用户所代理的所有员工 -->
+    <select id="user_findDlEmp" parameterClass="String" resultClass="mngRight">
+    	    select distinct t.emp_snoby,e.emp_sname as empNOByName from mng_userdlright t 
+   			 left join mng_emp e on e.emp_sno=t.emp_snoby
+    		where t.userid=#userId#
+    		order by t.userid
+    </select>
+    <!-- 根据代理人用户和被代理人的员工号查询所被代理的所有的权限 -->
+    <select id="user_findDlRightsByNo" parameterClass="java.util.HashMap" resultClass="mngRight">
+		select ul.right_sno as id,
+		case r.right_sparentno   
+		         when '0'  then  r.sysint_sno   
+		         else r.right_sparentno   end as pId,
+		r.right_sname as name,ul.sysint_sno ,'0' as checked from mng_userdlright ul
+		left join mng_right r on r.right_sno=ul.right_sno  and r.sysint_sno=ul.sysint_sno
+		where ul.emp_snoby=#empNOBy#
+  		and ul.userid=#userId#
+  		<isNotEmpty prepend="and" property="sysint_sno">
+  			r.sysint_sno  = #sysint_sno#
+  		</isNotEmpty>
+  		<isNotEmpty prepend="and" property="empNO">
+  			r.emp_sno  = #empNO#
+  		</isNotEmpty>
+  		order by sysint_sno,id
+  	</select>
+  	<!-- 用户特权查询 -->
+  	 <select id="user_findUserRightList" resultClass="mngRight" parameterClass="mngRightForm">
+	    select ur.right_sno as id,
+		case r.right_sparentno   
+		         when '0'  then  r.sysint_sno   
+		         else r.right_sparentno   end as pId,
+		r.right_sname as name,ur.sysint_sno ,'0' as checked from mng_userright ur
+		left join mng_right r on r.right_sno=ur.right_sno and r.sysint_sno=ur.sysint_sno
+		where 1=1
+		<isNotEmpty prepend="and" property="userid">
+		ur.userid=#userid#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="sysint_sno">
+		ur.sysint_sno=#sysint_sno#
+		</isNotEmpty>
+		order by sysint_sno,id
+  	</select>
+  	<!-- 唯一性验证 -->
+  	 <select id="user_uniqueName" parameterClass="mngUserForm" resultClass="java.lang.Integer">
+		select count(1)
+	    from mng_user u
+        where u.screenname=#screenname#
+        <isNotEmpty prepend="and" property="userid">
+        u.userid != #userid#
+        </isNotEmpty>
+  	</select>
+</sqlMap>

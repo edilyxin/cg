@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>  
+<typeAlias alias="sysDictItemForm" type="com.rc.sys.form.MngDictItemForm"/>     
+<typeAlias alias="sysDictItem" type="com.rc.sys.vo.MngDictItem"/> 
+	<!-- 查询结果数  -->
+	<select id="dict_findSize" parameterClass="mngDictForm" resultClass="java.lang.Integer">
+		select count(1) from mng_dict t  
+		left join mng_sysint s on s.sysint_sno=t.sysint_sno
+		where  t.dict_sisdel = '0' and t.DICT_SISVALID = '0'
+			<isNotEmpty prepend="and" property="searchA">
+				s.sysint_sname like '%'||#searchA#||'%' 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+				t.dict_sname like '%'||#searchB#||'%' 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchC">
+				t.dict_ntype = #searchC# 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="dict_sname" >
+				 t.dict_sname = #dict_sname#
+			</isNotEmpty>
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="dict_findPage" parameterClass="mngDictForm" resultClass="mngDict">
+		$pageSQLA$
+		select t.*,s.sysint_sname from mng_dict t 
+		left join mng_sysint s on s.sysint_sno=t.sysint_sno
+		where   t.dict_sisdel = '0' and t.DICT_SISVALID = '0'
+			<isNotEmpty prepend="and" property="searchA">
+				s.sysint_sname like '%'||#searchA#||'%' 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+				t.dict_sname like '%'||#searchB#||'%' 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchC">
+				t.dict_ntype = #searchC# 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="dict_sname" >
+				 t.dict_sname = #dict_sname#
+			</isNotEmpty>
+			order by t.dict_sno
+	    $pageSQLB$
+  	</select>
+  	
+    <!-- 新增 -->
+	<insert id="dict_add" parameterClass="mngDictForm">
+		<![CDATA[ 	
+			insert into mng_dict (dict_sno,
+								dict_sname,
+								dict_ntype,
+								dict_sdesc,
+								dict_stype,
+								sysint_sno,
+								dict_sisdel,
+								dict_sisvalid,
+								dict_sreplyby,
+								dict_dreplydate)
+			values (#dict_sno#,
+					#dict_sname#,
+					#dict_ntype#,
+					#dict_sdesc#,
+					#dict_stype#,
+					#sysint_sno#,
+					0,
+					0,
+					#dict_sreplyby#,
+					sysdate
+			)
+		]]>
+		<selectKey resultClass="String" keyProperty="dict_sno" > 
+			SELECT #dict_sno#  FROM DUAL 
+		</selectKey>
+	</insert>
+	
+	<!-- 根据ID查询信息  -->
+	<select id="dict_findByID" parameterClass="java.lang.String" resultClass="mngDict">
+		select t.*  from mng_dict t  where  t.dict_sno = #id#
+  	</select>
+  	<select id="dict_findItemByID" parameterClass="java.lang.String" resultClass="mngDictItem">
+		 select m.*,t.dict_sname from mng_dictitem m,mng_dict t
+	    where   t.dict_sno=m.dict_sno and   m.ditem_nid = #id#
+  	</select>
+  	
+  	<!-- 修改  -->
+	<update id="dict_update" parameterClass="mngDictForm">
+		update mng_dict t set
+		dict_sname=#dict_sname#,
+		dict_ntype=#dict_ntype#,
+		dict_sdesc=#dict_sdesc#,
+		dict_stype=#dict_stype#,
+		dict_salterby=#dict_salterby#,
+		dict_dalterdate=sysdate
+		where t.dict_sno=#dict_sno#
+    </update>
+    
+    <!-- 逻辑删除  -->
+	<update id="dict_delete" parameterClass="java.lang.String">
+		update mng_dict t set t.dict_sisdel = '1'
+		where t.dict_sno =#id#
+    </update>
+    
+    <!-- 更新状态  -->
+	<update id="dict_changeValid" parameterClass="java.lang.String">
+		update mng_dict t set t.dict_sisvalid = 1-t.dict_sisvalid
+		where t.dict_sno =#id#
+    </update>
+    <!--查询字典项信息dict_sname -->    	
+  	<select id="getDictItem" parameterClass="mngDictItemForm" resultClass="mngDictItem">
+	  select m.*,t.dict_sname from mng_dictitem m,mng_dict t
+	    where   t.dict_sno=m.dict_sno and   m.dict_sno = #dict_sno#
+	    <isNotEmpty prepend="and" property="ditem_sname">
+	    	m.DITEM_SNAME = #ditem_sname#
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ditem_svalue">
+	    	m.DITEM_SVALUE = #ditem_svalue#
+	    </isNotEmpty>
+	     <isNotEmpty prepend="and" property="searchC">
+	    	m.DITEM_NID != #searchC#
+	    </isNotEmpty>
+	   order by m.ditem_svalue <!--   DITEM_NID-->
+  	</select>   
+<!-- dict_sreplyby,	dict_dreplydate	,dict_salterby,dict_dalterdate -->
+<!--新增字典项信息 -->       
+     <insert id="setDictItem" parameterClass="mngDictItemForm">
+     <selectKey keyProperty="ditem_nid" resultClass="java.lang.String" > 
+			select nvl(max(ditem_nid),0)+1 from mng_dictitem
+		</selectKey>
+     insert into mng_dictitem(ditem_nid,dict_sno,ditem_sname,ditem_svalue,ditem_sdef1) 
+     values(#ditem_nid#,#dict_sno#,#ditem_sname#,#ditem_svalue#,#ditem_sdef1#)
+    
+     </insert>
+<!-- 修改字典 项信息  -->    
+  	 <update id="updateDictItem" parameterClass="mngDictItemForm">    
+      update mng_dictitem set 
+      ditem_sname=#ditem_sname#,
+      ditem_svalue=#ditem_svalue#,
+      ditem_sdef1=#ditem_sdef1#
+      where ditem_nid=#ditem_nid#   
+    </update>
+<!-- 删除字典项信息 -->
+	<update id="deleteDictItem" parameterClass="java.lang.String">
+	 delete mng_dictitem  where ditem_nid=#ditem_nid# 
+	 </update>  
+	 <!-- 批量删除字典项信息 -->
+	<update id="deleteDictItems" parameterClass="java.lang.String">
+	 delete mng_dictitem  where dict_sno=#dict_sno# 
+	 </update> 
+
+</sqlMap>

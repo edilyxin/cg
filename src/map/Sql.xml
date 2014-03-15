@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>
+	 <typeAlias alias="userInfo" type="com.rc.util.UserInfo" /> 
+
+	 <typeAlias alias="mngUser" type="com.rc.sys.vo.MngUser"/>
+	 <typeAlias alias="mngSysint" type="com.rc.sys.vo.MngSysint"/>
+	 <typeAlias alias="mngDboper" type="com.rc.sys.vo.MngDboper"/>
+	 <typeAlias alias="mngDict" type="com.rc.sys.vo.MngDict"/>
+	 <typeAlias alias="mngDictItem" type="com.rc.sys.vo.MngDictItem"/>
+	 <typeAlias alias="mngLog" type="com.rc.sys.vo.MngLog"/>
+	 <typeAlias alias="mngOper" type="com.rc.sys.vo.MngOper"/>
+	 <typeAlias alias="mngParm" type="com.rc.sys.vo.MngParm"/>
+	 <typeAlias alias="mngRight" type="com.rc.sys.vo.MngRight"/>
+	 <typeAlias alias="mngRole" type="com.rc.sys.vo.MngRole"/>
+	 <typeAlias alias="mngSequence" type="com.rc.sys.vo.MngSequence"/>
+	 
+	 <typeAlias alias="loginForm" type="com.rc.sys.form.LoginForm"/>
+	 <typeAlias alias="treeForm" type="com.rc.sys.form.TreeForm"/>
+	 <typeAlias alias="mngUserForm" type="com.rc.sys.form.MngUserForm"/>
+	 <typeAlias alias="mngSysintForm" type="com.rc.sys.form.MngSysintForm"/>
+	 <typeAlias alias="mngDboperForm" type="com.rc.sys.form.MngDboperForm"/>
+	 <typeAlias alias="mngDictForm" type="com.rc.sys.form.MngDictForm"/>
+	 <typeAlias alias="mngDictItemForm" type="com.rc.sys.form.MngDictItemForm"/>
+	 <typeAlias alias="mngLogForm" type="com.rc.sys.form.MngLogForm"/>
+	 <typeAlias alias="mngOperForm" type="com.rc.sys.form.MngOperForm"/>
+	 <typeAlias alias="mngParmForm" type="com.rc.sys.form.MngParmForm"/>
+	 <typeAlias alias="mngRightForm" type="com.rc.sys.form.MngRightForm"/>
+	 <typeAlias alias="mngRoleForm" type="com.rc.sys.form.MngRoleForm"/>
+	 <typeAlias alias="mngSequenceForm" type="com.rc.sys.form.MngSequenceForm"/>
+	 
+	 <typeAlias alias="mngEmp" type="com.rc.base.vo.MngEmp"/>
+	 <typeAlias alias="mngJob" type="com.rc.base.vo.MngJob"/>
+	 <typeAlias alias="mngPost" type="com.rc.base.vo.MngPost"/>
+	 <typeAlias alias="mngSchool" type="com.rc.base.vo.MngSchool"/>
+	 <typeAlias alias="mngUnitDepart" type="com.rc.base.vo.MngUnitDepart"/>
+	
+	 <typeAlias alias="mngEmpForm" type="com.rc.base.form.MngEmpForm"/>
+	 <typeAlias alias="mngJobForm" type="com.rc.base.form.MngJobForm"/>
+	 <typeAlias alias="mngPostForm" type="com.rc.base.form.MngPostForm"/>
+	 <typeAlias alias="mngSchoolForm" type="com.rc.base.form.MngSchoolForm"/>
+	 <typeAlias alias="mngUnitDepartForm" type="com.rc.base.form.MngUnitDepartForm"/>
+	 
+	 <typeAlias alias="mngEmpUserForm" type="com.rc.base.form.MngEmpUserForm"/>
+	 <typeAlias alias="mngEmpUser" type="com.rc.base.vo.MngEmpUser"/>
+ 
+</sqlMap>
+

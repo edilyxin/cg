@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" 
+"http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts> 
+	 <!-- 错误跳转 -->
+<include file="struts-error.xml"></include>
+<!-- 系统管理 -->
+	<package name="sys"  namespace="/"  extends="struts-default,json-default,error">
+<!-- 验证码 -->
+		<action name="RandomImgCode" class="com.rc.util.RandomImgCode">
+		</action>
+	
+<!-- 登陆 -->
+		<action name="login" class="com.rc.sys.action.LoginAction">
+			<result name="success">/main.jsp</result>
+			<result name="error">/login.jsp</result>
+			<result name="mainRight">/top.jsp</result>
+			<result name="menuRight">/menu.jsp</result>
+			<result name="welcome">/welcome.jsp</result>
+			<result name="errorPage">/jsp/error.jsp</result>
+		</action>
+<!-- 放大镜 -->
+ 		
+		<action name="tree" class="com.rc.sys.action.TreeAction">
+			<result name="findEmp" >/jsp/tree/empTree.jsp</result>
+			<result name="findComp" >/jsp/tree/compTree.jsp</result>
+			<result name="findCoop" >/jsp/tree/coopTree.jsp</result>
+			<result name="findCust" >/jsp/tree/custTree.jsp</result>
+			<result name="findDep" >/jsp/tree/depTree.jsp</result>
+			<result name="findJob" >/jsp/tree/jobTree.jsp</result>
+			<result name="findPro" >/jsp/tree/proTree.jsp</result>
+			<result name="findTeam" >/jsp/tree/teamTree.jsp</result>
+			<result name="findUD">/jsp/tree/unitDepartTree.jsp</result>
+			<result name="findUD1">/jsp/tree/unitDepartTree2.jsp</result>
+			<result name="findSchool">/jsp/tree/schoolTree.jsp</result>
+			<result name="findSchoolcheck">/jsp/tree/schoolTreecheck.jsp</result>
+			<result name="findSysint1" type="json">/jsp/sys/right/listRight.jsp
+			</result>
+			<result name="findSysint">/jsp/tree/sysintTree.jsp</result>
+			<result name="findRight">/jsp/tree/rightTree.jsp</result>
+			<result name="findHouse">/jsp/tree/houseTree.jsp</result>
+			<result name="findHouseUnit">/jsp/tree/houseUnitTree.jsp</result>
+			<result name="findHouseLayer">/jsp/tree/houseLayerTree.jsp</result>
+			<result name="findHouseLayer1">/jsp/tree/houseLayerTree1.jsp</result>
+			<result name="findRoom">/jsp/tree/roomTree.jsp</result>
+			<result name="findAsstesType">/jsp/tree/asstesTypeTree.jsp</result>
+			<result name="findTeachGroup">/jsp/tree/teachGroupTree.jsp</result>
+
+			
+			<result name="findDegreetype">/jsp/tree/degreetypeTree.jsp</result>
+			<result name="findProfession">/jsp/tree/professionTree.jsp</result>
+			<result name="findCourse">/jsp/tree/courseTree.jsp</result>
+			<result name="findTeachgroup">/jsp/tree/teachgroupTree.jsp</result>
+			<result name="findStudent">/jsp/tree/studentTree.jsp</result>
+			<result name="findClass">/jsp/tree/classTree.jsp</result>
+			<result name="findClass1">/jsp/tree/classTree1.jsp</result>
+			<result name="findLabOrg">/jsp/tree/labOrgTree.jsp</result>
+			<result name="findLabOrg1">/jsp/tree/labOrgTree1.jsp</result>
+			<result name="findLabOrg2">/jsp/tree/labOrgTree2.jsp</result>
+			<result name="findPost">/jsp/tree/postTree.jsp</result>
+			<result name="findGuanKongEqu">/jsp/tree/guanKongEquTree.jsp</result>
+			<result name="findLabPost">/jsp/tree/labPostTree.jsp</result>
+			<result name="findLabRoom">/jsp/tree/labRoomTree.jsp</result>
+			<result name="findLabRoomyzc">/jsp/tree/labRoomyzc.jsp</result>
+			
+			<result name="findXueke">/jsp/tree/xueKeTree.jsp</result>
+			<result name="findLabType">/jsp/tree/labTypeTree.jsp</result>
+			<result name="findExpXm">/jsp/tree/expXmTree.jsp</result>
+			<result name="findLabPgtype">/jsp/tree/labPgtypeTree.jsp</result>
+			<result name="findLabPgtx">/jsp/tree/labPgtxTree.jsp</result>
+			<result name="findLabPerson">/jsp/tree/labPersonTree.jsp</result>
+			<result name="findRoomType">/jsp/tree/roomTypeTree.jsp</result>
+			<result name="findUser">/jsp/tree/userTree.jsp</result>
+			<result name="findPreQuestion">/jsp/tree/prepareQuestionTree.jsp</result>
+			<result name="findEduScoreitem">/jsp/tree/eduScoreitemTree.jsp</result>
+			<result name="findLabEqu">/jsp/tree/labEquTree.jsp</result>
+			<result name="findEquipInfo">/jsp/tree/equipInfoTree.jsp</result>
+			<result name="findeduZscore">/jsp/tree/eduZscoreTree.jsp</result>
+			<result name="findeduRscoreemp">/jsp/tree/eduRscoreempTree.jsp</result>
+			<result name="findeduRscorerelate">/jsp/tree/eduRscorerelateTree.jsp</result>
+			<result name="findxueqi">/jsp/tree/xueqiTree.jsp</result>
+			<result name="findAgency">/jsp/tree/listBidAgency.jsp</result>
+			
+		</action>
+	<!-- 系统集成管理 -->
+	<action name="sysint" class="com.rc.sys.action.SysintAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/sysint/listSysint.jsp</result>
+			<result name="add">/jsp/sys/sysint/addSysint.jsp</result>
+			<result name="update">/jsp/sys/sysint/updateSysint.jsp</result>
+	</action>
+	
+<!-- 功能管理 -->
+	<action name="right" class="com.rc.sys.action.RightAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/right/listRight.jsp</result>
+			<result name="toAdd">/jsp/sys/right/addRight.jsp</result>
+			<result name="update">/jsp/sys/right/updateRight.jsp</result>
+			<result name="toDelete" type="json">
+				<param name="root">msg</param>
+			</result>
+			<result name="changeValid" type="json">
+				<param name="root">msg</param>
+			</result>
+			<result name="findRightNum" type="json">
+				<param name="root">rightNumList</param>
+			</result>
+			<result name="findSparent" type="json">
+				<param name="root">sparentList</param>
+			</result>
+			<result name="toOrder">/jsp/sys/right/orderRight.jsp</result>
+			<result name="findMenu" type="json">
+				<param name="root">menuList</param>
+			</result>
+			<result name="findSub" type="json">
+				<param name="root">subList</param>
+			</result>
+			<result name="order" type="json">
+				<param name="root">isSuccess</param>
+			</result>
+			<!-- 查找图标地址列表 -->
+			<result name="findImgList">/jsp/sys/right/imgList.jsp</result>
+	</action>
+	<!-- 功能操作对应的action，继承自OperAction -->
+	<action name="rightOper" class="com.rc.sys.action.RightOperAction">
+		<result name="error" >/jsp/error.jsp</result>
+		<result name="find">/jsp/sys/right/rightOper/listOper.jsp</result>
+		<result name="add">/jsp/sys/right/rightOper/addOper.jsp</result>
+		<result name="update">/jsp/sys/right/rightOper/updateOper.jsp</result>
+	</action>
+	
+<!-- 操作管理 -->
+	<action name="oper" class="com.rc.sys.action.OperAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/oper/listOper.jsp</result>
+			<result name="add">/jsp/sys/oper/addOper.jsp</result>
+			<result name="update">/jsp/sys/oper/updateOper.jsp</result>
+			<result name="findOperSname" type="json">
+				<param name="root">ok</param>
+			</result>
+	</action>
+	
+<!-- 数据权限管理 -->
+	<action name="dboper" class="com.rc.sys.action.DboperAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/dboper/listDboper.jsp</result>
+			<result name="add">/jsp/sys/dboper/addDboper.jsp</result>
+			<result name="update">/jsp/sys/dboper/updateDboper.jsp</result>
+			<result name="toAjax" type="json">
+				<param name="root">ok</param>
+			</result>
+	</action>
+	
+<!-- 参数管理 -->
+	<action name="parm" class="com.rc.sys.action.ParmAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/parm/listParm.jsp</result>
+			<result name="add">/jsp/sys/parm/addParm.jsp</result>
+			<result name="update">/jsp/sys/parm/updateParm.jsp</result>
+	</action>
+	<!-- 验证参数访问名唯一性 -->
+	<action name="parmsname" class="com.rc.sys.action.ParmAction" method="findParmSname">
+		<result name="findParmSname" type="json">
+			<param name="root">ok</param>
+		</result>
+		</action>
+<!-- 角色管理 -->
+	<action name="role" class="com.rc.sys.action.RoleAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/role/listRole.jsp</result>
+			<result name="toAdd">/jsp/sys/role/addRole.jsp</result>
+			<result name="toUpdate">/jsp/sys/role/updateRole.jsp</result>
+			<result name="getUserByRole">/jsp/sys/role/userRole.jsp</result>
+			<result name="isDefault" type="json">
+				<param name="root">ok</param>
+			</result>
+			
+			<result name="toFunction">/jsp/sys/role/funcRole.jsp</result>
+			<result name="toOper">/jsp/sys/role/operRole.jsp</result>
+			<result name="todbOper">/jsp/sys/role/dbOperRole.jsp</result>
+			<result name="saveRoleOper">/index.jsp</result>
+			<result name="tocheckRole">/jsp/sys/role/checkRole.jsp</result>
+	</action>
+	
+<!-- 用户管理 -->
+	<action name="user" class="com.rc.sys.action.UserAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/user/listUser.jsp</result>
+			<result name="add">/jsp/sys/user/addUser.jsp</result>
+			<result name="update">/jsp/sys/user/updateUser.jsp</result>
+			<result name="updatePwd">/jsp/sys/user/updatePwd.jsp</result>
+			<result name="toUserRight">/jsp/sys/user/privilegeRight.jsp</result>
+			<result name="toPrivilegeOper">/jsp/sys/user/privilegeOper.jsp</result>
+			<result name="toDBPrivilegeOper">/jsp/sys/user/DBprivilegeOper.jsp</result>
+			<result name="toRoleDistribute">/jsp/sys/user/roleList.jsp</result>
+			<result name="lookRight">/jsp/sys/user/rightList.jsp</result>
+			<result name="toDlRight">/jsp/sys/user/rightDl.jsp</result>
+			<result name="findPersonLook">/jsp/sys/user/DlPersonLook.jsp</result>
+			<result name="rightDlLook">/jsp/sys/user/rightDlLook.jsp</result>
+	</action>
+	
+<!-- 字典管理 -->
+	<action name="dict" class="com.rc.sys.action.DictAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/dict/listDict1.jsp</result>
+			<result name="findDict">/jsp/sys/dict/left.jsp</result>
+			<result name="findDictItem">/jsp/sys/dict/right.jsp</result>
+			<result name="add">/jsp/sys/dict/addDict.jsp</result>
+			<result name="update">/jsp/sys/dict/updateDict.jsp</result>
+			<result name="addItem">/jsp/sys/dict/addDictItem.jsp</result>
+			<result name="updateItem">/jsp/sys/dict/updateDictItem.jsp</result>
+			<result name="toSave" type="json">
+				<param name="root">msg</param>
+			</result>
+			<!-- 验证字典名的唯一性 -->
+			<result name="findDictUnique" type="json"></result>
+			<!-- 验证字典项名的唯一性 --><!-- 验证字典项值的唯一性 -->
+			<result name="findDictUniqueItem" type="json"></result>
+			
+			
+		
+	</action>
+	<!--<action name="findDictUnique" class="com.rc.sys.action.DictAction" method="findDictUnique">
+	  		
+	</action>
+--><!-- 日志管理 -->
+	<action name="log" class="com.rc.sys.action.LogAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/log/listLog.jsp</result>
+	</action>
+	
+<!-- 编码管理 -->
+	<action name="seq" class="com.rc.sys.action.SequenceAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/sys/sequence/listSequence.jsp</result>
+			<result name="add">/jsp/sys/sequence/addSequence.jsp</result>
+			<result name="update">/jsp/sys/sequence/updateSequence.jsp</result>
+			<result name="toAjax" type="json">
+				<param name="root">ok</param>
+			</result>
+			<result name="table" >/jsp/sys/table/listTable.jsp</result>
+			<result name="tableTree">/jsp/tree/tableTree.jsp</result>
+	</action>
+<!-- 编码管理下  数据库表信息 -->
+	
+
+	</package>
+</struts>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">    
+<sqlMapConfig> 
+    <settings 
+    	cacheModelsEnabled="true" 
+    	enhancementEnabled="true"  
+        lazyLoadingEnabled="false" 
+        maxRequests="20" 
+        maxSessions="20"  
+        maxTransactions="20" 
+        useStatementNamespaces="false" />   
+<!-- 定义类别名 -->
+    <sqlMap resource="map/Sql.xml"/>
+<!-- 放大镜 -->
+    <sqlMap resource="map/Sql-Sys-Tree.xml"/>
+<!-- 登录管理 -->
+    <sqlMap resource="map/Sql-Sys-Login.xml"/>
+<!-- 系统集成管理 -->
+    <sqlMap resource="map/Sql-Sys-Sysint.xml"/>
+<!-- 功能管理 -->
+    <sqlMap resource="map/Sql-Sys-Right.xml"/>
+<!-- 操作管理 -->
+    <sqlMap resource="map/Sql-Sys-Oper.xml"/>
+<!-- 参数管理 -->
+    <sqlMap resource="map/Sql-Sys-Parm.xml"/>
+<!-- 角色管理 -->
+    <sqlMap resource="map/Sql-Sys-Role.xml"/>
+<!-- 用户管理 -->
+    <sqlMap resource="map/Sql-Sys-User.xml"/>
+<!-- 字典管理 -->
+    <sqlMap resource="map/Sql-Sys-Dict.xml"/>
+<!-- 日志管理 -->
+    <sqlMap resource="map/Sql-Sys-Log.xml"/>
+<!-- 编码管理 -->
+    <sqlMap resource="map/Sql-Sys-Sequence.xml"/>
+
+<!-- 校区管理 -->
+    <sqlMap resource="map/Sql-Base-School.xml"/>
+<!-- 单位部门管理 -->
+    <sqlMap resource="map/Sql-Base-UnitDepart.xml"/>
+<!-- 岗位管理 -->
+    <sqlMap resource="map/Sql-Base-Job.xml"/>
+<!-- 职称管理 -->
+    <sqlMap resource="map/Sql-Base-Post.xml"/>     
+<!-- 职工管理 -->
+    <sqlMap resource="map/Sql-Base-Emp.xml"/>
+    
+    
+      
+    <sqlMap resource="map/Sql-Project-Accessory.xml"/>
+    <sqlMap resource="map/Sql-Project-Bid.xml"/>
+    <sqlMap resource="map/Sql-Project-BidWin.xml"/>
+    <sqlMap resource="map/Sql-Project-Check.xml"/>    
+    <sqlMap resource="map/Sql-Project-Contract.xml"/>
+    <sqlMap resource="map/Sql-Project-Entrancec.xml"/>
+    <sqlMap resource="map/Sql-Project-Entrancep.xml"/>
+    <sqlMap resource="map/Sql-Project-File.xml"/>
+    <sqlMap resource="map/Sql-Project-Formwork.xml"/>
+    <sqlMap resource="map/Sql-Project-Mail.xml"/>
+    <sqlMap resource="map/Sql-Project-Middle.xml"/>
+    <sqlMap resource="map/Sql-Project-Package.xml"/>
+    <sqlMap resource="map/Sql-Project-PackageList.xml"/>
+    <sqlMap resource="map/Sql-Project-PayMoney.xml"/>
+    <sqlMap resource="map/Sql-Project-Person.xml"/>
+    <sqlMap resource="map/Sql-Project-Process.xml"/>
+    <sqlMap resource="map/Sql-Project-Project.xml"/>
+    <sqlMap resource="map/Sql-Project-ProjectDetail.xml"/>
+    <sqlMap resource="map/Sql-Project-Report.xml"/>
+    <sqlMap resource="map/Sql-Project-ReportBegin.xml"/>
+    <sqlMap resource="map/Sql-Project-Setting.xml"/>
+ </sqlMapConfig> 

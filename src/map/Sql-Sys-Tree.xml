@@ -1,0 +1,663 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+
+<!-- 查询系统信息  -->
+     <select id="tree_findSys" parameterClass="treeForm" resultClass="mngSysint">
+	    SELECT e.* FROM mng_sysint e 
+	    where e.sysint_sstate ='0' 
+	    order by e.sysint_sno     
+  	</select> 
+
+ 
+<!-- 查询员工信息  -->
+     <select id="tree_findEmp" parameterClass="treeForm" resultClass="mngEmp">
+	    SELECT e.* FROM mng_emp e 
+	    where e.emp_sisdel ='0' and e.emp_sisvalid='0' 
+	    <isNotEmpty prepend="and" property="ud_sno">
+	    (e.ud_sno = #ud_sno# or e.comp_stemp = #ud_sno# )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno1">
+	    (e.ud_sno1 = #ud_sno1# or e.dep_stemp = #ud_sno1#)
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno2">
+	    (e.ud_sno2 = #ud_sno2# or e.job_stemp = #ud_sno2#)
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno3">
+	    (e.ud_sno3 = #ud_sno3# or e.class_stemp = #ud_sno3#)
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="sh_sno">
+	    (e.sh_sno = #sh_sno# or e.team_stemp = #sh_sno#)
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="emp_sno">
+	    (e.emp_sno = #emp_sno# or e.team_stemp = #emp_sno#)
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="job_sno">
+	    (e.job_sno = #job_sno# or e.team_stemp = #job_sno#)
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="post_sno">
+	    (e.post_sno = #post_sno# or e.team_stemp = #post_sno#)
+	    </isNotEmpty>
+
+	    order by e.emp_sno     
+  	</select> 
+
+<!-- 查出员工记录总条数 放大镜  -->
+	<select id="tree_findEmpSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+		select count(1) from mng_emp e 
+       
+      where e.emp_sisdel ='0' and e.emp_sisvalid='0'
+	   <isNotEmpty prepend="and" property="searchA">
+	    (e.ud_sname like '%$searchA$%'  )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchB"><!-- 学院 -->
+	    (e.ud_sname1 like '%$searchB$%'  )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchC"><!-- 系 -->
+	    (e.ud_sname2 like '%$searchC$%')
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchD">
+	    (e.ud_sname3 like '%$searchD$%' )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchE"><!-- 校区 -->
+	    (e.sh_sno = #searchE# )
+	    </isNotEmpty>
+	     <isNotEmpty prepend="and" property="ud_sno">
+	    (e.ud_sno like '%$ud_sno$%'  )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno1">
+	    (e.ud_sno1 like '%$ud_sno1$%' )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno2">
+	    (e.ud_sno2 like '%$ud_sno2$%')
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno3">
+	    (e.ud_sno3 like '%$ud_sno3$%' )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="sh_sno">
+	    (e.sh_sno like '%$sh_sno$%'  )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchG">
+	    e.ud_sno = #searchG# or 
+	    e.ud_sno1 = #searchG# or 
+	    e.ud_sno2 = #searchG# or 
+	    e.ud_sno3 = #searchG# 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="emp_sno">
+	    e.emp_sno = #emp_sno# 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchF">
+	    e.emp_sno != #searchF# 
+	    </isNotEmpty>
+	    order by e.emp_sno     
+  	</select>
+    <!-- 根据员工记录分页  放大镜 -->
+	<select id="tree_findEmpPage" parameterClass="treeForm" resultClass="mngEmp">
+		$pageSQLA$
+		select e.*,d1.ditem_sname as ditem_sname1,d2.ditem_sname as ditem_sname2,cl1.post_sname,s.sh_sname,j.job_sname
+	    from mng_emp e 
+	    left join mng_school s on s.sh_sno=e.sh_sno and s.sh_sisdel='0' and s.sh_sisvalid='0'
+	    left join mng_job j on j.job_sno=e.job_sno
+	    left join mng_post cl1 on cl1.post_sno = e.post_sno and cl1.post_sisdel='0' and cl1.post_sisvalid='0'
+	    left join mng_dict di on di.dict_sname ='emp_nlevel' and di.dict_sisdel='0' and di.dict_sisvalid='0'
+	    left join  mng_dictitem  d1 on  d1.ditem_svalue = to_char(e.emp_nlevel) and di.dict_sno=d1.dict_sno
+	    left join mng_dict di1 on  di1.dict_sname ='emp_sstype' and di1.dict_sisdel='0' and di1.dict_sisvalid='0'
+	    left join  mng_dictitem  d2 on d2.ditem_svalue = e.emp_sstype and di1.dict_sno=d2.dict_sno
+	    where e.emp_sisdel ='0' and e.emp_sisvalid='0'
+	  <isNotEmpty prepend="and" property="searchA">
+	    (e.ud_sname like '%$searchA$%'  )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchB">
+	    (e.ud_sname1 like '%$searchB$%'  )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchC">
+	    (e.ud_sname2 like '%$searchC$%')
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchD">
+	    (e.ud_sname3 like '%$searchD$%' )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchE">
+	    (e.sh_sno = #searchE# )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno">
+	    (e.ud_sno like '%$ud_sno$%'  )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno1">
+	    (e.ud_sno1 like '%$ud_sno1$%' )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno2">
+	    (e.ud_sno2 like '%$ud_sno2$%')
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="ud_sno3">
+	    (e.ud_sno3 like '%$ud_sno3$%' )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="sh_sno">
+	    (e.sh_sno like '%$sh_sno$%'  )
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchG">
+	    e.ud_sno = #searchG# or 
+	    e.ud_sno1 = #searchG# or 
+	    e.ud_sno2 = #searchG# or 
+	    e.ud_sno3 = #searchG# 
+	    </isNotEmpty>
+	   <isNotEmpty prepend="and" property="emp_sno">
+	    e.emp_sno = #emp_sno# 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchF">
+	    e.emp_sno != #searchF# 
+	    </isNotEmpty>
+	    order by e.emp_sno   
+	    $pageSQLB$
+  	</select>
+<!-- 查询单位信息  -->
+     <select id="tree_findComp" parameterClass="treeForm" resultClass="mngUnitDepart">
+	    SELECT c.* FROM mng_emp c 
+	    where c.comp_sisdel ='0' and c.comp_sisvalid='1' 
+	    
+	    <isNotEmpty   property="comp_ssuper">
+	     CONNECT BY PRIOR   c.comp_sno = c.comp_sSuper START WITH c.comp_sno=#comp_ssuper#
+	    </isNotEmpty>
+	    order by c.comp_sno     
+  	</select>   
+
+<!-- 查询部门信息 ud_nnumber  -->
+     <select id="tree_findDep" parameterClass="treeForm" resultClass="mngUnitDepart">
+	    SELECT d.* FROM base_Department d 
+	    left join mng_dict di on   di.dict_sname ='ud_smunidep' and di.dict_sisdel='0' and di.dict_sisvalid='0'
+        left join  mng_dictitem  d1  on  di.dict_sno=d1.dict_sno and  d1.ditem_svalue = u.ud_smunidep  
+        left join mng_dict di1 on  di1.dict_sname ='ud_nnumber' and di1.dict_sisdel='0' and di1.dict_sisvalid='0'
+        left join  mng_dictitem  d2 on di1.dict_sno=d2.dict_sno and d2.ditem_svalue = to_char(u.ud_nnumber)
+	    where d.dep_sisdel ='0' and d.dep_sisvalid='1'
+	    <isNotEmpty prepend="and" property="comp_sno">
+	     d.comp_sno = #comp_sno#  
+	    </isNotEmpty>
+	    order by d.dep_sno     
+  	</select>   
+
+  <!-- 校区信息 放大镜-->
+  		<select id="tree_findSchool" parameterClass="treeForm" resultClass="mngSchool">
+  			$pageSQLA$
+  			select distinct s.* from mng_school s
+  			<isNotEmpty property="lo_sno">
+  			    left join Mng_SchoolDepart sd on sd.sh_sno=s.sh_sno 
+				left join mng_unitdepart u on u.ud_sno=sd.ud_sno and u.ud_sisdel='0'
+				left join lab_org o on o.ud_sno=u.ud_sno and o.lo_sisdel='0'
+  				where o.lo_sno = #lo_sno# and s.sh_sisdel='0' 
+  			</isNotEmpty>
+  			<isEmpty property="lo_sno">
+  				where s.sh_sisdel='0' 
+  			</isEmpty>	
+  			<isNotEmpty prepend="and" property="searchA">
+  					s.sh_sno=#searchA#
+  			</isNotEmpty>
+  			
+  			order by s.sh_sno
+  			$pageSQLB$
+  		</select>
+  <!-- 校区信息数 放大镜 -->
+  			<select id="tree_findSchoolSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+				  select count(1) from mng_school s
+			 <isNotEmpty property="lo_sno">
+  			    left join Mng_SchoolDepart sd on sd.sh_sno=s.sh_sno 
+				left join mng_unitdepart u on u.ud_sno=sd.ud_sno and u.ud_sisdel='0'
+				left join lab_org o on o.ud_sno=u.ud_sno and o.lo_sisdel='0'
+  				where o.lo_sno = #lo_sno# and s.sh_sisdel='0' 
+  			</isNotEmpty>
+  			<isEmpty property="lo_sno">
+  				where s.sh_sisdel='0' 
+  			</isEmpty>	
+				  <isNotEmpty prepend="and" property="searchA">
+				  	s.sh_sno=#searchA#
+				  </isNotEmpty>	
+				 
+				  order by s.sh_sno
+  			</select>
+  			
+  		<!-- 单位部门信息 放大镜 -->
+  		<!-- 得到最低的部门层次-->
+  		<select id="tree_findUDCount" parameterClass="treeForm" resultClass="java.lang.Integer">
+  			select max(ud_nnumber) from mng_unitdepart
+  		</select>
+  		<select id="tree_findSonUD" parameterClass="treeForm" resultClass="mngUnitDepart">
+  			select u.* from mng_unitdepart  u
+			 CONNECT BY PRIOR  u.ud_sno = u.ud_stopno START WITH u.ud_sno=#ud_sno#
+  		</select>
+  		
+		<select id="tree_findUD" parameterClass="treeForm" resultClass="mngUnitDepart">
+			$pageSQLA$
+			select u.*,u1.ud_sno as ud_sno1 ,u1.ud_sname as ud_sname1,
+      		 u2.ud_sno as ud_sno2,u2.ud_sname as ud_sname2,
+      		 u3.ud_sno as ud_sno3,u3.ud_sname as ud_sname3,
+     		 u4.ud_sno as ud_sno4,u4.ud_sname as ud_sname4,
+     		 u5.ud_sno as ud_sno5,u5.ud_sname as ud_sname5,
+     		 u6.ud_sno as ud_sno6,u6.ud_sname as ud_sname6,
+      		 d1.ditem_sname as ditem_sname1,d2.ditem_sname as ditem_sname2
+      		 from mng_unitdepart u   
+      		 left join mng_unitdepart u1 on u.ud_stopno=u1.ud_sno
+      		 left join mng_unitdepart u2 on u1.ud_stopno=u2.ud_sno
+       	     left join mng_unitdepart u3 on u2.ud_stopno=u3.ud_sno
+             left join mng_unitdepart u4 on u3.ud_stopno=u4.ud_sno
+       	     left join mng_unitdepart u5 on u4.ud_stopno=u5.ud_sno
+             left join mng_unitdepart u6 on u5.ud_stopno=u6.ud_sno
+             <!-- left join Mng_SchoolDepart sd on sd.ud_sno=u.ud_sno 校区部门关联表 -->
+             left join mng_dict di on   di.dict_sname ='ud_smunidep' and di.dict_sisdel='0' and di.dict_sisvalid='0'
+        	 left join  mng_dictitem  d1  on  di.dict_sno=d1.dict_sno and  d1.ditem_svalue = u.ud_smunidep  
+             left join mng_dict di1 on  di1.dict_sname ='ud_nnumber' and di1.dict_sisdel='0' and di1.dict_sisvalid='0'
+             left join  mng_dictitem  d2 on di1.dict_sno=d2.dict_sno and d2.ditem_svalue = to_char(u.ud_nnumber)
+             
+     		 where u.ud_sisdel='0' and u.ud_sisvalid='0' 
+			<isNotEmpty prepend="and" property="searchA">
+				u.ud_sno=#searchA#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+				u.ud_sname like '%$searchB$%'
+				</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_sno">
+				u.ud_sno=#ud_sno#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_stopno">
+				u.ud_stopno=#ud_stopno#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_nnumber">
+				u.ud_nnumber=#ud_nnumber#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchC">
+				u.ud_nnumber!=#searchC#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_stype">
+				u.ud_stype=#ud_stype#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchG">
+				u.ud_sno=
+				(select e.ud_sno
+				from mng_emp e  
+				where e.emp_sno=#searchG#
+				) or u.ud_sno=
+				(select e.ud_sno1
+				from mng_emp e  
+				where e.emp_sno=#searchG#
+				)or u.ud_sno=
+				(select e.ud_sno2
+				from mng_emp e  
+				where e.emp_sno=#searchG#
+				)or u.ud_sno=
+				(select e.ud_sno3
+				from mng_emp e  
+				where e.emp_sno=#searchG#
+				)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_stop">
+				u.ud_stop=#ud_stop#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchH">
+				(u.ud_nnumber='2' or u.ud_nnumber='3')
+			</isNotEmpty>
+			order by u.ud_sno
+			$pageSQLB$
+		</select>
+		<!-- 单位部门信息数 放大镜 -->
+  		<select id="tree_findUDSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+  				select count(1) from mng_unitdepart u
+  				where u.ud_sisdel='0' and u.ud_sisvalid='0'
+			<isNotEmpty prepend="and" property="searchA">
+				u.ud_sno=#searchA#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchB">
+				u.ud_sname like '%$searchB$%'
+				</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_sno">
+				u.ud_sno=#ud_sno#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_stopno">
+				u.ud_stopno=#ud_stopno#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_nnumber">
+				u.ud_nnumber=#ud_nnumber#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchC">
+				u.ud_nnumber!=#searchC#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_stype">
+				u.ud_stype=#ud_stype#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchG">
+				u.ud_sno=
+				(select e.ud_sno
+				from mng_emp e  
+				where e.emp_sno=#searchG#
+				) or u.ud_sno=
+				(select e.ud_sno1
+				from mng_emp e  
+				where e.emp_sno=#searchG#
+				)or u.ud_sno=
+				(select e.ud_sno2
+				from mng_emp e  
+				where e.emp_sno=#searchG#
+				)or u.ud_sno=
+				(select e.ud_sno3
+				from mng_emp e  
+				where e.emp_sno=#searchG#
+				)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ud_stop">
+				u.ud_stop=#ud_stop#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchH">
+				(u.ud_nnumber='2' or u.ud_nnumber='3')
+			</isNotEmpty>
+				order by u.ud_sno
+  		</select>
+  		
+<!-- 查询岗位信息 -->
+     <select id="tree_findJob" parameterClass="treeForm" resultClass="mngJob">
+	    SELECT e.* FROM mng_job e 
+	    where e.job_sisdel ='0' and e.job_sisvalid='0' 
+	    <isNotEmpty prepend="and" property="ud_sno">
+	     e.ud_sno = #ud_sno#  
+	    </isNotEmpty>
+	    order by e.job_sno     
+  	</select>   
+  	
+   
+  	
+ 
+<!-- 查询字典信息 -->
+     <select id="tree_findDict" parameterClass="treeForm" resultClass="mngDictItem">
+	    select * from mng_dictitem t left join  mng_dict d on d.dict_sno=t.dict_sno 
+	    where d.dict_sisdel='0' and d.dict_sisvalid='0'  
+	    and d.dict_sname=#dict_sname#
+	    <isNotEmpty prepend="and" property="sysint_sno">
+	    	 d.sysint_sno=#sysint_sno#
+	    </isNotEmpty>
+	    <isEmpty prepend="and" property="sysint_sno">
+	    	 d.dict_stype='0'
+	    </isEmpty>
+	    <isNotEmpty prepend="and" property="dict_ntype">
+	 		 d.dict_ntype=#dict_ntype#
+	    </isNotEmpty>
+	    order by t.ditem_nid    
+  	</select>  
+  	
+<!-- 查询部门记录总条数  -->
+	<select id="tree_findDepSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+		select count(1) from base_department d 
+		left join base_department d1 on d1.dep_sno=d.dep_ssuper
+		left join mng_emp c on c.comp_sno=d.comp_sno 
+	    where d.dep_sisdel ='0' and d.dep_sisvalid='0' 
+	    <isNotEmpty prepend="and" property="comp_sno">
+	    d.comp_sno = #comp_sno# 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchA">
+	     d.dep_sno like '%'||#searchA#||'%' 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchB">
+	    d.dep_sname like '%'||#searchB#||'%'  
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchC">
+	    c.comp_sname like '%'||#searchC#||'%' 
+	    </isNotEmpty>
+	    <isNotEmpty   property="comp_ssuper">
+	     CONNECT BY PRIOR   c.comp_sno = c.comp_sSuper START WITH c.comp_sno=#comp_ssuper# 
+	    </isNotEmpty>  
+	    order by d.dep_sno     
+  	</select>
+  	
+	
+    <!-- 根据部门记录分页  -->
+	<select id="tree_findDepPage" parameterClass="treeForm" resultClass="mngUnitDepart">
+		$pageSQLA$
+		select d.*,
+		d1.dep_sname as dep_ssupername,
+		c.comp_sname    
+		from base_department d 
+		left join base_department d1 on d1.dep_sno=d.dep_ssuper
+		left join mng_emp c on c.comp_sno=d.comp_sno 
+	    where d.dep_sisdel ='0' and d.dep_sisvalid='0' 
+	    <isNotEmpty prepend="and" property="comp_sno">
+	    d.comp_sno = #comp_sno# 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchA">
+	     d.dep_sno like '%'||#searchA#||'%' 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchB">
+	    d.dep_sname like '%'||#searchB#||'%'  
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchC">
+	    c.comp_sname like '%'||#searchC#||'%' 
+	    </isNotEmpty>
+	    <isNotEmpty   property="comp_ssuper">
+	     CONNECT BY PRIOR   c.comp_sno = c.comp_sSuper START WITH c.comp_sno=#comp_ssuper# 
+	    </isNotEmpty>  
+	    order by d.dep_sno          
+		
+	    $pageSQLB$
+  	</select>	
+  	
+ 	
+<!-- 查询岗位记录总条数  -->
+	<select id="tree_findJobSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+		select count(1) from  mng_job j 
+		left join mng_unitdepart d on d.ud_sno=j.ud_sno<!-- job_stype	职务类别：公共和部门 【岗位放大镜】 -->
+		<!-- job_nlevel	职务级别：【岗位放大镜】 -->
+		
+	    where j.job_sisdel ='0' and j.job_sisvalid='0' 
+	    <isNotEmpty prepend="and" property="ud_sno">
+	    j.ud_sno = #ud_sno# 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchA">
+	    j.job_sno like '%'||#searchA#||'%' 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchB">
+	    j.job_sname like '%'||#searchB#||'%'  
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchC">
+	    d.ud_sname like '%'||#searchE#||'%'  
+	    </isNotEmpty>
+	    <isNotEmpty   property="ud_stopno">
+	     CONNECT BY PRIOR   d.ud_sno = d.ud_stopno START WITH d.ud_sno=#ud_stopno# 
+	    </isNotEmpty>  
+	    order by j.job_sno  
+  	</select>
+  	
+	
+    <!-- 根据岗位记录分页  -->
+	<select id="tree_findJobPage" parameterClass="treeForm" resultClass="mngJob">
+		$pageSQLA$
+		select j.*,d1.ditem_sname as ditem_sname1,d2.ditem_sname as ditem_sname2,
+		d.ud_sname  
+		from mng_job j 
+		left join mng_unitdepart d on d.ud_sno=j.ud_sno
+		left join mng_dict di on di.dict_sisdel='0' and di.dict_sisvalid='0' and di.dict_sname ='job_stype'
+        left join  mng_dictitem  d1  on  di.dict_sno=d1.dict_sno and  d1.ditem_svalue = j.job_stype
+        left join mng_dict di1 on  di1.dict_sname ='job_nlevel' and di1.dict_sisdel='0' and di1.dict_sisvalid='0'
+        left join  mng_dictitem  d2 on di1.dict_sno=d2.dict_sno and d2.ditem_svalue = to_char(j.job_nlevel)
+	    where j.job_sisdel ='0' and j.job_sisvalid='0' 
+	    <isNotEmpty prepend="and" property="ud_sno">
+	    j.ud_sno = #ud_sno# 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchA">
+	    j.job_sno like '%'||#searchA#||'%' 
+	    </isNotEmpty>
+	    <isNotEmpty prepend="and" property="searchB">
+	    j.job_sname like '%'||#searchB#||'%'  
+	    </isNotEmpty>
+	  
+	    <isNotEmpty prepend="and" property="searchC">
+	    d.ud_sname like '%'||#searchE#||'%'  
+	    </isNotEmpty>
+	    <isNotEmpty   property="ud_stopno">
+	     CONNECT BY PRIOR   d.ud_sno = d.ud_stopno START WITH d.ud_sno=#ud_stopno# 
+	    </isNotEmpty>  
+	    order by j.job_sno        
+		
+	    $pageSQLB$
+  	</select>	
+  	
+  	  <!-- 系统集成信息表 放大镜 -->
+  <select id="tree_findSysint" parameterClass="treeForm" resultClass="mngSysint">
+  			$pageSQLA$
+  			select s.* from mng_sysint s
+  			where s.sysint_sstate='0' 
+  			<isNotEmpty prepend="and" property="searchA">
+  					s.sysint_sname like '%$searchA$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchB">
+  					s.sysint_ssname like '%$searchB$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchC">
+  					s.sysint_susrtype = #searchC#
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="sysint_sno">
+  					s.sysint_sno = #sysint_sno#
+  			</isNotEmpty>
+  			order by s.sysint_sno
+  			$pageSQLB$
+  		</select>
+   <!-- 系统集成信息数 放大镜 -->
+  			<select id="tree_findSysintSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+			select count(1) from mng_sysint s
+  			where s.sysint_sstate='0' 
+  			<isNotEmpty prepend="and" property="searchA">
+  					s.sysint_sname like '%$searchA$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchB">
+  					s.sysint_ssname like '%$searchB$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchC">
+  					s.sysint_susrtype = #searchC#
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="sysint_sno">
+  					s.sysint_sno = #sysint_sno#
+  			</isNotEmpty>
+  			order by s.sysint_sno
+  			</select>
+  			
+  	 <!-- 功能信息表 放大镜 -->
+  <select id="tree_findRight" parameterClass="treeForm" resultClass="mngRight">
+  			$pageSQLA$
+  		<![CDATA[	
+  		select s.SYSINT_SNAME sysint_sname, r1.RIGHT_SNAME right_sparentname, r.* from MNG_RIGHT r 
+		left join MNG_SYSINT s on r.SYSINT_SNO = s.SYSINT_SNO
+		left join MNG_RIGHT r1 on r.RIGHT_SPARENTNO=r1.RIGHT_SNO and r1.sysint_sno=r.sysint_sno
+		where r.RIGHT_SISDEL='0' and s.SYSINT_SSTATE='0' and r.right_sisvalid='0' and r.right_nmorb='1'
+  			]]>
+  			<isNotEmpty prepend="and" property="searchA">
+  					s.sysint_sname like '%$searchA$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchB">
+  					r.right_sname like '%$searchB$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchC">
+  					r1.right_sname like '%$searchC$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="right_sno">
+  					r.right_sno = #right_sno#
+  			</isNotEmpty>
+  			
+  			<isNotEmpty prepend="and" property="sysint_sno">
+  					r.sysint_sno = #sysint_sno#
+  			</isNotEmpty>
+  			order by r.right_sno
+  			$pageSQLB$
+  		</select>
+   <!-- 功能信息数 放大镜 -->
+  			<select id="tree_findRightSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+		<![CDATA[	
+		select count(1) 
+		from	MNG_RIGHT r 
+		left join MNG_SYSINT s on r.SYSINT_SNO = s.SYSINT_SNO
+		left join MNG_RIGHT r1 on r.RIGHT_SPARENTNO=r1.RIGHT_SNO and r1.sysint_sno=r.sysint_sno
+		where r.RIGHT_SISDEL='0' and s.SYSINT_SSTATE='0' and r.right_sisvalid='0' and r.right_nmorb='1'
+  		]]>	
+  			<isNotEmpty prepend="and" property="searchA">
+  					s.sysint_sname like '%$searchA$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchB">
+  					r.right_sname like '%$searchB$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchC">
+  					r1.right_sname like '%$searchC$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="right_sno">
+  					r.right_sno = #right_sno#
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="sysint_sno">
+  					r.sysint_sno = #sysint_sno#
+  			</isNotEmpty>
+  			order by r.right_sno
+  			</select>
+  
+    
+  <!-- begin 职称mng_post放大镜 -->
+   <select id="tree_findPost" parameterClass="treeForm" resultClass="mngPost">
+  			$pageSQLA$
+  			select s.*,d1.ditem_sname as ditem_sname1
+  			from mng_post s
+  			left join mng_dict di on di.dict_sisdel='0' and di.dict_sisvalid='0' and di.dict_sname ='post_nlevel'
+            left join mng_dictitem  d1  on  di.dict_sno=d1.dict_sno and  d1.ditem_svalue = to_char(s.post_nlevel)
+       		
+  			where s.post_sisdel='0' and s.post_sisvalid='0'
+  			<isNotEmpty prepend="and" property="searchA">
+  					s.post_sno like '%$searchA$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchB">
+  					s.post_sname like '%$searchB$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="post_sno">
+  					s.post_sno =#post_sno#
+  			</isNotEmpty>
+  			order by s.post_sno
+  			$pageSQLB$
+  		</select>
+		<select id="tree_findPostSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+			select count(1)  
+			from mng_post s
+  			
+  			where s.post_sisdel='0' and s.post_sisvalid='0'
+  			<isNotEmpty prepend="and" property="searchA">
+  					s.post_sno like '%$searchA$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="searchB">
+  					s.post_sname like '%$searchB$%'
+  			</isNotEmpty>
+  			<isNotEmpty prepend="and" property="post_sno">
+  					s.post_sno =#post_sno#
+  			</isNotEmpty>
+  			order by s.post_sno
+  			</select>
+  <!-- end 职称mng_post放大镜 -->
+   
+ <!--begin用户放大镜-->		
+ 	<select id="tree_findUserSize" parameterClass="treeForm" resultClass="java.lang.Integer">
+		select count(1) from mng_user u   
+		<dynamic prepend="where">
+		u.status='0'
+		<isNotEmpty prepend="and" property="searchA">
+			u.screenname like '%'||#searchA#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchB">
+			u.firstname||u.lastname like '%'||#searchB#||'%' 
+		</isNotEmpty>
+		</dynamic>
+  	</select>
+
+	<select id="tree_findUserPage" parameterClass="treeForm" resultClass="mngUser">
+		$pageSQLA$
+		select u.* from mng_user u 
+		<dynamic prepend="where">
+		 u.status='0'
+		<isNotEmpty prepend="and" property="searchA">
+			u.screenname like '%'||#searchA#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchB">
+			u.firstname||u.lastname like '%'||#searchB#||'%' 
+		</isNotEmpty>
+		</dynamic>
+	    $pageSQLB$
+  	</select>
+ <!-- end用户放大镜 --> 		
+ 
+</sqlMap>
+

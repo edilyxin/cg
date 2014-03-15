@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE sqlMap    
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"  
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">   
+<sqlMap>       
+	<!-- 查询结果数  -->
+	<select id="parm_findSize" parameterClass="mngParmForm" resultClass="java.lang.Integer">
+		select count(1)  from mng_parm p
+		left join mng_sysint sy on sy.sysint_sno=p.sysint_sno  and sy.sysint_sstate ='0'
+		<dynamic prepend="where"> 
+  	   p.parm_sisdel='0'
+	  		<isNotEmpty  property="searchA">
+	  			 and p.sysint_sno like '%'||#searchA#||'%'
+	  		</isNotEmpty>
+	  	
+	  		 <isNotEmpty  property="searchB">
+	  			 and p.parm_sdisname like '%'||#searchB#||'%'
+	  		</isNotEmpty>
+	  		
+	  		<isNotEmpty   property="searchC">
+	  			  and p.parm_svalue like'%'||#searchC#||'%'
+	  			</isNotEmpty>
+	  		
+	  		<isNotEmpty  property="searchD">
+	  			 and p.parm_stype like '%'||#searchD#||'%'
+	  		</isNotEmpty>
+		  </dynamic> 
+  	</select>
+
+	<!-- 查询结果分页  -->
+	<select id="parm_findPage" parameterClass="mngParmForm" resultClass="mngParm">
+		$pageSQLA$
+		
+		select sy.sysint_sname,  p.* from mng_parm p
+		left join mng_sysint sy on sy.sysint_sno=p.sysint_sno and sy.sysint_sstate ='0'  
+        
+	  		<dynamic prepend="where"> 
+  	         p.parm_sisdel='0'
+	  		<isNotEmpty  property="searchA">
+	  			 and p.sysint_sno like '%'||#searchA#||'%'
+	  		</isNotEmpty>
+	  	
+	  		 <isNotEmpty  property="searchB">
+	  			 and p.parm_sdisname like '%'||#searchB#||'%'
+	  		</isNotEmpty>
+	  		
+	  		<isNotEmpty   property="searchC">
+	  			  and p.parm_svalue like'%'||#searchC#||'%'
+	  			</isNotEmpty>
+	  		
+	  		<isNotEmpty  property="searchD">
+	  			 and p.parm_stype like '%'||#searchD#||'%'
+	  		</isNotEmpty>
+		  </dynamic>
+	  		 order by nvl(p.sysint_sno,0), p.parm_nid
+              $pageSQLB$
+  	</select>
+  	
+    <!-- 新增 -->
+	<insert id="parm_add" parameterClass="mngParmForm">
+		<selectKey keyProperty="parm_nid" resultClass="java.lang.Long">
+	   		select nvl(max(parm_nid),0)+1 from mng_parm
+		</selectKey>
+		<![CDATA[ 	
+			insert into mng_parm (parm_nid,sysint_sno,parm_stype,parm_sname,parm_sdisname,parm_svalue,parm_sdesc,parm_sisdel,parm_sisvalid)
+			values (#parm_nid#,#sysint_sno#,#parm_stype#,#parm_sname#,#parm_sdisname#,#parm_svalue#,#parm_sdesc#,0,0)
+		]]>
+	</insert>
+	
+	<!-- 根据ID查询信息  -->
+	<select id="parm_findByID" parameterClass="java.lang.String" resultClass="mngParm">
+		select t.*  from mng_parm t  where  t.parm_nid = #id#
+  	</select>
+  	
+  	<!-- 修改  -->
+	<update id="parm_update" parameterClass="mngParmForm">
+		update mng_parm  set 
+		 
+		parm_sname=#parm_sname#,
+		parm_sdisname=#parm_sdisname#,
+		parm_svalue=#parm_svalue#,
+		parm_sdesc=#parm_sdesc#,
+		parm_sisdel='0',
+		parm_sisvalid='0'
+		where parm_nid=#parm_nid#
+    </update>
+    
+    <!-- 逻辑删除  -->
+	<update id="parm_delete" parameterClass="java.lang.String">
+		update mng_parm t set t.parm_sisdel = '1'
+		where t.parm_nid =#id#
+    </update>
+    
+    <!-- 更新状态  -->
+	<update id="parm_changeValid" parameterClass="java.lang.String">
+		update mng_parm t set t.parm_sisvalid = 1-t.parm_sisvalid
+		where t.parm_nid =#id#
+    </update>
+    <!-- 根据系统编号得到系统名称 -->
+    <select id="parm_sysint_sno"  resultClass="com.rc.sys.vo.MngSysint">
+      select * from mng_sysint where sysint_sstate='0'
+    </select>
+    <!-- 根据遍历所有的访问名 -->
+    <select id="parm_findsname" parameterClass="mngParmForm" resultClass="java.lang.Integer">
+    select count(1) from mng_parm 
+    <dynamic prepend="where"> 
+  	  parm_sisdel='0'
+	  		<isNotEmpty  property="sysint_sno">
+    		and  sysint_sno=#sysint_sno#  
+   		  </isNotEmpty>
+     <isNotEmpty  property="parm_sname">
+     and parm_sname=#parm_sname#
+     </isNotEmpty>
+      
+      <isNotEmpty  property="parm_sdisname">
+     and parm_sdisname=#parm_sdisname#
+     </isNotEmpty>
+     </dynamic>
+    </select>
+    
+    <!--  根据访问名查询参数值  -->
+    <select id="parm_getValue" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+
+	    select parm_svalue from mng_parm 
+	    where parm_sname=#parm_sname# and parm_sisdel ='0' and parm_sisvalid='0'
+	    <isNotEmpty  prepend="and" property="sysint_sno">
+	    sysint_sno = #sysint_sno# and parm_stype = '1'
+  		</isNotEmpty>
+  		<isEmpty prepend="and" property="sysint_sno">
+  		parm_stype = '0'
+  		</isEmpty>
+  	</select> 
+</sqlMap>

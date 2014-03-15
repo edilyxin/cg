@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	 <!-- 错误跳转 -->
+<include file="struts-error.xml"></include>
+<!-- 基础管理 -->
+	<package name="base"  namespace="/"  extends="struts-default,json-default,error">
+<!-- 校区管理 -->
+	<action name="school" class="com.rc.base.action.SchoolAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/base/school/listSchool.jsp</result>
+			<result name="add">/jsp/base/school/addSchool.jsp</result>
+			<result name="checkUnique" type="json">
+				<param name="root">isOK</param>
+			</result>
+			<result name="update">/jsp/base/school/updateSchool.jsp</result>
+	</action>
+<!-- 单位部门管理 -->
+	<action name="unitDepart" class="com.rc.base.action.UnitDepartAction">
+	        <result name="error" >/jsp/error.jsp</result>
+	        <result name="toMenuUD">/jsp/base/unitDepart/menuUnitDepart.jsp</result>
+			<result name="find">/jsp/base/unitDepart/listUnitDepart.jsp</result>
+			<result name="add">/jsp/base/unitDepart/addUnitDepart.jsp</result>
+			<result name="update">/jsp/base/unitDepart/updateUnitDepart.jsp</result>
+			<result name="findTopList" type="json">
+				<param name="root">topList</param>
+			</result>
+			<result name="canAddSchool" type="json">
+				<param name="root">bl</param>
+			</result>
+			<result name="findSchool">/jsp/base/unitDepart/setSchool.jsp</result>
+			<result name="toDelete" type="json">
+				<param name="root">msg</param>
+			</result>
+			<result name="changeValid" type="json">
+				<param name="root">msg</param>
+			</result>
+	</action>
+<!-- 岗位管理 -->
+
+	<action name="job" class="com.rc.base.action.JobAction">
+	<result name="toMenuUD">/jsp/base/job/menuJob.jsp</result>
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/base/job/listJob.jsp</result>
+			<result name="add">/jsp/base/job/addJob.jsp</result>
+			<result name="update">/jsp/base/job/updateJob.jsp</result>
+			<result name="find1" type="json">
+				<param name="root">JobLevel</param>
+			</result>
+	</action>
+	<!-- 物品姓名唯一性验证 -->
+	  <action name="jobsname" class="com.rc.base.action.JobAction" method="findJobSname">
+		<result name="findJobSname" type="json">
+			<param name="root">ok</param>
+		</result>
+	</action>
+<!-- 职称管理 -->
+	<action name="post" class="com.rc.base.action.PostAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/base/post/listPost.jsp</result>
+			<result name="add">/jsp/base/post/addPost.jsp</result>
+			<result name="update">/jsp/base/post/updatePost.jsp</result>
+			<result name="toAjax" type="json">
+			<param name="root">ok</param>
+			</result>
+	</action>
+<!-- 职工管理 -->
+	<action name="emp" class="com.rc.base.action.EmpAction">
+	        <result name="error" >/jsp/error.jsp</result>
+			<result name="find">/jsp/base/emp/listEmp.jsp</result>
+			<result name="add">/jsp/base/emp/addEmp.jsp</result>
+			<result name="update">/jsp/base/emp/updateEmp.jsp</result>
+			<result name="userfind">/jsp/base/emp/listUser.jsp</result>
+			<result name="adduser">/jsp/base/emp/addUser.jsp</result>
+			<result name="addempuser">/jsp/base/emp/addEmpUser.jsp</result>
+			 <result name="tree">/jsp/base/emp/menuemp.jsp</result>
+	</action>
+ 
+		</package>
+</struts>    
