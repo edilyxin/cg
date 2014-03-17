@@ -8,4 +8,6 @@
 	<constant name="struts.custom.i18n.resources" value="struts" />
 	<include file="struts-sys-config.xml"></include>
 	<include file="struts-base-config.xml"></include>
+	<include file="struts-project-config.xml"></include>
+	<include file="struts-demo-config.xml"></include>
 </struts>    
