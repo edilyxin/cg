@@ -12,7 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.rc.project.dao.*;
-import com.rc.project.vo.*;
+import com.rc.project.form.*;
+import com.rc.project.vo.RpReportBegin;
 
 public class DaoTest {
 
@@ -28,29 +29,25 @@ public class DaoTest {
 				"epEntrancepDAO", "epFormworkDAO", "epMailDAO", "epPackageDAO",
 				"epPackageListDAO", "epPayMoneyDAO", "epPersonDAO",
 				"epProcessDAO", "epProjectDAO", "epProjectDetailDAO",
-				"epSettingDAO", "rpFileDAO","rpMiddleDAO",  "rpReportDAO",
-				"rpReportBeginDAO" };
+				"epSettingDAO", "rpFileDAO",
+//				"rpMiddleDAO",  "rpReportDAO",
+//				"rpReportBeginDAO" 
+				};
 		String[] objs = new String[] { "CkCheck", "EpAccessory", "EpBid",
 				"EpBidWin", "EpContract", "EpEntrancec", "EpEntrancep",
 				"EpFormwork", "EpMail", "EpPackage", "EpPackageList",
 				"EpPayMoney", "EpPerson", "EpProcess", "EpProject",
-				"EpProjectDetail", "EpSetting", "RpFile", "RpMiddle","RpReport", 
+				"EpProjectDetail", "EpSetting", "RpFile", 
+				"RpMiddle","RpReport", 
 				"RpReportBegin" };
 
-		// CkCheckDAO dao= (CkCheckDAO) ctx.getBean("ckCheckDAO");
-		// CkCheck record=new CkCheck();
-		// setValue(record);
-		// dao.insert(record);
-		// dao.selectByPrimaryKey("S");
-		// dao.updateByPrimaryKey(record);
-		// dao.deleteByPrimaryKey("S");
 
 		ClassLoader loader = ClassLoader.getSystemClassLoader();
 
 		for (int i = 0; i < names.length; i++) {
 			System.out.println("--------------------------------------"+names[i]+"----------------------------");
 			Object bean = ctx.getBean(names[i]);
-			Object record = loader.loadClass("com.rc.project.vo." + objs[i])
+			Object record = loader.loadClass("com.rc.project.form." + objs[i]+"Form")
 					.newInstance();
 			setValue(record);
 
@@ -59,8 +56,6 @@ public class DaoTest {
 			Object key = getValue(deleteByPrimaryKey);
 			if (key == null)
 				key = record;
-			deleteByPrimaryKey.invoke(bean, key);
-
 			Method insert = getMethod(bean.getClass(), "insert");
 			insert.invoke(bean, record);
 
@@ -71,6 +66,9 @@ public class DaoTest {
 			Method updateByPrimaryKey = getMethod(bean.getClass(),
 					"updateByPrimaryKey");
 			updateByPrimaryKey.invoke(bean, record);
+			
+			deleteByPrimaryKey.invoke(bean, key);
+
 
 		}
 

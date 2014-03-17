@@ -209,7 +209,7 @@ function commit(){
 		</tr>
 		
 		<s:iterator value="list"  var="v" status="s">
-		<tr bgcolor="#ffffff" class="STYLE19"  <s:if test="#v.sysint_sstate==\"1\"">style="color:red;"</s:if> >
+		<tr 1  <s:if test="#v.sysint_sstate==\"1\"">style="color:red;"</s:if> >
  		<td height="20"><input name="idcheckbox"  type="checkbox"  id="ibox" value="<s:property value="#v.sysint_sno" />%u0008<s:property value="#v.sysint_sname" />" onclick="checkOne(this)"/></td>
  		<td><s:property value="%{#s.index+1}"/> </td>
 		<td title="${v.sysint_sno}"><s:property value="#v.sysint_sno" /></td>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	 <!-- 错误跳转 -->
+<!-- <include file="struts-error.xml"></include> -->
+<!-- 立项管理 -->
+	<package name="demo"  namespace="/"  extends="struts-default,json-default">
+<!-- 批复导入 -->
+		<action name="demo" class="com.rc.demo.action.DemoAction">
+		        <!-- <result name="error" >/jsp/error.jsp</result> -->
+				<result name="find">/jsp/demo/demoList.jsp</result>
+				<result name="add">/jsp/demo/demoAdd.jsp</result>
+				<result name="update">/jsp/demo/demoUpdate.jsp</result>
+				<result name="main">/jsp/demo/demoMain.jsp</result>
+				<result name="menu">/jsp/demo/demoMenu.jsp</result>
+		</action>
+		<action name="demo1" class="com.rc.demo.action.Demo1Action">
+		        <!-- <result name="error" >/jsp/error.jsp</result> -->
+				<result name="toAdd">/jsp/demo1/demo1add.jsp</result>
+		</action>
+	</package>
+</struts>

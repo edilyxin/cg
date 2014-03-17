@@ -10,7 +10,7 @@ import com.rc.util.page.PageBean;
  * @author edilyxin
  *
  */
-public class PojectDeclare extends BaseAction {
+public class ProjectReport extends BaseAction {
 	
 	private List list;
 	private String msg;//操作信息1

@@ -5,22 +5,79 @@
 <!-- <include file="struts-error.xml"></include> -->
 <!-- 立项管理 -->
 	<package name="project"  namespace="/"  extends="struts-default,json-default">
-<!-- 批复导入 -->
-		<action name="manually" class="com.rc.project.action.DemoAction">
+<!-- 项目立项 -->
+		<action name="approve" class="com.rc.project.action.ProjectDetailAction">
 		        <!-- <result name="error" >/jsp/error.jsp</result> -->
-				<result name="findForAuto">/jsp/project/manually/ProList.jsp</result>
+				<result name="find">/jsp/project/approve/listDetail.jsp</result>
+				<result name="update">/jsp/project/approve/detailUpdate.jsp</result>
 		</action>
-		<!-- Demo -->
-		<action name="demo" class="com.rc.project.action.DemoAction">
-		        <!-- <result name="error" >/jsp/error.jsp</result> -->
-				<result name="find">/jsp/project/projectdetail/list.jsp</result>
-				<result name="add">/jsp/project/projectdetail/add.jsp</result>
-				<result name="update">/jsp/project/projectdetail/update.jsp</result>
+<!-- 执行过程管理 -->
+		<action name="process" class="com.rc.project.action.ProjectProcessAction">
+			<result name="find">/jsp/project/process/listDetail.jsp</result>
+			<result name="firsttrial">/jsp/project/process/firsttrial.jsp</result>
+			<result name="print">/jsp/project/process/print.jsp</result>
 		</action>
-		
-		<!-- 项目初申报 -->
-		<action name="pdeclare" class="com.rc.project.action.PojectDeclare">
-			<result name="findAndAuto">/jsp/project/declare/listDeclare.jsp</result>
+<!-- 项目分包管理 -->
+		<action name="splite" class="com.rc.project.action.PackageAction">
+			<result name="main">/jsp/project/splite/mainForm.jsp</result>
+			<result name="menu">/jsp/project/splite/menuForm.jsp</result>
+			<result name="techview">/jsp/project/techview.jsp</result>
+			<!-- 招标采购处理 -->
+			<result name="findbit">/jsp/project/splite/bit/projectList.jsp</result>
+			<result name="addbitpackage">/jsp/project/splite/bit/add.jsp</result>
+			<result name="updateparameter">/jsp/project/splite/bit/updateParameter.jsp</result>
+			<!-- 集中采购处理 -->
+			<result name="findcollect">/jsp/project/splite/collect/projectList.jsp</result>
+			<result name="collectdetail">/jsp/project/splite/collect/packageDetail.jsp</result>
+			<result name="collectupdate">/jsp/project/splite/collect/updateProject.jsp</result>
+			<result name="addcollectpackage">/jsp/project/splite/collect/add.jsp</result>
+			<result name="selectsupplier">/jsp/project/splite/collect/select.jsp</result>			
+		</action>
+<!-- 合同 -->
+		<action name="contract" class="com.rc.project.action.ContractAction">
+			<result name="add">/jsp/project/contract/add.jsp</result>
+		</action>
+<!-- 历史记录 -->
+		<action name="history" class="com.rc.project.action.ProcessAction">
+			<result name="detail">/jsp/project/history/processDetail.jsp</result>
+			<result name="list">/jsp/project/history/processList.jsp</result>
+		</action>
+<!-- 进口申报 -->
+		<action name="declarep" class="com.rc.project.action.EntrancePAction">
+			<result name="add">/jsp/project/declarep/add.jsp</result>
+		</action>
+<!-- 设备免税申请 -->
+		<action name="declarec" class="com.rc.project.action.EntranceCAction">
+			<result name="add">/jsp/project/declarec/add.jsp</result>
+		</action>
+<!-- 招标公示 -->
+		<action name="bit" class="com.rc.project.action.BitAction">
+			<result name="add">/jsp/project/bit/add.jsp</result>
+		</action>
+<!-- 中标结果 -->
+		<action name="bitwin" class="com.rc.project.action.BitWinAction">
+			<result name="add">/jsp/project/bitwin/add.jsp</result>
+		</action>
+<!-- 应收应付 -->
+		<action name="paymoney" class="com.rc.project.action.PayMoneyAction">
+			<result name="addreceivable">/jsp/project/paymoney/addreceivable.jsp</result>
+			<result name="addpayable">/jsp/project/paymoney/addpayable.jsp</result>
+		</action>
+<!-- 发邮件 -->
+		<action name="mail" class="com.rc.project.action.MaiAction">
+			<result name="snedmail">/jsp/project/mail/snedmail.jsp</result>
+		</action>
+<!-- 设置流程 -->
+		<action name="setting" class="com.rc.project.action.ProcessSettingAction">
+			<result name="list">/jsp/project/setting/list.jsp</result>
+			<result name="add">/jsp/project/setting/add.jsp</result>
+			<result name="update">/jsp/project/setting/update.jsp</result>
+		</action>
+<!-- 执行人设置 -->
+		<action name="person" class="com.rc.project.action.PersonAction">
+			<result name="list">/jsp/project/person/list.jsp</result>
+			<result name="add">/jsp/project/person/add.jsp</result>
+			<result name="update">/jsp/project/person/add.jsp</result>
 		</action>
 	</package>
 </struts>
