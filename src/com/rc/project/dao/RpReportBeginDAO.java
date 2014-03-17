@@ -93,12 +93,10 @@ public class RpReportBeginDAO extends SqlMapClientDaoSupport {
     public List<RpReportBegin> selectByPage(RpReportBeginForm form){
     	return getSqlMapClientTemplate().queryForList("RP_REPORTBEGIN_selectByPage", form);
     }
-<<<<<<< HEAD
     
     public int selectSize(RpReportBeginForm form){
     	return (Integer)getSqlMapClientTemplate().queryForObject("RP_REPORTBEGIN_findSizeByForm",form);
     }
-=======
->>>>>>> 6b7c57421d1777e89b1706d932f0ed6a3662aa42
+
 
 }
