@@ -256,7 +256,7 @@ getValue:function (str){
       }
       break;
     
-     case "clientHeight":
+     /*case "clientHeight":
       if ( typeof(document.compatMode) != 'undefined' && document.compatMode != 'BackCompat' )
       {
        nResult = document.documentElement.clientHeight;
@@ -265,7 +265,7 @@ getValue:function (str){
       {
        nResult = document.body.clientHeight;
       }
-      break;
+      break;*/
     
      case "scrollWidth":
       if ( typeof(document.compatMode) != 'undefined' && document.compatMode != 'BackCompat' )

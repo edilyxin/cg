@@ -23,7 +23,7 @@ public class ProjectDeclare extends BaseAction {
 	private String msg;// 操作信息1
 	private PageBean bean;// 分页标签类
 	private RpReportBeginForm form; // 表单
-	private ProjectDeclareService projectDeclareService;
+	private ProjectDeclareService projectDeclareService = (ProjectDeclareService)getBean("projectDeclareService");
 
 	/**
 	 * 初申请管理查询
@@ -31,7 +31,7 @@ public class ProjectDeclare extends BaseAction {
 	 * @return
 	 * @throws Exception
 	 */
-	public String findAndAuto() throws Exception {
+	public String find() throws Exception {
 		// 判断form表单是否为空
 		if (form == null) {
 			form = new RpReportBeginForm();
@@ -48,7 +48,6 @@ public class ProjectDeclare extends BaseAction {
 		}
 		// 初始化分页标签
 		String page = request.getParameter("page");
-		//TODO 提供findsize方法
 		bean = new PageBean(projectDeclareService.findSize(form), PageBean.PAGE_SIZE);
 		if (page != null) {
 			bean.setCurrentPage(Integer.parseInt(page));
@@ -57,8 +56,28 @@ public class ProjectDeclare extends BaseAction {
 		form.setPageSQLA(bean.getPageSQLA());
 		form.setPageSQLB(bean.getPageSQLB());
 		list = projectDeclareService.findAndAuto(form);
-		return "findAndAuto";
+		return "find";
 
+	}
+	
+	/**
+	 * 上传文件并且检查文件的合法性
+	 * 如果不合法给出错误提示，如果合法，回写filename和filepath，以便后续的导入
+	 * @return
+	 * @throws Exception
+	 */
+	public String fileuploadAndCheck() throws Exception{
+		//上传文件
+		//检查文件合法新
+		return "fileuploadAndCheck";
+	}
+	
+	/**
+	 * 在检验合法的情况下提交数据写库
+	 * @return
+	 */
+	public String importData() throws Exception {
+		return "importData";
 	}
 
 	public List getList() {

@@ -13,6 +13,8 @@ public class ProjectDeclareServiceImpl implements ProjectDeclareService {
 
 	private RpReportBeginDAO rpReportBeginDAO;
 	private RpReportBeginExample example;
+	private String filepath;    //文档路径
+	private String filename;    //文档名称
 	
 
 	public void setRpReportBeginDAO(RpReportBeginDAO rpReportBeginDAO) {
@@ -26,7 +28,15 @@ public class ProjectDeclareServiceImpl implements ProjectDeclareService {
 
 	@Override
 	public int findSize(RpReportBeginForm pForm) {
-		// TODO Auto-generated method stub
 		return this.rpReportBeginDAO.selectSize(pForm);
+	}
+
+	@Override
+	public int importData(RpReportBeginForm pForm) {
+		return 0;
+	}
+	
+	private int importExcl(String filename){
+		return 0;
 	}
 }

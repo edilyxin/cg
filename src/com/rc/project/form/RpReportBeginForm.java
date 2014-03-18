@@ -5,6 +5,16 @@ import java.util.Date;
 
 public class RpReportBeginForm {
 	
+	/**
+	 * 文件路径
+	 */
+	private String filePath;
+	
+	/**
+	 * 文件名称
+	 */
+	private String fileName;
+	
     /**
      * 
      */
@@ -1747,6 +1757,24 @@ public class RpReportBeginForm {
 	public void setSearchF(String searchF) {
 		this.searchF = searchF;
 	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
+	
     
     
 }

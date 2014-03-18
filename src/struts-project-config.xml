@@ -79,5 +79,13 @@
 			<result name="add">/jsp/project/person/add.jsp</result>
 			<result name="update">/jsp/project/person/add.jsp</result>
 		</action>
+		
+<!-- 初申报项目 -->
+        <action name="pdeclare" class="com.rc.project.action.ProjectDeclare">
+			<result name="find">/jsp/project/declare/listDeclare.jsp</result>
+		</action>
 	</package>
+	
+	
+    
 </struts>
