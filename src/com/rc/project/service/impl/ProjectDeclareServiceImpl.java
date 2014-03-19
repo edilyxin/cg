@@ -1,6 +1,12 @@
 package com.rc.project.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 
 import com.rc.project.dao.RpReportBeginDAO;
 import com.rc.project.form.PojectDeclareForm;
@@ -33,10 +39,36 @@ public class ProjectDeclareServiceImpl implements ProjectDeclareService {
 
 	@Override
 	public int importData(RpReportBeginForm pForm) {
+		importExcl("sdfdfd");
 		return 0;
 	}
 	
 	private int importExcl(String filename){
+		//获取excel文件
+		final String path = "import/20140318000001/初申报项目汇总表.xls";
+		try {
+			Workbook book = Workbook.getWorkbook(new File(path));
+			
+			Sheet sheet = book.getSheet(0);
+			
+			int rows = sheet.getRows();
+			int cols = sheet.getColumns();
+			
+			System.out.println("rows : " +rows + " cols:" + cols);
+		} catch (BiffException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		//按照模板匹配文件
+		
 		return 0;
+	}
+	
+	public static void main(String[] args){
+		ProjectDeclareServiceImpl p = new ProjectDeclareServiceImpl();
+		p.importData(null);
 	}
 }
