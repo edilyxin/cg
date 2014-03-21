@@ -362,5 +362,9 @@
    <select id="tree_findUDnum" parameterClass="mngUnitDepartForm" resultClass="java.lang.Integer">
   			select max(ud_nnumber) from mng_unitdepart
  </select>
+ 
+ <select id="emp_findbyNameAndSno1" parameterClass="MngEmpForm" resultClass="com.rc.base.vo.MngEmp">
+     select * from mng_emp e where emp_sname = #emp_sname# and ud_sno1 = #ud_sno1#
+ </select> 
      
 </sqlMap>

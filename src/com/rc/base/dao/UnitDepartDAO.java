@@ -316,5 +316,14 @@ public class UnitDepartDAO extends SqlMapClientDaoSupport {
 		}
 		return bl;
 	}
+	
+	/**
+	 * 根据部门简称来得到部门信息
+	 * @param ssname
+	 * @return
+	 */
+	public List findBySSname(String ssname){
+		return  getSqlMapClientTemplate().queryForList("unitDepart_findBySSname", ssname);
+	}
 }
 

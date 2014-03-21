@@ -77,7 +77,10 @@ public class ProjectDeclare extends BaseAction {
 	 * @return
 	 */
 	public String importData() throws Exception {
-		return "importData";
+		UserInfo user = (UserInfo)this.session.get("userInfo");
+		form.setRPB_SALTERBY(user.getEmp_sno());
+		this.projectDeclareService.importData(form);
+		return find();
 	}
 
 	public List getList() {

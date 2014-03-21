@@ -1773,6 +1773,21 @@ public class RpReportBeginForm {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
+
+	@Override
+	public String toString() {
+		return "RpReportBeginForm [filePath=" + filePath + ", fileName=" + fileName + ", pageSQLA=" + pageSQLA + ", pageSQLB=" + pageSQLB + ", searchA=" + searchA + ", searchB1=" + searchB1
+				+ ", searchB2=" + searchB2 + ", searchC=" + searchC + ", searchD=" + searchD + ", searchE=" + searchE + ", searchF=" + searchF + ", RPB_SNO=" + RPB_SNO + ", RPB_NNUM=" + RPB_NNUM
+				+ ", UD_SNO=" + UD_SNO + ", UD_SNO1=" + UD_SNO1 + ", RPB_SREPORTUNITNAME=" + RPB_SREPORTUNITNAME + ", RPB_SPROJECTNAME=" + RPB_SPROJECTNAME + ", RPB_SYEAR=" + RPB_SYEAR + ", EMP_SNO="
+				+ EMP_SNO + ", RPB_SPERSON=" + RPB_SPERSON + ", RPB_SPROTYPE=" + RPB_SPROTYPE + ", RPB_SREPORTTOTAL=" + RPB_SREPORTTOTAL + ", RPB_SSUGGESTTOTAL=" + RPB_SSUGGESTTOTAL + ", RPB_SLEVEL="
+				+ RPB_SLEVEL + ", RPB_SMEM=" + RPB_SMEM + ", RPB_SISDEL=" + RPB_SISDEL + ", RPB_SISVALID=" + RPB_SISVALID + ", RPB_SREPLYBY=" + RPB_SREPLYBY + ", RPB_SREPLYDATE=" + RPB_SREPLYDATE
+				+ ", RPB_SALTERBY=" + RPB_SALTERBY + ", RPB_SALTERDATE=" + RPB_SALTERDATE + ", RPB_SDEF1=" + RPB_SDEF1 + ", RPB_SDEF2=" + RPB_SDEF2 + ", RPB_SDEF3=" + RPB_SDEF3 + ", RPB_SDEF4="
+				+ RPB_SDEF4 + ", RPB_SDEF5=" + RPB_SDEF5 + ", RPB_SDEF6=" + RPB_SDEF6 + ", RPB_SDEF7=" + RPB_SDEF7 + ", RPB_SDEF8=" + RPB_SDEF8 + ", RPB_SDEF9=" + RPB_SDEF9 + ", RPB_SDEF10="
+				+ RPB_SDEF10 + ", RPB_SDEF11=" + RPB_SDEF11 + ", RPB_SDEF12=" + RPB_SDEF12 + ", RPB_SDEF13=" + RPB_SDEF13 + ", RPB_SDEF14=" + RPB_SDEF14 + ", RPB_SDEF15=" + RPB_SDEF15
+				+ ", RPB_DDEF16=" + RPB_DDEF16 + ", RPB_DDEF17=" + RPB_DDEF17 + ", RPB_DDEF18=" + RPB_DDEF18 + ", RPB_DDEF19=" + RPB_DDEF19 + ", RPB_DDEF20=" + RPB_DDEF20 + ", RPB_NDEF1=" + RPB_NDEF1
+				+ ", RPB_NDEF2=" + RPB_NDEF2 + ", RPB_NDEF3=" + RPB_NDEF3 + ", RPB_NDEF4=" + RPB_NDEF4 + ", RPB_NDEF5=" + RPB_NDEF5 + ", RPB_NDEF6=" + RPB_NDEF6 + ", RPB_NDEF7=" + RPB_NDEF7
+				+ ", RPB_NDEF8=" + RPB_NDEF8 + ", RPB_NDEF9=" + RPB_NDEF9 + ", RPB_NDEF10=" + RPB_NDEF10 + ", RPB_NDEF11=" + RPB_NDEF11 + "]";
+	}
 	
 	
     

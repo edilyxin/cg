@@ -299,5 +299,9 @@ public class EmpDAO extends SqlMapClientDaoSupport {
 		return (List) getSqlMapClientTemplate().queryForList("emp_school1",sno);
   }
     
+    public List findbyNameAndSno1(MngEmpForm form){
+    	return getSqlMapClientTemplate().queryForList("emp_findbyNameAndSno1", form);
+    }
+    
 }
 

@@ -99,4 +99,5 @@
     <select id="school_findAll" resultClass="mngSchool">
     	select * from MNG_SCHOOL where SH_SISDEL='0' and SH_SISVALID='0' order by SH_SNO
     </select>
+    
 </sqlMap>

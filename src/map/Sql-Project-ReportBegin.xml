@@ -64,6 +64,15 @@
 		<isNotEmpty prepend="and" property="searchF">
 		<![CDATA[ t.RPB_SREPLYDATE <= to_date('$searchF$ 23:59:59','yyyy-mm-dd hh24:mi:ss') ]]>
 		</isNotEmpty>
+		<isNotEmpty prepend="and" property="RPB_SPROJECTNAME">
+			T.RPB_SPROJECTNAME = #RPB_SPROJECTNAME#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="EMP_SNO">
+			T.EMP_SNO = #EMP_SNO#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="UD_SNO1">
+			T.UD_SNO1 = #UD_SNO1#
+		</isNotEmpty>
 		ORDER BY RPB_SREPLYDATE DESC 
 		$pageSQLB$
 	</select>
@@ -97,8 +106,17 @@
 		<isNotEmpty prepend="and" property="searchF">
 		<![CDATA[ t.RPB_SREPLYDATE <= to_date('$searchF$ 23:59:59','yyyy-mm-dd hh24:mi:ss') ]]>
 		</isNotEmpty>
+		<isNotEmpty prepend="and" property="RPB_SPROJECTNAME">
+			T.RPB_SPROJECTNAME = #RPB_SPROJECTNAME#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="EMP_SNO">
+			T.EMP_SNO = #EMP_SNO#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="UD_SNO1">
+			T.UD_SNO1 = #UD_SNO1#
+		</isNotEmpty>
 	</select>
-
+	
 	<delete id="RP_REPORTBEGIN_deleteByPrimaryKey" parameterClass="com.rc.project.form.RpReportBeginForm">
 		delete from CG.RP_REPORTBEGIN
 		where RPB_SNO = #RPB_SNO:VARCHAR#

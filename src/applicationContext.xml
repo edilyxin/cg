@@ -435,6 +435,30 @@
 		<property name="rpReportBeginDAO">
 			<ref bean="rpReportBeginDAO" />
 		</property>
+		<property name="empDAO">
+			<ref bean="empDAO" />
+		</property>
+		<property name="unitDepartDAO">
+			<ref bean="unitDepartDAO" />
+		</property>
+	</bean>
+	
+	<bean id="projectReplyService" class = "com.rc.project.service.impl.ProjectReplyServiceImpl">
+		<property name="epProjectDAO">
+			<ref bean="epProjectDAO" />
+		</property>
+		<property name="epProjectDetailDAO">
+			<ref bean="epProjectDetailDAO" />
+		</property>
+		<property name="rpReportDAO">
+			<ref bean="rpReportDAO" />
+		</property>
+		<property name="unitDepartDAO">
+			<ref bean="unitDepartDAO" />
+		</property>
+		<property name="empDAO">
+			<ref bean="empDAO" />
+		</property>
 	</bean>
 
 

@@ -84,8 +84,13 @@
         <action name="pdeclare" class="com.rc.project.action.ProjectDeclare">
 			<result name="find">/jsp/project/declare/listDeclare.jsp</result>
 		</action>
+<!-- 批复管理 -->	
+         <action name="manually" class="com.rc.project.action.ProjectReply">
+             <result name="findForAuto">/jsp/project/declare/listReply.jsp</result>
+             <result name="findDetailForAuto">/jsp/project/declare/replyDetails.jsp</result>
+         </action>
 	</package>
-	
+
 	
     
 </struts>

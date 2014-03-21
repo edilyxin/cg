@@ -2436,4 +2436,23 @@ public class EpProjectDetailForm {
     public void setEpdDdef5(Date epdDdef5) {
         this.epdDdef5 = epdDdef5;
     }
+
+	@Override
+	public String toString() {
+		return "EpProjectDetailForm [epdNid=" + epdNid + ", epSno=" + epSno + ", epdSaskno=" + epdSaskno + ", rpSno=" + rpSno + ", epdSyear=" + epdSyear + ", udSno=" + udSno + ", epdSreportunitname="
+				+ epdSreportunitname + ", epdNno=" + epdNno + ", epdSname=" + epdSname + ", epdSnamexiao=" + epdSnamexiao + ", epdSmodel=" + epdSmodel + ", epdSspec=" + epdSspec + ", epdSbrand="
+				+ epdSbrand + ", epdSunit=" + epdSunit + ", epdNnum=" + epdNnum + ", epdNprice=" + epdNprice + ", epdNtotal=" + epdNtotal + ", epdNnumsong=" + epdNnumsong + ", epdNpricesong="
+				+ epdNpricesong + ", epdNtotalsong=" + epdNtotalsong + ", epdNnumjian=" + epdNnumjian + ", epdNpricejian=" + epdNpricejian + ", epdNtotaljian=" + epdNtotaljian + ", epdNcannot="
+				+ epdNcannot + ", epdSapprovenote=" + epdSapprovenote + ", epdSstat=" + epdSstat + ", epdSpurtype=" + epdSpurtype + ", epdSisimport=" + epdSisimport + ", epdSisfreetax="
+				+ epdSisfreetax + ", epdSjkfile=" + epdSjkfile + ", epdSmsfile=" + epdSmsfile + ", plSpara=" + plSpara + ", plSremark=" + plSremark + ", plSpaytype=" + plSpaytype + ", plSbuydate="
+				+ plSbuydate + ", epdSisdel=" + epdSisdel + ", epdSisvalid=" + epdSisvalid + ", epdSreplyby=" + epdSreplyby + ", epdSreplydate=" + epdSreplydate + ", epdSalterby=" + epdSalterby
+				+ ", epdSalterdate=" + epdSalterdate + ", epdSdef1=" + epdSdef1 + ", epdSdef2=" + epdSdef2 + ", epdSdef3=" + epdSdef3 + ", epdSdef4=" + epdSdef4 + ", epdSdef5=" + epdSdef5
+				+ ", epdSdef6=" + epdSdef6 + ", epdSdef7=" + epdSdef7 + ", epdSdef8=" + epdSdef8 + ", epdSdef9=" + epdSdef9 + ", epdSdef10=" + epdSdef10 + ", epdSdef11=" + epdSdef11 + ", epdSdef12="
+				+ epdSdef12 + ", epdSdef13=" + epdSdef13 + ", epdSdef14=" + epdSdef14 + ", epdSdef15=" + epdSdef15 + ", epdSdef16=" + epdSdef16 + ", epdSdef17=" + epdSdef17 + ", epdSdef18="
+				+ epdSdef18 + ", epdSdef19=" + epdSdef19 + ", epdSdef20=" + epdSdef20 + ", epdNdef1=" + epdNdef1 + ", epdNdef2=" + epdNdef2 + ", epdNdef3=" + epdNdef3 + ", epdNdef4=" + epdNdef4
+				+ ", epdNdef5=" + epdNdef5 + ", epdNdef6=" + epdNdef6 + ", epdNdef7=" + epdNdef7 + ", epdNdef8=" + epdNdef8 + ", epdNdef9=" + epdNdef9 + ", epdNdef10=" + epdNdef10 + ", epdDdef1="
+				+ epdDdef1 + ", epdDdef2=" + epdDdef2 + ", epdDdef3=" + epdDdef3 + ", epdDdef4=" + epdDdef4 + ", epdDdef5=" + epdDdef5 + "]";
+	}
+    
+    
 }

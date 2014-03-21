@@ -161,4 +161,10 @@
 		where t.ud_sisdel='0' and t.ud_sisvalid='0'
 		and d.ud_sno=#ud_sno#
     </select>
+    
+    <!-- 按照部门简称来查询 -->
+    <select id="unitDepart_findBySSname" parameterClass = "java.lang.String" resultClass="com.rc.base.vo.MngSchoolDepart">
+        select * from MNG_UNITDEPART d where d.UD_SSNAME = #ssname# 
+    </select>
+    
 </sqlMap>

@@ -24,6 +24,13 @@ function find(){
 	document.form.action="<%=path%>/pdeclare!find";
 	document.form.submit();
 }
+
+//导出验证后的数据
+function importData(){
+	alert("importData");
+	document.form.action="<%=path%>/pdeclare!importData";
+	document.form.submit();
+}
 </script>
 </head>
 <body>
@@ -67,7 +74,8 @@ function find(){
 						<a>
 							<td colspan="7"><span class="STYLE1" style="white-space: nowrap;">初申报信息列表</span></td>
 							<td><a href="#"><span class="STYLE1">初申报项目汇总表下载(模板)</span></a></td>
-							<td><a title="导入初申报项目汇总表" href="javascript:void(0);" onclick="importExcel('导入初申报项目汇总表','unitDepart!toImport');"><span class="STYLE1">导入初申报项目汇总表</span></a></td>
+							<!-- importExcel('导入初申报项目汇总表','unitDepart!toImport'); -->
+							<td><a title="导入初申报项目汇总表" href="javascript:void(0);" onclick="importData()"><span class="STYLE1">导入初申报项目汇总表</span></a></td>
 							<td><a href="#"><span class="STYLE1">导出表(按单位统计)</span></a></td>
 					</tr>
 				</table>
@@ -88,17 +96,17 @@ function find(){
 					</tr>
 					<s:iterator value="list" var="v" status="s">
 						<tr bgcolor="#ffffff" class="STYLE19">
-							<th width="40px" height="20"><input type="checkbox" name="checkbox" id="ibox" onclick="checkOne(this);" /></th>
-							<th width="40px"><s:property value="%{#s.index+1}" /></th>
-							<th title="${v.RPB_SNO} " width="100px"><s:property value="#v.RPB_SNO" /></th>
-							<th width="120px"><a><span>查看附件</span></a></th>
-							<th>项目名称</th>
-							<th width="100px">项目负责人</th>
-							<th width="80px">申报金额（万元）</th>
-							<th width="120px">建议金额（万元）</th>
-							<th width="120px">项目重要性</th>
-							<th width="120px">专家意见</th>
-							<th width="120px">导入时间</th>
+							<td width="40px" height="20"><input type="checkbox" name="checkbox" id="ibox" onclick="checkOne(this);" /></td>
+							<td width="40px"><s:property value="%{#s.index+1}" /></td>
+							<td title="${v.RPB_SNO}" width="100px"><s:property value="#v.RPB_SNO" /></td>
+							<td ><a><span>查看附件</span></a></td>
+							<td title="${v.RPB_SNO}"><s:property value="#v.RPB_SNO" /></td>
+							<td title="${v.RPB_SNO}" ><s:property value="#v.RPB_SNO" /></td>
+							<td title="${v.RPB_SNO}" ><s:property value="#v.RPB_SNO" /></td>
+							<td title="${v.RPB_SNO}" ><s:property value="#v.RPB_SNO" /></td>
+							<td title="${v.RPB_SNO}" ><s:property value="#v.RPB_SNO" /></td>
+							<td title="${v.RPB_SNO}" ><s:property value="#v.RPB_SNO" /></td>
+							<td title="${v.RPB_SNO}" ><s:property value="#v.RPB_SNO" /></td>
 						</tr>
 					</s:iterator>
 				</table>
