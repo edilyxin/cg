@@ -11,14 +11,14 @@ public interface ProjectDeclareService {
      * @param pForm
      * @return
      */
-    public List<RpReportBegin> findAndAuto(RpReportBeginForm pForm);
+    public List<RpReportBegin> findAndAuto(RpReportBeginForm pForm) throws Exception;
     
     /**
      * 查询结果数
      * @param pForm
      * @return
      */
-    public int findSize(RpReportBeginForm pForm);
+    public int findSize(RpReportBeginForm pForm) throws Exception;
     
     /**
      * 通过配置的地址导入excel文件，检查是否是合法的文件
@@ -29,5 +29,5 @@ public interface ProjectDeclareService {
      * @param pForm 上传的文件名称，上传路径不能为空
      * @return
      */
-    public int importData(RpReportBeginForm pForm);
+    public int importData(RpReportBeginForm pForm) throws Exception;
 }

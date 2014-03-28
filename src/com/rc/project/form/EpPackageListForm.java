@@ -1,7 +1,11 @@
 package com.rc.project.form;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.rc.project.vo.EpPackageList;
+import com.rc.project.vo.EpProjectDetail;
 
 public class EpPackageListForm {
     /**
@@ -2243,4 +2247,27 @@ public class EpPackageListForm {
     public void setPL_TDEF5(Date PL_TDEF5) {
         this.PL_TDEF5 = PL_TDEF5;
     }
+    
+    public EpPackageList toVO() {
+		try {
+
+			EpPackageList vo = new EpPackageList();
+			EpPackageListForm.class.getFields();
+			for (Field field : EpPackageList.class.getDeclaredFields()) {
+				Field sField = EpPackageListForm.class.getDeclaredField(field.getName());
+				if (sField != null) {
+					sField.setAccessible(true);
+					field.setAccessible(true);
+					Object value = sField.get(this);
+					field.set(vo, value);
+				}
+
+			}
+			return vo;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+    
 }

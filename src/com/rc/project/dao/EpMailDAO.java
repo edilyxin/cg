@@ -42,6 +42,10 @@ public class EpMailDAO extends SqlMapClientDaoSupport {
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
     public void insert(EpMailForm record) {
+    	Object obj1 = getSqlMapClientTemplate().queryForObject(
+				"EP_MAIL_maxid");    	
+    	int maxId = obj1 == null ? 0:(Integer)obj1;
+    	record.setML_NID(BigDecimal.valueOf(maxId));
         getSqlMapClientTemplate().insert("EP_MAIL_insert", record);
     }
 

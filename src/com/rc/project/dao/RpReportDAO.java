@@ -89,5 +89,14 @@ public class RpReportDAO extends SqlMapClientDaoSupport {
         int rows = getSqlMapClientTemplate().update("RP_REPORT_updateByPrimaryKey", record);
         return rows;
     }
+    
+    public List selectByPage(RpReportForm record){
+    	return getSqlMapClientTemplate().queryForList("RP_REPORT_selectByPage", record);
+    }
+    
+    public int selectByCount(RpReportForm record){
+    	return (Integer)getSqlMapClientTemplate().queryForObject("RP_REPORT_selectByCount",record);
+    }
+    
 
 }

@@ -1,127 +1,154 @@
 package com.rc.project.action;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rc.base.service.EmpService;
 import com.rc.demo.form.DemoForm;
+import com.rc.project.dao.EpPackageDAO;
+import com.rc.project.form.EpEntrancecForm;
+import com.rc.project.form.EpEntrancepForm;
+import com.rc.project.form.EpPackageListForm;
+import com.rc.project.form.EpProjectDetailForm;
+import com.rc.project.service.ProjectService;
+import com.rc.project.vo.EpEntrancep;
+import com.rc.project.vo.EpPackage;
+import com.rc.project.vo.EpPackageList;
+import com.rc.project.vo.EpProjectDetail;
+import com.rc.sys.service.LogService;
 import com.rc.util.BaseAction;
 import com.rc.util.page.PageBean;
 
 public class PackageAction extends BaseAction {
 	private List list;
-	private DemoForm form;
+	private List projectMenu;
+	private List bitList;
+	private List allPackage;
+	private List collectList;
+	private List packageLists;
+	private EpProjectDetail projectDetail;
+	private EpPackageListForm packageListForm;
+	private EpProjectDetailForm projectDetailForm;	
+	private EpPackageList packageList;
 	private PageBean bean;
+	private ProjectService projectService = (ProjectService) getBean("projectService");
+	private LogService log = (LogService) getBean("logService");
 
-	private void Init() {
-		list = new ArrayList();
-		for (int i = 1; i < 11; i++) {
-			form = new DemoForm();
-			form.setField1("这是我的字段内容");
-			form.setField2("吧唧吧唧");
-			form.setField3("哦了哦了哦哦啊");
-			list.add(form);
-		}
-		bean = new PageBean(list.size(), 10);
+	public String find() {
+		String EP_SNO = request.getParameter("EP_SNO");
+		bitList = projectService.findBits(EP_SNO);
+		allPackage = projectService.findAllBidPackages(EP_SNO);
+		collectList = projectService.findCollects(EP_SNO);
+		return "find";
 	}
 
 	public String toSelectsupplier() throws IOException {
 		return "selectsupplier";
 	}
-		
-	public String findcollect() {
-		return "findcollect";
-	}
-	
-	public String findbit() {
-		return "findbit";
-	}
-	
+
 	public String menu() {
+		projectMenu = projectService.find();
 		return "menu";
-	}	
+	}
 
 	public String main() {
-		Init();
 		return "main";
-	}	
-	///////////////////招标采购/////////////////////////////
-	
-	public String toUpdateparameter(){
+	}
+
+	// /////////////////招标采购/////////////////////////////
+
+	public String toUpdateparameter() {
+		long EPD_NID = Long.valueOf(request.getParameter("EPD_NID"));
+		projectDetail = projectService.findProjectDetail(BigDecimal.valueOf(EPD_NID));
 		return "updateparameter";
-	}	
-	
-	public String updateparameter(){
-		return this.findbit();
-	}	
+	}
+
+	public String updateparameter() {
+		projectService.updateProjectDetail(projectDetailForm);
+		return this.find();
+	}
 
 	public String splitPackage() {
-		return this.findbit();
+		String[] ids = request.getParameterValues("idcheckbox");
+
+		System.out.println(ids);
+		projectService.splitPackage(ids);
+
+		return this.find();
 	}
-	
+
 	public String submitPackage() {
-		return this.findbit();
+		String BG_SNO = request.getParameter("BG_SNO");
+		projectService.submitBidPackage(BG_SNO);
+		return this.find();
 	}
 	
 	public String deletePackage() {
-		return this.findbit();
+		String BG_SNO = request.getParameter("BG_SNO");
+		projectService.deletePackage(BG_SNO);
+
+		return this.find();
+	}
+	
+
+	// ///////////集中采购///////////////////
+
+	public String toAddcollectpackage() {
+		return "addcollectpackage";
 	}
 
-	public String saveEntranceP(){
-		return this.findbit();
-	}
-	
-	
-/////////////集中采购///////////////////	
-	
-	
-	public String toAddcollectpackage(){
-		return "addcollectpackage";
-	}
-	
-	public String toCollectdetail(){
+	public String toCollectdetail() {
+		long EPD_NID = Long.valueOf(request.getParameter("EPD_NID"));
+		projectDetail = projectService.findProjectDetail(BigDecimal.valueOf(EPD_NID));
+		packageLists=projectService.findCoolectPackageLists(BigDecimal.valueOf(EPD_NID));
+		
 		return "collectdetail";
 	}
-	
-	public String toCollectupdate(){
+
+	public String toCollectupdate() {
+		long EPD_NID = Long.valueOf(request.getParameter("EPD_NID"));
+		projectDetail = projectService.findProjectDetail(BigDecimal.valueOf(EPD_NID));
 		return "collectupdate";
 	}
-	
-	public String collectupdate(){
-		return this.findcollect();
+
+	public String collectupdate() {
+		projectService.updateProjectDetail(projectDetailForm);
+		return this.find();
 	}
-	
-	public String submitCollect(){
-		return this.findcollect();
+
+	public String submitCollect() {
+		String EP_SNO = request.getParameter("EP_SNO");
+		String[] ids = request.getParameterValues("idcheckbox");
+		projectService.submitCollect(EP_SNO);
+		return this.find();
 	}
-	
-	public String toAddPackageDetail(){
+
+	public String toAddPackageDetail() {		
+		return "addcollectpackage";
+	}
+
+	public String addPackageDetail() {		
+		projectService.addPackageDetail(packageListForm);
+		return this.toCollectdetail();
+	}
+
+	public String toUpdatePackageDetail() {
+		long PL_NNO = Long.valueOf(request.getParameter("PL_NNO"));
+		packageList=projectService.getPackageDetail(PL_NNO);
 		return "addcollectpackage";
 	}
 	
-	public String addPackageDetail(){
+	public String updatePackageDetail() {
+		projectService.updatePackageDetail(packageListForm);		
 		return this.toCollectdetail();
 	}
-	
-	public String toUpdatePackageDetail(){
-		return "addcollectpackage";
-	}
-	
-	public String deletePackageDetail(){
+
+	public String deletePackageDetail() {
+		long PL_NNO = Long.valueOf(request.getParameter("PL_NNO"));
+		projectService.deletePackageDetail(PL_NNO);
 		return this.toCollectdetail();
-	}	
-	
-	/*
-	 * 
-	 * result true or false
-	 */
-	public String checkUnique() throws IOException {
-		if (form.getField1().equals("1")) {
-			response.getWriter().print(true);
-		} else {
-			response.getWriter().print(false);
-		}
-		return null;
 	}
 
 	public List getList() {
@@ -132,12 +159,12 @@ public class PackageAction extends BaseAction {
 		this.list = list;
 	}
 
-	public DemoForm getForm() {
-		return form;
+	public EpPackageListForm getPackageListForm() {
+		return packageListForm;
 	}
 
-	public void setForm(DemoForm form) {
-		this.form = form;
+	public void setPackageListForm(EpPackageListForm packageListForm) {
+		this.packageListForm = packageListForm;
 	}
 
 	public PageBean getBean() {
@@ -147,4 +174,70 @@ public class PackageAction extends BaseAction {
 	public void setBean(PageBean bean) {
 		this.bean = bean;
 	}
+
+	public List getProjectMenu() {
+		return projectMenu;
+	}
+
+	public void setProjectMenu(List projectMenu) {
+		this.projectMenu = projectMenu;
+	}
+
+	public List getBitList() {
+		return bitList;
+	}
+
+	public void setBitList(List bitList) {
+		this.bitList = bitList;
+	}
+
+	public List getCollectList() {
+		return collectList;
+	}
+
+	public void setCollectList(List collectList) {
+		this.collectList = collectList;
+	}
+
+	public List getAllPackage() {
+		return allPackage;
+	}
+
+	public void setAllPackage(List allPackage) {
+		this.allPackage = allPackage;
+	}
+
+	public EpProjectDetail getProjectDetail() {
+		return projectDetail;
+	}
+
+	public void setProjectDetail(EpProjectDetail projectDetail) {
+		this.projectDetail = projectDetail;
+	}
+
+	public List getPackageLists() {
+		return packageLists;
+	}
+
+	public void setPackageLists(List packageLists) {
+		this.packageLists = packageLists;
+	}
+
+	public EpPackageList getPackageList() {
+		return packageList;
+	}
+
+	public void setPackageList(EpPackageList packageList) {
+		this.packageList = packageList;
+	}
+
+	public EpProjectDetailForm getProjectDetailForm() {
+		return projectDetailForm;
+	}
+
+	public void setProjectDetailForm(EpProjectDetailForm projectDetailForm) {
+		this.projectDetailForm = projectDetailForm;
+	}
+	
+	
 }

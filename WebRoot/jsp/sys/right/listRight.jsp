@@ -307,11 +307,10 @@ getSysSelect('<s:property value="form.searchA"/>','sysint_sno','<%=path %>');
 							</a>
 						</s:if>
 						<s:if test="#session.operList.get(\"010206\")!=null">
-	      					<a title="导入" href="javascript:void(0);" onclick="importExcel();">
-	      						<img src="<%=path%>/<s:property value="#session.operList.get(\"010206\").oper_simg"/>" width="10" height="10" border="0"/>
-								<span class="STYLE1"><s:property value="#session.operList.get(\"010206\").oper_sname"/></span>
-							</a>
-						</s:if>
+									<a title="导入" href="javascript:void(0);" onclick="importExcel();"> <img src="<%=path%>/<s:property value="#session.operList.get(\"010206\").oper_simg"/>" width="10" height="10" border="0" />
+										<span class="STYLE1"><s:property value="#session.operList.get(\"010206\").oper_sname" /></span>
+									</a>
+								</s:if>
 						<s:if test="#session.operList.get(\"010207\")!=null">
 	      					<a title="功能操作" href="javascript:void(0);" onclick="lookOper();">
 	      						<img src="<%=path%>/<s:property value="#session.operList.get(\"010207\").oper_simg"/>" width="10" height="10" border="0"/> 

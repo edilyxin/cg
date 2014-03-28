@@ -5,86 +5,136 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rc.demo.form.DemoForm;
+import com.rc.project.form.EpContractForm;
+import com.rc.project.form.EpProcessForm;
+import com.rc.project.service.ContractService;
+import com.rc.project.service.PackageService;
+import com.rc.project.vo.EpContract;
+import com.rc.sys.service.LogService;
 import com.rc.util.BaseAction;
+import com.rc.util.UserInfo;
 import com.rc.util.page.PageBean;
 
 public class ContractAction extends BaseAction {
-	private List list;
-	private DemoForm form;
-	private PageBean bean;
-
-	private void Init() {
-		list = new ArrayList();
-		for (int i = 1; i < 11; i++) {
-			form = new DemoForm();
-			form.setField1("这是我的字段内容");
-			form.setField2("吧唧吧唧");
-			form.setField3("哦了哦了哦哦啊");
-			list.add(form);
-		}
-		bean = new PageBean(list.size(), 10);
+	private EpContractForm form;
+	private EpContract vo;
+	private ContractService contractService = (ContractService)getBean("contractService");
+	private LogService log = (LogService)getBean("logService");
+	private PackageService pService = (PackageService)getBean("packageService");
+	private String message;
+	
+	public void addActionError(String anErrorMessage){
+		   String s=anErrorMessage;
+		   System.out.println(s);
+		  }
+		  public void addActionMessage(String aMessage){
+		   String s=aMessage;
+		   System.out.println(s);
+		  
+		  }
+		  public void addFieldError(String fieldName, String errorMessage){
+		   String s=errorMessage;
+		   String f=fieldName;
+		   System.out.println(s);
+		   System.out.println(f);
+		  
+		  }
+	
+	public EpContract getVo() {
+		return vo;
 	}
 
-	public String menu() {
-		return "menu";
+	public void setVo(EpContract vo) {
+		this.vo = vo;
 	}
 
-	public String toAdd() {
+	public String toDetail(){
+		String bg_sno = this.request.getParameter("bg_sno");
+		String ep_sno =this.request.getParameter("ep_sno");
+		vo = this.contractService.getDetailByPackage(ep_sno, bg_sno);
+		return "detail";
+	}
+	
+	public String toAdd(){
+		String bg_sno = this.request.getParameter("bg_sno");
+		String ep_sno =this.request.getParameter("ep_sno");
+		vo = this.contractService.getDetailByPackage(ep_sno, bg_sno);
+		System.out.println(vo.getCT_SNO());
 		return "add";
 	}
-
-	public String add() throws IOException {
+	
+	public String add() throws IOException{
+		UserInfo user = (UserInfo)this.session.get("userInfo");
+		if(user == null)return ERROR;
+		String bg_sno = this.request.getParameter("bg_sno");
+		String ep_sno =this.request.getParameter("ep_sno");
+	 	if(form.getBG_SNO() == null){
+	 		form.setBG_SNO(bg_sno);
+		 	form.setEP_SNO(ep_sno);
+	 		if(contractService.insert(form)){
+				EpProcessForm process=new EpProcessForm();
+				process.setSS_SREMARK("添加合同信息");
+				pService.submitCurrentProcess(this.request, process);
+				message = "添加成功";
+				log.logInsert(user, "添加合同", "ep_contract");			
+			}
+			else{
+				message = "操作失败";
+			}
+	 	}
+	 	else{
+	 		form.setBG_SNO(bg_sno);
+		 	form.setEP_SNO(ep_sno);
+	 		if(contractService.updateContract(form)){
+				EpProcessForm process=new EpProcessForm();
+				process.setSS_SREMARK("修改合同信息");
+				pService.submitCurrentProcess(this.request, process);
+				message = "添加成功";
+				log.logInsert(user, "修改合同", "ep_contract");			
+			}
+			else{
+				message = "操作失败";
+			}
+	 	}
+		
 		String path = request.getContextPath();
-		String url = path + "/process!find";
+		String url = path+"/process!find";
 		this.response.sendRedirect(url);
 		return null;
 	}
-	
-	public String main() {
-		Init();
-		return "main";
-	}
-	
 
-	public String toUpdate() {
-		return "update";
-	}
-	
-
-	/*
-	 * 
-	 * result true or false
-	 */
-	public String checkUnique() throws IOException {
-		if (form.getField1().equals("1")) {
-			response.getWriter().print(true);
-		} else {
-			response.getWriter().print(false);
-		}
-		return null;
-	}
-
-	public List getList() {
-		return list;
-	}
-
-	public void setList(List list) {
-		this.list = list;
-	}
-
-	public DemoForm getForm() {
+	public EpContractForm getForm() {
 		return form;
 	}
 
-	public void setForm(DemoForm form) {
+	public void setForm(EpContractForm form) {
 		this.form = form;
 	}
 
-	public PageBean getBean() {
-		return bean;
+	public ContractService getContractService() {
+		return contractService;
 	}
 
-	public void setBean(PageBean bean) {
-		this.bean = bean;
+	public void setContractService(ContractService contractService) {
+		this.contractService = contractService;
 	}
+
+	public LogService getLog() {
+		return log;
+	}
+
+	public void setLog(LogService log) {
+		this.log = log;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
+	
+	
 }

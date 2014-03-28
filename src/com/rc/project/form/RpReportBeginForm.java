@@ -25,6 +25,9 @@ public class RpReportBeginForm {
 	 */
 	private String pageSQLB;//分页后段
 	
+	private String year;
+	
+	private boolean all;
 	/**
 	 * rpbSyear 年份
 	 */
@@ -1772,6 +1775,26 @@ public class RpReportBeginForm {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+	
+	
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	
+
+	public boolean isAll() {
+		return all;
+	}
+
+	public void setAll(boolean all) {
+		this.all = all;
 	}
 
 	@Override

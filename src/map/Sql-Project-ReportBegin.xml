@@ -55,7 +55,7 @@
 			'%'||#searchC#||'%'
 		</isNotEmpty>
 		<isNotEmpty prepend="and" property="searchD">
-			T.EMP_SNO LIKE 
+			T.RPB_SPERSON LIKE 
 			'%'||#searchD#||'%'
 		</isNotEmpty>
 		<isNotEmpty prepend="and" property="searchE">
@@ -72,6 +72,12 @@
 		</isNotEmpty>
 		<isNotEmpty prepend="and" property="UD_SNO1">
 			T.UD_SNO1 = #UD_SNO1#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="RPB_SPROJECTNAME">
+			T.RPB_SPROJECTNAME = #RPB_SPROJECTNAME#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="RPB_SPERSON">
+			T.RPB_SPERSON = #RPB_SPERSON#
 		</isNotEmpty>
 		ORDER BY RPB_SREPLYDATE DESC 
 		$pageSQLB$
@@ -142,8 +148,8 @@
 		#RPB_SREPORTUNITNAME:VARCHAR#, #RPB_SPROJECTNAME:VARCHAR#, #RPB_SYEAR:VARCHAR#,
 		#EMP_SNO:VARCHAR#, #RPB_SPERSON:VARCHAR#, #RPB_SPROTYPE:VARCHAR#,
 		#RPB_SREPORTTOTAL:DECIMAL#,
-		#RPB_SSUGGESTTOTAL:DECIMAL#, #RPB_SLEVEL:VARCHAR#, #RPB_SMEM:VARCHAR#, #RPB_SISDEL:VARCHAR#,
-		#RPB_SISVALID:VARCHAR#, #RPB_SREPLYBY:VARCHAR#, #RPB_SREPLYDATE:DATE#,
+		#RPB_SSUGGESTTOTAL:DECIMAL#, #RPB_SLEVEL:VARCHAR#, #RPB_SMEM:VARCHAR#, '0',
+		'0', #RPB_SREPLYBY:VARCHAR#, #RPB_SREPLYDATE:DATE#,
 		#RPB_SALTERBY:VARCHAR#,
 		#RPB_SALTERDATE:DATE#, #RPB_SDEF1:VARCHAR#, #RPB_SDEF2:VARCHAR#, #RPB_SDEF3:VARCHAR#,
 		#RPB_SDEF4:VARCHAR#, #RPB_SDEF5:VARCHAR#, #RPB_SDEF6:VARCHAR#,
@@ -361,10 +367,10 @@
 				#RPB_SMEM:VARCHAR#
 			</isNotNull>
 			<isNotNull prepend="," property="RPB_SISDEL">
-				#RPB_SISDEL:VARCHAR#
+				'0'
 			</isNotNull>
 			<isNotNull prepend="," property="RPB_SISVALID">
-				#RPB_SISVALID:VARCHAR#
+				'0'
 			</isNotNull>
 			<isNotNull prepend="," property="RPB_SREPLYBY">
 				#RPB_SREPLYBY:VARCHAR#

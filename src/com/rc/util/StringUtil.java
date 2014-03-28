@@ -46,9 +46,6 @@ public class StringUtil {
     } 
     return resultString; 
   } 
-  
-
-  
  public static void main(String[] args){ 
     System.err.println(MD5Encode("123456")); 
   } 

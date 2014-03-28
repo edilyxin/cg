@@ -41,6 +41,10 @@ public class EpFormworkDAO extends SqlMapClientDaoSupport {
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
     public void insert(EpFormworkForm record) {
+    	Object obj1 = getSqlMapClientTemplate().queryForObject(
+				"EP_FORMWORK_maxid");    	
+    	int maxId = obj1 == null ? 0:(Integer)obj1;
+    	record.setFORM_NID(BigDecimal.valueOf(maxId));
         getSqlMapClientTemplate().insert("EP_FORMWORK_insert", record);
     }
 

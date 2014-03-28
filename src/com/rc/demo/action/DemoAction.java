@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rc.demo.form.Demo1Form;
 import com.rc.demo.form.DemoForm;
 import com.rc.util.BaseAction;
 import com.rc.util.page.PageBean;
@@ -20,13 +21,18 @@ public class DemoAction extends BaseAction {
 			form.setField1("这是我的字段内容");
 			form.setField2("吧唧吧唧");
 			form.setField3("哦了哦了哦哦啊");
+			Demo1Form d1form = new Demo1Form();
+			d1form.setField1("f11111");
+			form.setDemo1Form(d1form);
 			list.add(form);
 		}
+		
 		bean = new PageBean(list.size(),10);
 	}
 	
 	public String find(){
 		Init();
+		
 		return "find";
 	}
 	

@@ -40,6 +40,10 @@ public class CkCheckDAO extends SqlMapClientDaoSupport {
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
     public void insert(CkCheckForm record) {
+    	Object obj = getSqlMapClientTemplate().queryForObject(
+				"CK_CHECK_maxid");    	
+    	int maxId = obj == null ? 0:(Integer)obj;
+    	record.setCK_SID(String.valueOf(maxId));
         getSqlMapClientTemplate().insert("CK_CHECK_insert", record);
     }
 

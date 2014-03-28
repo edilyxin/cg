@@ -1,77 +1,166 @@
 package com.rc.project.action;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 
-import com.rc.demo.form.DemoForm;
+import com.rc.project.form.EpProcessForm;
+import com.rc.project.form.EpSettingForm;
+import com.rc.project.service.PackageService;
+import com.rc.project.service.ProcessService;
+import com.rc.project.service.ProjectService;
+import com.rc.project.vo.EpProcess;
+import com.rc.project.vo.EpSetting;
 import com.rc.util.BaseAction;
+import com.rc.util.UserInfo;
 import com.rc.util.page.PageBean;
 
-
 public class ProcessAction extends BaseAction {
-
 	private List list;
-	private DemoForm form;
-	private PageBean bean;
+	private EpProcess vo;
+	private EpProcessForm form;
+	// private PageBean bean;
+	private PackageService service = (PackageService) getBean("packageService");
 
-	private void Init() {
-		list = new ArrayList();
-		for (int i = 1; i < 11; i++) {
-			form = new DemoForm();
-			form.setField1("这是我的字段内容");
-			form.setField2("吧唧吧唧");
-			form.setField3("哦了哦了哦哦啊");
-			list.add(form);
-		}
-		bean = new PageBean(list.size(), 10);
+	private EpSetting getNextProcess(String purType, int currentNo) {
+		int nextNo = currentNo + 1;
+		EpSettingForm form = new EpSettingForm();
+		form.setSET_SPURTYPE(purType);
+		form.setSET_NNO(BigDecimal.valueOf(nextNo));
+		return service.findnextSetid(form);
+	}
+
+	private EpSetting getPreProcess(String purType, int currentNo) {
+		int nextNo = currentNo - 1;
+		EpSettingForm form = new EpSettingForm();
+		form.setSET_SPURTYPE(purType);
+		form.setSET_NNO(BigDecimal.valueOf(nextNo));
+		return service.findnextSetid(form);
 	}
 
 	public String find() {
-		Init();
+		if (form == null) {
+			form = new EpProcessForm();
+		}
+		// 验证登陆session是否有效
+		UserInfo userInfo = (UserInfo) session.get("userInfo");
+		if (userInfo == null) {
+			return ERROR;
+		}
+		// 初始化分页标签
+		// String page = request.getParameter("page");
+		// bean = new PageBean(service.findSize(form),
+		// PageBean.PAGE_SIZE);
+		// if (page != null) {
+		// bean.setCurrentPage(Integer.parseInt(page));
+		// }
+		// 设置分页语句
+		// form.setPageSQLA(bean.getPageSQLA());
+		// form.setPageSQLB(bean.getPageSQLB());
+		// 分页查询
+		list = service.findPage();
 		return "find";
 	}
 
-	public String menu() {
-		return "menu";
+	public String toFirsttrial() {
+		return "firsttrial";
 	}
 
-	public String toAdd() {
-		return "add";
-	}
+	public String ok() {
+		String ss_nid = this.request.getParameter("ss_nid");
+		String set_nno = this.request.getParameter("set_nno");
+		String bg_sno = this.request.getParameter("bg_sno");
+		String ep_sno = this.request.getParameter("ep_sno");
+		String set_spurtype = this.request.getParameter("set_spurtype");
+		
+		EpProcessForm process = new EpProcessForm();
+		process.setSS_SREMARK("当前提交技术审核");
 
-	public String main() {
-		Init();
-		return "main";
-	}
+		service.submitCurrentProcess(this.request, process);
+		/*// 修改当前状态 已经操作
+		EpProcessForm process = new EpProcessForm();
+		process.setSS_NID(BigDecimal.valueOf(Integer.parseInt(ss_nid)));
+		process.setSS_SSTATE("1");
+		process.setSS_SREMARK("某某提交当前状态，添加备注信息");
+		System.out.println("修改当前状态1");
+		service.updateProcessState(process);
 
-	public String add() {
+		// 添加下一步操作 为操作
+		EpProcessForm form = new EpProcessForm();
+		form.setBG_SNO(bg_sno);
+		form.setEP_SNO(ep_sno);
+		form.setSS_NNO(this.getNextProcess(set_spurtype,
+				Integer.parseInt(set_nno)).getSET_NID());
+		form.setSS_SSTATE("0");
+		service.insertProcess(form);*/
 		return this.find();
 	}
 
-	public String toUpdate() {
-		return "update";
-	}
-
-	public String update() {
-		return find();
-	}
-
-	public String toDelete() {
-		return find();
-	}
-
-	/*
-	 * 
-	 * result true or false
-	 */
-	public String checkUnique() throws IOException {
-		if (form.getField1().equals("1")) {
-			response.getWriter().print(true);
-		} else {
-			response.getWriter().print(false);
+	// 每一步回退
+	public String back() {
+		EpProcessForm process = new EpProcessForm();
+		/*String ss_nid = this.request.getParameter("ss_nid");
+		String set_nid = this.request.getParameter("set_nid");
+		String set_nno = this.request.getParameter("set_nno");
+		String bg_sno = this.request.getParameter("bg_sno");
+		String ep_sno = this.request.getParameter("ep_sno");
+		String set_spurtype = this.request.getParameter("set_spurtype");
+		// 修改当前状态为退回
+		EpProcessForm process = new EpProcessForm();
+		process.setSS_NID(BigDecimal.valueOf(Integer.parseInt(ss_nid)));
+		process.setSS_SSTATE("3");
+		process.setSS_SREMARK("某某回退");
+		service.updateProcessState(process);		
+		
+		//如果是初审退回操作
+		if (set_nno.equals("1")) {
+			System.out.println("初审退回");
+			return this.reject();
 		}
-		return null;
+		else{
+		// 在process中修改当前状态回退，然后添加一个上一步未操作记录
+		// 添加下一步操作 为操作
+			int setnnid = Integer.valueOf(set_nid);
+			EpProcessForm form = new EpProcessForm();
+			form.setBG_SNO(bg_sno);
+			form.setEP_SNO(ep_sno);
+			form.setSS_NNO(getPreProcess(set_spurtype, Integer.parseInt(set_nno))
+					.getSET_NID());
+			form.setSS_SSTATE("0");
+			service.insertProcess(form);
+			System.out.println("步骤退回");
+			return this.find();
+		}*/
+		process.setSS_SREMARK("退回操作");
+		service.backCurrentProcess(this.request, process );
+		return this.find();
+	}
+
+	/*// 初审回退
+	public String reject() {
+		String ss_nid = this.request.getParameter("ss_nid");
+		String bg_sno = this.request.getParameter("bg_sno");
+		// 修改包的状态，修改当前process中的状态为未操作。
+		ProjectService pService = (ProjectService) getBean("projectService");
+		pService.back(bg_sno);
+		return this.find();
+	}*/
+
+	public String firsttrial() {
+		// 根据process中的主键修改当前状态为已操作
+		// 在process表中添加一个下一个流程的未操作记录
+		return this.ok();
+	}
+
+	public String toPrint() {
+		return "print";
+	}
+
+	public String sendMail() {
+		return this.find();
+	}
+
+	public String print() {
+		return toFirsttrial();
 	}
 
 	public List getList() {
@@ -82,19 +171,28 @@ public class ProcessAction extends BaseAction {
 		this.list = list;
 	}
 
-	public DemoForm getForm() {
+	public EpProcess getVo() {
+		return vo;
+	}
+
+	public void setVo(EpProcess vo) {
+		this.vo = vo;
+	}
+
+	public EpProcessForm getForm() {
 		return form;
 	}
 
-	public void setForm(DemoForm form) {
+	public void setForm(EpProcessForm form) {
 		this.form = form;
 	}
 
-	public PageBean getBean() {
-		return bean;
+	public PackageService getService() {
+		return service;
 	}
 
-	public void setBean(PageBean bean) {
-		this.bean = bean;
+	public void setService(PackageService service) {
+		this.service = service;
 	}
+
 }

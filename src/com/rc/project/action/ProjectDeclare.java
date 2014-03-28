@@ -1,5 +1,7 @@
 package com.rc.project.action;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +10,7 @@ import com.rc.project.form.RpReportBeginForm;
 import com.rc.project.service.ProjectDeclareService;
 import com.rc.sys.form.MngLogForm;
 import com.rc.util.BaseAction;
+import com.rc.util.StringUtil;
 import com.rc.util.UserInfo;
 import com.rc.util.page.PageBean;
 
@@ -24,6 +27,43 @@ public class ProjectDeclare extends BaseAction {
 	private PageBean bean;// 分页标签类
 	private RpReportBeginForm form; // 表单
 	private ProjectDeclareService projectDeclareService = (ProjectDeclareService)getBean("projectDeclareService");
+	private File myfile;//上传文件
+	private String myfileFileName;// 文件名
+	
+	
+	public String getMyfileFileName() {
+		return myfileFileName;
+	}
+
+	public void setMyfileFileName(String myfileFileName) {
+		this.myfileFileName = myfileFileName;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+
+	public ProjectDeclareService getProjectDeclareService() {
+		return projectDeclareService;
+	}
+
+	public void setProjectDeclareService(ProjectDeclareService projectDeclareService) {
+		this.projectDeclareService = projectDeclareService;
+	}
+
+	public File getMyfile() {
+		return myfile;
+	}
+
+	public void setMyfile(File myfile) {
+		this.myfile = myfile;
+	}
+
+
 
 	/**
 	 * 初申请管理查询
@@ -105,6 +145,30 @@ public class ProjectDeclare extends BaseAction {
 
 	public void setForm(RpReportBeginForm form) {
 		this.form = form;
+	}
+	
+	public String update() throws Exception{
+		response.setContentType("text/html;charset=utf-8");
+		try{
+		UserInfo user = (UserInfo)this.session.get("userInfo");
+		form.setRPB_SREPLYBY(user.getEmp_sno());
+		form.setFileName(this.myfileFileName);
+		form.setFilePath(this.myfile.toString());
+		this.projectDeclareService.importData(form);
+		String returnValue = "导入成功了！";
+		System.out.println("filepath : "+ this.myfile);
+		System.out.println("filename : "+ this.myfileFileName);
+		
+		if(form!=null){
+			System.out.println("year : " + form.getYear());
+			System.out.println("isall : " +form.isAll());
+		}
+		
+		response.getWriter().print(returnValue);
+		}catch(IllegalStateException e){
+			response.getWriter().print("错误 :" + e.getMessage());
+		}
+		return null;
 	}
 
 	

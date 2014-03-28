@@ -19,6 +19,14 @@ public class EpProcessDAO extends SqlMapClientDaoSupport {
     public EpProcessDAO() {
         super();
     }
+    
+    public List findPage(EpProcessForm form){
+    	return getSqlMapClientTemplate().queryForList("EP_PROCESS_findPage", form);
+    }
+    
+    public int findSize(EpProcessForm form){
+    	return (Integer)getSqlMapClientTemplate().queryForObject("EP_PROCESS_findSize", form);
+    }
 
 
     /**
@@ -40,8 +48,8 @@ public class EpProcessDAO extends SqlMapClientDaoSupport {
      *
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
-    public void insert(EpProcessForm record) {
-        getSqlMapClientTemplate().insert("EP_PROCESS_insert", record);
+    public boolean insert(EpProcessForm record) {
+        return getSqlMapClientTemplate().insert("EP_PROCESS_insert", record) == null?false:true;
     }
 
     /**
@@ -86,9 +94,9 @@ public class EpProcessDAO extends SqlMapClientDaoSupport {
      *
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
-    public int updateByPrimaryKey(EpProcessForm record) {
+    public boolean updateByPrimaryKey(EpProcessForm record) {
         int rows = getSqlMapClientTemplate().update("EP_PROCESS_updateByPrimaryKey", record);
-        return rows;
+        return rows == 0?false:true;
     }
 
 }

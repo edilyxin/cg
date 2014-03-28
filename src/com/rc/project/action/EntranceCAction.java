@@ -1,86 +1,58 @@
 package com.rc.project.action;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.rc.demo.form.DemoForm;
+import com.rc.project.form.EpEntrancecForm;
+import com.rc.project.service.ProjectService;
+import com.rc.project.vo.EpEntrancec;
 import com.rc.util.BaseAction;
 import com.rc.util.page.PageBean;
 
 public class EntranceCAction extends BaseAction {
-	private List list;
-	private DemoForm form;
-	private PageBean bean;
 
-	private void Init() {
-		list = new ArrayList();
-		for (int i = 1; i < 11; i++) {
-			form = new DemoForm();
-			form.setField1("这是我的字段内容");
-			form.setField2("吧唧吧唧");
-			form.setField3("哦了哦了哦哦啊");
-			list.add(form);
-		}
-		bean = new PageBean(list.size(), 10);
-	}		
+	private EpEntrancecForm entrancecForm;
+	private EpEntrancec entrancec;
+	private ProjectService projectService = (ProjectService) getBean("projectService");
 	
-	public String save() throws IOException {
+	
+	private String toMain() throws IOException {
+		String EP_SNO = request.getParameter("EP_SNO");
+		String path = request.getContextPath();
+		String url = path + "/declarep!toAdd?EP_SNO=" + EP_SNO;
+		this.response.sendRedirect(url);
 		return null;
 	}
 	
-	public String menu() {
-		return "menu";
+	public String save() throws IOException {
+		projectService.saveEntranceC(entrancecForm);
+		return this.toMain();
 	}
-
+	
 	public String toAdd() {
+		long EPD_NID = Long.valueOf(request.getParameter("EPD_NID"));
+		entrancec=projectService.findEntranceC(BigDecimal.valueOf(EPD_NID));
 		return "add";
 	}
 
-	public String main() {
-		Init();
-		return "main";
+	public EpEntrancec getEntrancec() {
+		return entrancec;
 	}
 
-	public String toUpdate() {
-		return "update";
-	}
-	
-
-	/*
-	 * 
-	 * result true or false
-	 */
-	public String checkUnique() throws IOException {
-		if (form.getField1().equals("1")) {
-			response.getWriter().print(true);
-		} else {
-			response.getWriter().print(false);
-		}
-		return null;
+	public void setEntrancec(EpEntrancec entrancec) {
+		this.entrancec = entrancec;
 	}
 
-	public List getList() {
-		return list;
+	public EpEntrancecForm getEntrancecForm() {
+		return entrancecForm;
 	}
 
-	public void setList(List list) {
-		this.list = list;
+	public void setEntrancecForm(EpEntrancecForm entrancecForm) {
+		this.entrancecForm = entrancecForm;
 	}
 
-	public DemoForm getForm() {
-		return form;
-	}
 
-	public void setForm(DemoForm form) {
-		this.form = form;
-	}
-
-	public PageBean getBean() {
-		return bean;
-	}
-
-	public void setBean(PageBean bean) {
-		this.bean = bean;
-	}
 }

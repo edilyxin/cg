@@ -17,7 +17,6 @@ public class EpAccessoryDAO extends SqlMapClientDaoSupport {
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
     public EpAccessoryDAO() {
-        super();
     }
 
 
@@ -42,6 +41,10 @@ public class EpAccessoryDAO extends SqlMapClientDaoSupport {
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
     public void insert(EpAccessoryForm record) {
+    	Object obj = getSqlMapClientTemplate().queryForObject(
+				"EP_ACCESSORY_maxid");    	
+    	int maxId = obj == null ? 0:(Integer)obj;
+    	record.setAS_NID(BigDecimal.valueOf(maxId));
         getSqlMapClientTemplate().insert("EP_ACCESSORY_insert", record);
     }
 

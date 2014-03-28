@@ -41,6 +41,10 @@ public class RpFileDAO extends SqlMapClientDaoSupport {
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
     public void insert(RpFileForm record) {
+    	Object obj1 = getSqlMapClientTemplate().queryForObject(
+				"RP_FILE_maxid");    	
+    	int maxId = obj1 == null ? 0:(Integer)obj1;
+    	record.setRPF_NID(BigDecimal.valueOf(maxId));
         getSqlMapClientTemplate().insert("RP_FILE_insert", record);
     }
 

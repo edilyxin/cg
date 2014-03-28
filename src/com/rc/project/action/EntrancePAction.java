@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rc.demo.form.DemoForm;
+import com.rc.project.form.EpEntrancecForm;
+import com.rc.project.form.EpEntrancepForm;
+import com.rc.project.service.ProjectService;
+import com.rc.project.vo.EpEntrancec;
+import com.rc.project.vo.EpEntrancep;
 import com.rc.util.BaseAction;
 import com.rc.util.page.PageBean;
 
@@ -12,71 +17,32 @@ public class EntrancePAction extends BaseAction {
 	private List list;
 	private DemoForm form;
 	private PageBean bean;
-
-	private void Init() {
-		list = new ArrayList();
-		for (int i = 1; i < 11; i++) {
-			form = new DemoForm();
-			form.setField1("这是我的字段内容");
-			form.setField2("吧唧吧唧");
-			form.setField3("哦了哦了哦哦啊");
-			list.add(form);
-		}
-		bean = new PageBean(list.size(), 10);
-	}
-
-	public String toSelectsupplier() throws IOException {
-		return "selectsupplier";
-	}
-		
-	public String findcollect() {
-		return "findcollect";
+	private ProjectService projectService = (ProjectService) getBean("projectService");
+	private EpEntrancep entrancep;
+	
+	private EpEntrancepForm entrancepForm;
+	
+	private List projectDetails;
+	
+	
+	private String toMain() throws IOException {
+		String EP_SNO = request.getParameter("EP_SNO");
+		String path = request.getContextPath();
+		String url = path + "/splite!find?EP_SNO=" + EP_SNO;
+		this.response.sendRedirect(url);
+		return null;
 	}
 	
-	public String findbit() {
-		return "findbit";
-	}
-	
-	public String menu() {
-		return "menu";
-	}
-
-	public String toAdd() {
+	public String toAdd() {		
+		String EP_SNO = request.getParameter("EP_SNO");
+		entrancep = projectService.getEntranceP(EP_SNO);
+		projectDetails=projectService.findBidProjectDetails(EP_SNO);
 		return "add";
 	}
 
-	public String main() {
-		Init();
-		return "main";
-	}
-
-	public String toUpdate() {
-		return "update";
-	}
-
-	public String splitPackage() {
-		return this.findbit();
-	}
-	
-	public String submitPackage() {
-		return this.findbit();
-	}
-	
-	public String deletePackage() {
-		return this.findbit();
-	}
-
-	/*
-	 * 
-	 * result true or false
-	 */
-	public String checkUnique() throws IOException {
-		if (form.getField1().equals("1")) {
-			response.getWriter().print(true);
-		} else {
-			response.getWriter().print(false);
-		}
-		return null;
+	public String saveEntranceP() throws IOException {		
+		projectService.saveEntranceP(entrancepForm);
+		return toMain();
 	}
 
 	public List getList() {
@@ -103,4 +69,31 @@ public class EntrancePAction extends BaseAction {
 		this.bean = bean;
 	}
 
+	public EpEntrancep getEntrancep() {
+		return entrancep;
+	}
+
+	public void setEntrancep(EpEntrancep entrancep) {
+		this.entrancep = entrancep;
+	}
+
+	public EpEntrancepForm getEntrancepForm() {
+		return entrancepForm;
+	}
+
+	public void setEntrancepForm(EpEntrancepForm entrancepForm) {
+		this.entrancepForm = entrancepForm;
+	}
+
+	public List getProjectDetails() {
+		return projectDetails;
+	}
+
+	public void setProjectDetails(List projectDetails) {
+		this.projectDetails = projectDetails;
+	}
+
+	
+	
+	
 }

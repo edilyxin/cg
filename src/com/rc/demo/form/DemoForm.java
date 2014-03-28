@@ -7,6 +7,13 @@ public class DemoForm {
 	private String searchA;
 	private String searchB;
 	private String searchC;
+	private Demo1Form demo1Form;
+	public Demo1Form getDemo1Form() {
+		return demo1Form;
+	}
+	public void setDemo1Form(Demo1Form demo1Form) {
+		this.demo1Form = demo1Form;
+	}
 	public String getSearchA() {
 		return searchA;
 	}

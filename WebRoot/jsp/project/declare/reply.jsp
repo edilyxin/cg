@@ -13,8 +13,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <title>批复管理</title>
 </head>
 <frameset rows="300,*" id="frame1" frameborder="NO" border="0" framespacing="0">
-	<frame src="<%=path %>/manually!findForAuto" name="main" noresize="noresize" marginwidth="0" marginheight="0" frameborder="0" scrolling="auto"   />
-	<frame src="<%=path %>/manually!findDetailForAuto" name="detail" marginwidth="0" marginheight="0" frameborder="0" scrolling="auto"   />
+	<frame src="<%=path %>/manually!findForAuto" name="top" id="top" noresize="noresize" marginwidth="0" marginheight="0" frameborder="0" scrolling="auto"   />
+	<frame src="<%=path %>/manually!findDetailForAuto" name="detail" id="detail" marginwidth="0" marginheight="0" frameborder="0" scrolling="auto"   />
 </frameset>
 
 </html>

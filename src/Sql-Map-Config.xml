@@ -67,5 +67,5 @@
     <sqlMap resource="map/Sql-Project-ProjectDetail.xml"/>
     <sqlMap resource="map/Sql-Project-Report.xml"/>
     <sqlMap resource="map/Sql-Project-ReportBegin.xml"/>
-    <sqlMap resource="map/Sql-Project-Setting.xml"/>
+    <sqlMap resource="map/Sql-Project-Setting.xml"/> 
  </sqlMapConfig> 

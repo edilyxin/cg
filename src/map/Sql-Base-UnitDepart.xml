@@ -163,7 +163,7 @@
     </select>
     
     <!-- 按照部门简称来查询 -->
-    <select id="unitDepart_findBySSname" parameterClass = "java.lang.String" resultClass="com.rc.base.vo.MngSchoolDepart">
+    <select id="unitDepart_findBySSname" parameterClass = "java.lang.String" resultClass="com.rc.base.vo.MngUnitDepart">
         select * from MNG_UNITDEPART d where d.UD_SSNAME = #ssname# 
     </select>
     

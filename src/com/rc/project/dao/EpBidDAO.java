@@ -1,9 +1,12 @@
 package com.rc.project.dao;
 
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.rc.project.form.EpAccessoryForm;
 import com.rc.project.form.EpBidForm;
 import com.rc.project.vo.EpBid;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
@@ -19,6 +22,13 @@ public class EpBidDAO extends SqlMapClientDaoSupport {
     public EpBidDAO() {
         super();
     }
+    
+    public EpBid getBidByPackage(String ep_sno,String bg_sno){
+    	EpBidForm form = new EpBidForm();
+    	form.setEP_SNO(ep_sno);
+    	form.setBG_SNO(bg_sno);
+    	return (EpBid)getSqlMapClientTemplate().queryForObject("EP_BID_selectByPackage", form);
+    }
 
 
     /**
@@ -32,6 +42,7 @@ public class EpBidDAO extends SqlMapClientDaoSupport {
         key.setEB_NID(EB_NID);
         int rows = getSqlMapClientTemplate().delete("EP_BID_deleteByPrimaryKey", key);
         return rows;
+        
     }
 
     /**
@@ -40,8 +51,45 @@ public class EpBidDAO extends SqlMapClientDaoSupport {
      *
      * @ibatorgenerated Mon Mar 17 15:29:33 CST 2014
      */
-    public void insert(EpBidForm record) {
-        getSqlMapClientTemplate().insert("EP_BID_insert", record);
+    public boolean insert(EpBidForm record) {
+//    	Object obj1 = getSqlMapClientTemplate().queryForObject(
+//				"EP_BID_maxid");    	
+//    	int maxId = obj1 == null ? 0:(Integer)obj1;
+//    	
+//    	record.setEB_NID(BigDecimal.valueOf(maxId));
+    	Object obj =getSqlMapClientTemplate().insert("EP_BID_insert", record);
+    	System.out.println(obj);
+        return obj==null?false:true;
+    }
+    
+    public boolean insert(EpBidForm record,EpAccessoryForm fileForm) {
+    	if(fileForm == null)return insert(record);
+    	boolean result = false;
+    	SqlMapClient sqlMapClient = getSqlMapClientTemplate().getSqlMapClient();
+    	try {
+			sqlMapClient.startTransaction();
+			sqlMapClient.startBatch();
+			sqlMapClient.insert("EP_BID_insert", record);
+			sqlMapClient.insert("EP_ACCESSORY_insert", fileForm);
+			sqlMapClient.executeBatch();
+			sqlMapClient.commitTransaction();
+			result = true;
+		} catch (Exception e) {
+			try {
+				sqlMapClient.getCurrentConnection().rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				sqlMapClient.endTransaction();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+        return result;
     }
 
     /**

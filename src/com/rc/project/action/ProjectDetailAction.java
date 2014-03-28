@@ -5,73 +5,76 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rc.demo.form.DemoForm;
+import com.rc.project.form.EpProcessForm;
+import com.rc.project.form.EpProjectDetailForm;
+import com.rc.project.form.EpProjectForm;
+import com.rc.project.service.ProjectDetailService;
 import com.rc.util.BaseAction;
+import com.rc.util.UserInfo;
 import com.rc.util.page.PageBean;
 
 public class ProjectDetailAction extends BaseAction {
 
 	private List list;
-	private DemoForm form;
+	private EpProjectDetailForm form;
 	private PageBean bean;
+	private ProjectDetailService service = (ProjectDetailService)getBean("projectDetailService");
+	private String message;
 
-	private void Init() {
-		list = new ArrayList();
-		for (int i = 1; i < 11; i++) {
-			form = new DemoForm();
-			form.setField1("这是我的字段内容");
-			form.setField2("吧唧吧唧");
-			form.setField3("哦了哦了哦哦啊");
-			list.add(form);
-		}
-		bean = new PageBean(list.size(), 10);
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	public String find() {
-		Init();
+		if(form==null){
+			form = new EpProjectDetailForm();
+		}
+		//验证登陆session是否有效
+		UserInfo userInfo = (UserInfo) session.get("userInfo");
+	 	if (userInfo == null) {
+			return ERROR;
+		}
+	 	//初始化分页标签
+		String page = request.getParameter("page");
+		bean = new PageBean(service.findSize(form),
+				PageBean.PAGE_SIZE);
+		if (page != null) {
+			bean.setCurrentPage(Integer.parseInt(page));
+		}
+		//设置分页语句
+		form.setPageSQLA(bean.getPageSQLA());
+		form.setPageSQLB(bean.getPageSQLB());
+		//分页查询
+		list = service.findPage(form);
 		return "find";
-	}
-
-	public String menu() {
-		return "menu";
-	}
-
-	public String toAdd() {
-		return "add";
-	}
-
-	public String main() {
-		Init();
-		return "main";
-	}
-
-	public String add() {
+	}	
+	public String save(){
+		if(form==null){
+			System.out.println("save form is null");
+			form = new EpProjectDetailForm();
+		}
+		System.out.println(form.getEPD_SPURTYPE());
+		System.out.println(request.getParameterValues("idcheckbox")[0]);
+		service.updatePurtType(Integer.valueOf(form.getEPD_SPURTYPE()), request.getParameterValues("idcheckbox"));
 		return this.find();
 	}
-
-	public String toUpdate() {
-		return "update";
+	
+	
+	public ProjectDetailService getService() {
+		return service;
 	}
 
-	public String update() {
-		return find();
+
+
+	public void setService(ProjectDetailService service) {
+		this.service = service;
 	}
 
-	public String toDelete() {
-		return find();
-	}
 
-	/*
-	 * 
-	 * result true or false
-	 */
-	public String checkUnique() throws IOException {
-		if (form.getField1().equals("1")) {
-			response.getWriter().print(true);
-		} else {
-			response.getWriter().print(false);
-		}
-		return null;
-	}
 
 	public List getList() {
 		return list;
@@ -81,11 +84,11 @@ public class ProjectDetailAction extends BaseAction {
 		this.list = list;
 	}
 
-	public DemoForm getForm() {
+	public EpProjectDetailForm getForm() {
 		return form;
 	}
 
-	public void setForm(DemoForm form) {
+	public void setForm(EpProjectDetailForm form) {
 		this.form = form;
 	}
 

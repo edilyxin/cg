@@ -20,7 +20,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	-->
 	
-	<script type="text/javascript" src="<%=path%>/js/CJL.0.1.min.js"></script>
+<script type="text/javascript" src="<%=path%>/js/CJL.0.1.min.js"></script>
 <script type="text/javascript" src="<%=path%>/js/ImagePreviewd.js"></script>
 <script type="text/javascript" src="<%=path%>/js/JS_Pinyin.js"></script>
 <script type="text/javascript" src="<%=path%>/js/city.js"></script>
@@ -180,6 +180,7 @@ $("#file").live("change",function(){
   <body style="overflow:auto;">
   			<form class="frm" id="frm" name="frm" method="post" action="<%=path %>/<s:property value="pathname"/>" enctype="multipart/form-data" >
             <p>请选择需导入的Excel文件 :<input class="file" type="file" id="file" name="myfile" value="" /></p>
+            <p></p>
             <p><input type="button" id="button" onclick="uploadFile()" value="导入"/></p>
             <span id="show" style="color:blue;"></span>
             </form>
