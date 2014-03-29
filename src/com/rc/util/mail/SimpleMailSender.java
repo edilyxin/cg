@@ -1,7 +1,11 @@
 package com.rc.util.mail;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;    
 import java.util.Properties;   
+
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.Address;    
 import javax.mail.BodyPart;    
 import javax.mail.Message;    
@@ -13,6 +17,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;    
 import javax.mail.internet.MimeMessage;    
 import javax.mail.internet.MimeMultipart;    
+import javax.mail.internet.MimeUtility;
 
 public class SimpleMailSender  {    
 /**   
@@ -58,8 +63,9 @@ public class SimpleMailSender  {
     /**   
       * 以HTML格式发送邮件   
       * @param mailInfo 待发送的邮件信息   
+     * @throws UnsupportedEncodingException 
       */    
-    public static boolean sendHtmlMail(MailSenderInfo mailInfo){    
+    public static boolean sendHtmlMail(MailSenderInfo mailInfo) throws UnsupportedEncodingException{    
       // 判断是否需要身份认证    
       MyAuthenticator authenticator = null;   
       Properties pro = mailInfo.getProperties();   
@@ -89,16 +95,34 @@ public class SimpleMailSender  {
       // 创建一个包含HTML内容的MimeBodyPart    
       BodyPart html = new MimeBodyPart();    
       // 设置HTML内容    
-      html.setContent(mailInfo.getContent(), "text/html; charset=utf-8");    
+      html.setContent(mailInfo.getContent(), "text/html; charset=utf-8");
       mainPart.addBodyPart(html);    
+      //如果有附件
+      for(int i = 0;i<mailInfo.getAttachFileNames().length;i++){
+    	  MimeBodyPart attch = new MimeBodyPart();
+    	  FileDataSource fds = new FileDataSource(mailInfo.getAttachFileNames()[i]);
+    	  attch.setDataHandler(new DataHandler(fds));
+    	  attch.setFileName(MimeUtility.encodeText(fds.getName(), "UTF-8", null));
+    	  mainPart.addBodyPart(attch);
+      }
       // 将MiniMultipart对象设置为邮件内容    
       mailMessage.setContent(mainPart);    
       // 发送邮件    
+      System.out.println(mailInfo.toString());
       Transport.send(mailMessage);    
       return true;    
       } catch (MessagingException ex) {    
           ex.printStackTrace();    
+          return false;    
       }    
-      return false;    
-    }    
+    }
+    
+    /**
+     * 发送带附件的email
+     * @param mailInfo
+     * @return
+     */
+    public static boolean sendHtmlMailAndAttchs(MailSenderInfo mailInfo){
+    	return false;
+    }
 }   

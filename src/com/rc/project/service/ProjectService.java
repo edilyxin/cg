@@ -3,22 +3,23 @@ package com.rc.project.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.rc.project.form.EpEntrancecForm;
 import com.rc.project.form.EpEntrancepForm;
 import com.rc.project.form.EpPackageListForm;
+import com.rc.project.form.EpProcessForm;
 import com.rc.project.form.EpProjectDetailForm;
 import com.rc.project.vo.EpEntrancec;
 import com.rc.project.vo.EpEntrancep;
 import com.rc.project.vo.EpPackageList;
 import com.rc.project.vo.EpProjectDetail;
 
-
 public interface ProjectService {
 	public List find();
-	
+
 	public List findBits(String EP_SNO);
-	
-	
+
 	public void splitPackage(String[] EPD_NIDs);
 
 	public List findAllBidPackages(String eP_SNO);
@@ -50,11 +51,18 @@ public interface ProjectService {
 	public List findBidProjectDetails(String EP_SNO);
 
 	public EpEntrancec findEntranceC(BigDecimal ePD_NID);
-	
+
 	public void saveEntranceC(EpEntrancecForm entrancecForm);
 
 	public void submitCollect(String eP_SNO);
-	
-	public void back(String BG_SNO);
-}
 
+	public void back(String BG_SNO);
+
+	public List getListByBG(String BG_SNO);
+	
+	public List getListByBG(String BG_SNO,String[] EPD_NIDs);
+
+	public void splitCollect(String EP_SNO,String BG_SNO,String aG_NID1, String[] ePD_NIDs, String[] nums,HttpServletRequest request,EpProcessForm process);
+	public void backToSelect(HttpServletRequest request,EpProcessForm process);
+	public void backToApprove(String EPD_NID);
+}

@@ -1,6 +1,7 @@
 package com.rc.project.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,6 +90,34 @@ public class PackageServiceImpl implements PackageService {
 		return findnextSetid(form);
 	}
 	
+	//拆分报价提交记录过程，项目包状态不变，添加新报带操作状态
+	public void submitCurrentProcess(HttpServletRequest request,EpProcessForm process,String newBg_sno){
+		String ss_nid = request.getParameter("ss_nid");
+		String set_nno = request.getParameter("set_nno");		
+		String ep_sno = request.getParameter("ep_sno");
+		String set_spurtype = request.getParameter("set_spurtype");
+		
+		
+		
+		// 修改当前状态 已经操作
+				
+//				process.setSS_NID(BigDecimal.valueOf(Integer.parseInt(ss_nid)));
+//				//process.setSS_SSTATE("1");
+//								
+//				updateProcessState(process);
+				//获取霞个流程设置
+				EpSetting  nextsetting = getNextSetting(set_spurtype,Integer.parseInt(set_nno));
+				//如果最后一个流程，就不用新增下一步
+				if(nextsetting == null){return;}
+				// 添加下一步操作 为操作
+				EpProcessForm form = new EpProcessForm();
+				form.setBG_SNO(newBg_sno);
+				form.setEP_SNO(ep_sno);
+				form.setSS_NNO(nextsetting.getSET_NID());
+				form.setSS_SSTATE("0");
+				insertProcess(form);
+	} 
+	
 	/*
 	 * 提交当前流程，修改当前流程状态为1-已操作，添加下一个流程记录
 	 * request
@@ -108,6 +137,7 @@ public class PackageServiceImpl implements PackageService {
 				
 				process.setSS_NID(BigDecimal.valueOf(Integer.parseInt(ss_nid)));
 				process.setSS_SSTATE("1");
+				process.setSS_TDATE(new Date(System.currentTimeMillis()));
 								
 				updateProcessState(process);
 				//获取霞个流程设置
@@ -118,6 +148,8 @@ public class PackageServiceImpl implements PackageService {
 				EpProcessForm form = new EpProcessForm();
 				form.setBG_SNO(bg_sno);
 				form.setEP_SNO(ep_sno);
+				form.setSS_SMAN("admin");
+				form.setSS_TDATE(new Date(System.currentTimeMillis()));
 				form.setSS_NNO(nextsetting.getSET_NID());
 				form.setSS_SSTATE("0");
 				insertProcess(form);
@@ -144,7 +176,7 @@ public class PackageServiceImpl implements PackageService {
 		if(presetting == null){
 			ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(ServletActionContext.getRequest().getSession().getServletContext());
 			ProjectService pService = (ProjectService) ctx.getBean("projectService");
-			pService.back(bg_sno);	        
+			pService.back(bg_sno);
 		}
 		//添加下一步操作 为操作
 		else{
@@ -157,15 +189,45 @@ public class PackageServiceImpl implements PackageService {
 			insertProcess(form);
 		}	
 	}
+	
+	public void skipProcess(HttpServletRequest request){
+		String ss_nid = request.getParameter("ss_nid");
+		String set_nid = request.getParameter("set_nid");
+		String set_nno = request.getParameter("set_nno");
+		String bg_sno = request.getParameter("bg_sno");
+		String ep_sno = request.getParameter("ep_sno");
+		String set_spurtype = request.getParameter("set_spurtype");
+		EpSetting  nextsetting = getNextSetting(set_spurtype,Integer.parseInt(set_nno));		
+		EpProcessForm record = new EpProcessForm();
+		record.setSS_NID(BigDecimal.valueOf(Integer.parseInt(ss_nid)));
+		record.setSS_NNO(nextsetting.getSET_NNO());
+		this.epProcessDAO.updateByPrimaryKeySelective(record );
+	}
 
+	/*
+	 * 查找所有已提交的项目编号
+	 */
 	public List findEpsNo(){return epPackageDAO.findEpsNo();}
 	
+	/*
+	 * 根据项目编号列表项目包列表
+	 */
 	public List findProject(List ids){return epPackageDAO.findProject(ids);}
 	
+	/*
+	 * 根据项目编号获取包列表
+	 */
 	public List findPackage(String epsno){return epPackageDAO.findPackage(epsno);}
 	
+	/*
+	 * 根据条件查询流程数据
+	 * form：查询条件
+	 */
 	public EpProcess findProcess(EpProcessForm form){return epPackageDAO.findProcess(form);}
 	
+	/*
+	 * 获取流程设置
+	 */
 	public EpSetting findSetting(int setId){return epPackageDAO.findSetting(setId);}
 
 	public EpPackageListDAO getEpPackageListDAO() {

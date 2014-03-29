@@ -1,6 +1,7 @@
 package com.rc.project.action;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.rc.project.form.EpProcessForm;
@@ -16,26 +17,29 @@ import com.rc.util.page.PageBean;
 
 public class ProcessAction extends BaseAction {
 	private List list;
+	private List packageDetailList;
 	private EpProcess vo;
+	private String message;
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public List getPackageDetailList() {
+		return packageDetailList;
+	}
+
+	public void setPackageDetailList(List packageDetailList) {
+		this.packageDetailList = packageDetailList;
+	}
+
 	private EpProcessForm form;
 	// private PageBean bean;
 	private PackageService service = (PackageService) getBean("packageService");
-
-	private EpSetting getNextProcess(String purType, int currentNo) {
-		int nextNo = currentNo + 1;
-		EpSettingForm form = new EpSettingForm();
-		form.setSET_SPURTYPE(purType);
-		form.setSET_NNO(BigDecimal.valueOf(nextNo));
-		return service.findnextSetid(form);
-	}
-
-	private EpSetting getPreProcess(String purType, int currentNo) {
-		int nextNo = currentNo - 1;
-		EpSettingForm form = new EpSettingForm();
-		form.setSET_SPURTYPE(purType);
-		form.setSET_NNO(BigDecimal.valueOf(nextNo));
-		return service.findnextSetid(form);
-	}
+	private ProjectService projectService = (ProjectService)getBean("projectService");
 
 	public String find() {
 		if (form == null) {
@@ -62,94 +66,51 @@ public class ProcessAction extends BaseAction {
 	}
 
 	public String toFirsttrial() {
+		String BG_SNO = request.getParameter("bg_sno");
+		packageDetailList = projectService.getListByBG(BG_SNO);
 		return "firsttrial";
 	}
 
 	public String ok() {
-		String ss_nid = this.request.getParameter("ss_nid");
-		String set_nno = this.request.getParameter("set_nno");
-		String bg_sno = this.request.getParameter("bg_sno");
-		String ep_sno = this.request.getParameter("ep_sno");
-		String set_spurtype = this.request.getParameter("set_spurtype");
-		
+
 		EpProcessForm process = new EpProcessForm();
 		process.setSS_SREMARK("当前提交技术审核");
+		UserInfo userInfo = (UserInfo)session.get("userInfo");
+		process.setSS_SMAN(userInfo.getEmp_sname());
+		process.setSS_TDATE(new Date(System.currentTimeMillis()));
 
 		service.submitCurrentProcess(this.request, process);
-		/*// 修改当前状态 已经操作
-		EpProcessForm process = new EpProcessForm();
-		process.setSS_NID(BigDecimal.valueOf(Integer.parseInt(ss_nid)));
-		process.setSS_SSTATE("1");
-		process.setSS_SREMARK("某某提交当前状态，添加备注信息");
-		System.out.println("修改当前状态1");
-		service.updateProcessState(process);
-
-		// 添加下一步操作 为操作
-		EpProcessForm form = new EpProcessForm();
-		form.setBG_SNO(bg_sno);
-		form.setEP_SNO(ep_sno);
-		form.setSS_NNO(this.getNextProcess(set_spurtype,
-				Integer.parseInt(set_nno)).getSET_NID());
-		form.setSS_SSTATE("0");
-		service.insertProcess(form);*/
-		return this.find();
+		this.message = "提交成功";
+		return this.toFirsttrial();
 	}
 
 	// 每一步回退
 	public String back() {
-		EpProcessForm process = new EpProcessForm();
-		/*String ss_nid = this.request.getParameter("ss_nid");
-		String set_nid = this.request.getParameter("set_nid");
-		String set_nno = this.request.getParameter("set_nno");
-		String bg_sno = this.request.getParameter("bg_sno");
-		String ep_sno = this.request.getParameter("ep_sno");
-		String set_spurtype = this.request.getParameter("set_spurtype");
-		// 修改当前状态为退回
-		EpProcessForm process = new EpProcessForm();
-		process.setSS_NID(BigDecimal.valueOf(Integer.parseInt(ss_nid)));
-		process.setSS_SSTATE("3");
-		process.setSS_SREMARK("某某回退");
-		service.updateProcessState(process);		
-		
-		//如果是初审退回操作
-		if (set_nno.equals("1")) {
-			System.out.println("初审退回");
-			return this.reject();
-		}
-		else{
-		// 在process中修改当前状态回退，然后添加一个上一步未操作记录
-		// 添加下一步操作 为操作
-			int setnnid = Integer.valueOf(set_nid);
-			EpProcessForm form = new EpProcessForm();
-			form.setBG_SNO(bg_sno);
-			form.setEP_SNO(ep_sno);
-			form.setSS_NNO(getPreProcess(set_spurtype, Integer.parseInt(set_nno))
-					.getSET_NID());
-			form.setSS_SSTATE("0");
-			service.insertProcess(form);
-			System.out.println("步骤退回");
-			return this.find();
-		}*/
+		EpProcessForm process = new EpProcessForm();		
 		process.setSS_SREMARK("退回操作");
-		service.backCurrentProcess(this.request, process );
+		UserInfo userInfo = (UserInfo)session.get("userInfo");
+		process.setSS_SMAN(userInfo.getEmp_sname());
+		process.setSS_TDATE(new Date(System.currentTimeMillis()));
+		service.backCurrentProcess(this.request, process);
+		this.message = "退回成功";
 		return this.find();
 	}
-
-	/*// 初审回退
-	public String reject() {
-		String ss_nid = this.request.getParameter("ss_nid");
-		String bg_sno = this.request.getParameter("bg_sno");
-		// 修改包的状态，修改当前process中的状态为未操作。
-		ProjectService pService = (ProjectService) getBean("projectService");
-		pService.back(bg_sno);
+	
+	//集中采购分包在确定采购合同的回退，就直接删除包和历史记录
+	public String backSubPackage(){
+		projectService.backToSelect(request, null);
 		return this.find();
-	}*/
+	}
 
 	public String firsttrial() {
-		// 根据process中的主键修改当前状态为已操作
-		// 在process表中添加一个下一个流程的未操作记录
 		return this.ok();
+		
 	}
+	
+	public String skip(){
+		this.service.skipProcess(this.request);		
+		return this.find();
+	}	
 
 	public String toPrint() {
 		return "print";

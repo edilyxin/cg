@@ -16,7 +16,7 @@ import com.rc.util.UserInfo;
 
 public class BidAction extends BaseAction {
 	private EpBidForm form;
-	private EpBid vo;
+	private EpBid vo;	
 	public EpBid getVo() {
 		return vo;
 	}
@@ -67,9 +67,8 @@ public class BidAction extends BaseAction {
 			return ERROR;
 		}
 	 	String bg_sno = this.request.getParameter("bg_sno");
-		String ep_sno =this.request.getParameter("ep_sno");
-		
-		//vo = this.bidService.getBidByPackage(ep_sno, bg_sno);
+		String ep_sno =this.request.getParameter("ep_sno");	
+
 		form.setBG_SNO(bg_sno);
 	 	form.setEP_SNO(ep_sno);
 		if(form.getEB_NID() == null){			
@@ -85,7 +84,7 @@ public class BidAction extends BaseAction {
 			}
 		}
 		else{
-			form.setEB_NID(vo.getEB_NID());
+			//form.setEB_NID(vo.getEB_NID());
 			if(bidService.updateBid(form)){
 				EpProcessForm process=new EpProcessForm();
 				process.setSS_SREMARK("提交公示");
@@ -94,13 +93,7 @@ public class BidAction extends BaseAction {
 				log.logInsert(userInfo, "修改招标公示", "Ep_Bid");
 			}
 		}
-	 	
-		
-		
-		String path = request.getContextPath();
-		String url = path+"/process!find";
-		this.response.sendRedirect(url);
-		return null;
+		return "add";
 	}
 	
 	public String getMessage() {

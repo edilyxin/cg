@@ -27,6 +27,11 @@ public class EpProcessDAO extends SqlMapClientDaoSupport {
     public int findSize(EpProcessForm form){
     	return (Integer)getSqlMapClientTemplate().queryForObject("EP_PROCESS_findSize", form);
     }
+    
+    public boolean deleteByPackage(String bg_sno){
+    	return getSqlMapClientTemplate().delete("EP_PROCESS_deleteByPackage",bg_sno) == 0?false:true;
+    }
+    
 
 
     /**

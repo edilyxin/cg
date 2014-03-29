@@ -18,7 +18,15 @@ public class SelectSupplierAction extends BaseAction {
 		return "selectsupplier";
 	}
 	
+	public String selectsupplier(){
+		return "selectsupplier";
+	}
+	
 	public String save() throws IOException{
+		
+		
+		
+		
 		EpProcessForm process=new EpProcessForm();
 		process.setSS_SREMARK("选择了供应商信息");
 		pService.submitCurrentProcess(this.request, process);

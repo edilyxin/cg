@@ -24,15 +24,16 @@
 			<result name="techview">/jsp/project/techview.jsp</result>
 			<result name="find">/jsp/project/splite/projectList.jsp</result>
 			<!-- 招标采购处理 -->
-			<!-- <result name="findbit">/jsp/project/splite/bit/projectList.jsp</result> -->
+			<result name="findbit">/jsp/project/splite/bit/projectList.jsp</result>
 			<result name="addbitpackage">/jsp/project/splite/bit/add.jsp</result>
 			<result name="updateparameter">/jsp/project/splite/bit/updateParameter.jsp</result>
 			<!-- 集中采购处理 -->
-			<!-- <result name="findcollect">/jsp/project/splite/collect/projectList.jsp</result> -->
+			<result name="findcollect">/jsp/project/splite/collect/projectList.jsp</result>
 			<result name="collectdetail">/jsp/project/splite/collect/packageDetail.jsp</result>
 			<result name="collectupdate">/jsp/project/splite/collect/updateProject.jsp</result>
 			<result name="addcollectpackage">/jsp/project/splite/collect/add.jsp</result>
-			<result name="selectsupplier">/jsp/project/splite/collect/select.jsp</result>			
+			<result name="selectsupplier">/jsp/project/splite/collect/select.jsp</result>
+			<result name="selectsupplierDetail">/jsp/project/splite/collect/selectDetail.jsp</result>				
 		</action>
 <!-- 选择供应商 -->
 		<action name="supplier" class="com.rc.project.action.SelectSupplierAction">
@@ -75,8 +76,8 @@
 			<result name="detail">/jsp/project/paymoney/detail.jsp</result>
 		</action>
 <!-- 发邮件 -->
-		<action name="mail" class="com.rc.project.action.MailAction">
-			<result name="toSendmail">/jsp/project/mail/sendmail.jsp</result>
+		<action name="mail" class="com.rc.project.action.MailAction">			
+			<result name="mail">/jsp/project/mail/mail.jsp</result>
 		</action>
 <!-- 设置流程 -->
 		<action name="setting" class="com.rc.project.action.ProcessSettingAction">

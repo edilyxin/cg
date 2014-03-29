@@ -8,8 +8,7 @@
 	<bean id="dataSource"  class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" /> 
     	<!-- 基本属性 url、user、password -->
-    	<property name="url" value="jdbc:oracle:thin:@192.168.1.120:1521:orcl" /> 
-    	<!-- <property name="url" value="jdbc:oracle:thin:@10.10.10.111:1521:XE" /> -->
+    	<property name="url" value="jdbc:oracle:thin:@192.168.1.101:1521:XE" />
     	<property name="username" value="cg" />
     	<property name="password" value="cg" />
     	<!-- 配置初始化大小、最小、最大 -->
@@ -445,6 +444,12 @@
 		<property name="epPersonDAO">
 			<ref bean="epPersonDAO" />
 		</property>
+		<property name="unitDepartDAO">
+			<ref bean="unitDepartDAO" />
+		</property>
+		<property name="empDAO">
+			<ref bean="empDAO" />
+		</property>
 	</bean>
 	<bean id="bidService" class="com.rc.project.service.impl.BidServiceImpl">
 		<property name="epBidDAO">
@@ -531,7 +536,7 @@
 		</property>
 		<property name="epPackageListDAO">
 			<ref bean="epPackageListDAO" />
-		</property>
+		</property>		
 	</bean>
 	
 	<!-- 初导入管理 -->

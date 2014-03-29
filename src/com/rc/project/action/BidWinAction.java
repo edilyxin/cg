@@ -9,6 +9,7 @@ import com.rc.project.form.EpBidWinForm;
 import com.rc.project.form.EpProcessForm;
 import com.rc.project.service.BidWinService;
 import com.rc.project.service.PackageService;
+import com.rc.project.service.ProjectService;
 import com.rc.project.vo.EpBidWin;
 import com.rc.sys.service.LogService;
 import com.rc.util.BaseAction;
@@ -21,7 +22,9 @@ public class BidWinAction extends BaseAction {
 	private BidWinService bidWinService = (BidWinService)getBean("bidWinService");
 	private LogService log= (LogService)getBean("logService");
 	private PackageService pService = (PackageService)getBean("packageService");
+	private ProjectService projectService = (ProjectService)getBean("projectService");
 	private String message;
+	private List packageDetailList;
 	
 	
 	public EpBidWin getVo() {
@@ -35,6 +38,7 @@ public class BidWinAction extends BaseAction {
 	public String toDetail(){
 		String bg_sno = this.request.getParameter("bg_sno");
 		String ep_sno =this.request.getParameter("ep_sno");
+		packageDetailList = projectService.getListByBG(bg_sno);
 		vo = this.bidWinService.getDetailByPackage(ep_sno, bg_sno);
 		return "detail";
 	}
@@ -43,6 +47,7 @@ public class BidWinAction extends BaseAction {
 		String bg_sno = this.request.getParameter("bg_sno");
 		String ep_sno =this.request.getParameter("ep_sno");
 		vo = this.bidWinService.getDetailByPackage(ep_sno, bg_sno);
+		packageDetailList = projectService.getListByBG(bg_sno);				
 		return "add";
 	}
 	
@@ -58,25 +63,31 @@ public class BidWinAction extends BaseAction {
 	 	//vo = this.bidWinService.getDetailByPackage(ep_sno, bg_sno);
 	 	if(form.getEBW_NID() == null){
 	 		if(bidWinService.insert(form)){
+	 			this.message="添加成功";
 				EpProcessForm process=new EpProcessForm();
 				process.setSS_SREMARK("中标公示");
 				pService.submitCurrentProcess(this.request, process);
 				log.logInsert(user, "添加招标结果", "ep_bidwin");
 			}
+	 		else{
+	 			this.message="操作失败";
+	 		}
 	 	}
 	 	else {
-	 		form.setEBW_NID(vo.getEBW_NID());
+//	 		form.setEBW_NID(vo.getEBW_NID());
 	 		if(bidWinService.updateBidWin(form)){
+	 			this.message="修改成功";
 	 			EpProcessForm process=new EpProcessForm();
 				process.setSS_SREMARK("中标公示");
 				pService.submitCurrentProcess(this.request, process);
 				log.logInsert(user, "修改招标结果", "ep_bidwin");
 	 		}
+	 		else{
+	 			this.message="操作失败";
+	 		}
 	 	}
-		String path = request.getContextPath();
-		String url = path+"/process!find";
-		this.response.sendRedirect(url);
-		return null;
+		
+		return "add";
 	}
 
 	public EpBidWinForm getForm() {
@@ -109,6 +120,14 @@ public class BidWinAction extends BaseAction {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public List getPackageDetailList() {
+		return packageDetailList;
+	}
+
+	public void setPackageDetailList(List packageDetailList) {
+		this.packageDetailList = packageDetailList;
 	}
 	
 	

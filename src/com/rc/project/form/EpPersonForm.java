@@ -3,6 +3,9 @@ package com.rc.project.form;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.rc.base.form.MngEmpForm;
+import com.rc.base.form.MngUnitDepartForm;
+
 /**
  * @author Administrator
  *
@@ -15,9 +18,8 @@ public class EpPersonForm {
 	private String searchB;
 	private String searchC;
 	
-	
-	
-    public String getSearchA() {
+
+	public String getSearchA() {
 		return searchA;
 	}
 

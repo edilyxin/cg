@@ -30,4 +30,6 @@ public interface PackageService {
 	
 	public void submitCurrentProcess(HttpServletRequest request,EpProcessForm process);
 	public void backCurrentProcess(HttpServletRequest request,EpProcessForm process);
+	public void submitCurrentProcess(HttpServletRequest request,EpProcessForm process,String newBg_sno);
+	public void skipProcess(HttpServletRequest request);
 }

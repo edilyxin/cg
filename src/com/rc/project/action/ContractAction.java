@@ -23,6 +23,7 @@ public class ContractAction extends BaseAction {
 	private PackageService pService = (PackageService)getBean("packageService");
 	private String message;
 	
+	
 	public void addActionError(String anErrorMessage){
 		   String s=anErrorMessage;
 		   System.out.println(s);
@@ -59,7 +60,7 @@ public class ContractAction extends BaseAction {
 		String bg_sno = this.request.getParameter("bg_sno");
 		String ep_sno =this.request.getParameter("ep_sno");
 		vo = this.contractService.getDetailByPackage(ep_sno, bg_sno);
-		System.out.println(vo.getCT_SNO());
+//		System.out.println(vo.getCT_SNO());
 		return "add";
 	}
 	
@@ -68,7 +69,8 @@ public class ContractAction extends BaseAction {
 		if(user == null)return ERROR;
 		String bg_sno = this.request.getParameter("bg_sno");
 		String ep_sno =this.request.getParameter("ep_sno");
-	 	if(form.getBG_SNO() == null){
+		System.out.println(form.getBG_SNO());
+	 	if(form.getBG_SNO().equals("")){
 	 		form.setBG_SNO(bg_sno);
 		 	form.setEP_SNO(ep_sno);
 	 		if(contractService.insert(form)){
@@ -83,8 +85,6 @@ public class ContractAction extends BaseAction {
 			}
 	 	}
 	 	else{
-	 		form.setBG_SNO(bg_sno);
-		 	form.setEP_SNO(ep_sno);
 	 		if(contractService.updateContract(form)){
 				EpProcessForm process=new EpProcessForm();
 				process.setSS_SREMARK("修改合同信息");
@@ -96,11 +96,10 @@ public class ContractAction extends BaseAction {
 				message = "操作失败";
 			}
 	 	}
+		System.out.println("履约金："+form.getCT_SISLYJ());
+		System.out.println("质保金："+form.getCT_SISZBJ());
 		
-		String path = request.getContextPath();
-		String url = path+"/process!find";
-		this.response.sendRedirect(url);
-		return null;
+		return "add";
 	}
 
 	public EpContractForm getForm() {
@@ -134,7 +133,4 @@ public class ContractAction extends BaseAction {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
-	
-	
 }

@@ -23,9 +23,17 @@ public class PayMoneyServiceImpl implements PayMoneyService {
 
 
 	@Override
-	public List getListDetailByPackage(String ep_sno, String bg_sno) {
+	public List getListDetailByPackage(String ep_sno, String bg_sno,String payType) {
+		EpPayMoneyForm form = new EpPayMoneyForm();
+    	form.setBG_SNO(bg_sno);
+    	form.setEP_SNO(ep_sno);
+    	form.setPM_SDEF1(payType);
 		// TODO Auto-generated method stub
-		return this.epPayMoneyDAO.getListByPackage(ep_sno, bg_sno);
+		return this.epPayMoneyDAO.getListByPackage(form);
+	}
+	
+	public List getListByPayType(String payType){
+		return this.epPayMoneyDAO.getListByPayType(payType);
 	}
 
 }

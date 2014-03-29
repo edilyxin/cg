@@ -3,8 +3,19 @@ package com.rc.project.service.impl;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.rc.project.dao.EpEntrancecDAO;
 import com.rc.project.dao.EpEntrancepDAO;
@@ -19,6 +30,7 @@ import com.rc.project.form.EpEntrancepForm;
 import com.rc.project.form.EpPackageListForm;
 import com.rc.project.form.EpProcessForm;
 import com.rc.project.form.EpProjectDetailForm;
+import com.rc.project.service.PackageService;
 import com.rc.project.service.ProjectService;
 import com.rc.project.vo.EpEntrancec;
 import com.rc.project.vo.EpEntrancep;
@@ -39,6 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private EpEntrancecDAO entrancecDAO;
 	private EpProcessDAO processDAO;
 	private EpSettingDAO settingDAO;
+	private static ApplicationContext ctx = null;
 
 	public EpProjectDAO getProjectDAO() {
 		return projectDAO;
@@ -104,30 +117,41 @@ public class ProjectServiceImpl implements ProjectService {
 		this.settingDAO = settingDAO;
 	}
 
-	private void startTransaction() {
-//		try {
-//			projectDAO.getSqlMapClient().startTransaction();
-//		} catch (SQLException e) {
-//			throw new RuntimeException(e);
-//		}
+	public Object getBean(String name) {
+		if (ctx == null) {
+			ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(ServletActionContext.getRequest().getSession().getServletContext());
+		}
+		return ctx.getBean(name);
+	}
+
+	private TransactionStatus startTransaction() {
+		DataSourceTransactionManager tx = (DataSourceTransactionManager) getBean("transactionManager");
+		return tx.getTransaction(new DefaultTransactionDefinition());
 
 	}
 
-	private void commitTransaction() {
-//		try {
-//			projectDAO.getSqlMapClient().commitTransaction();
-//		} catch (SQLException e) {
-//			throw new RuntimeException(e);
-//		}
+	private void commitTransaction(TransactionStatus status) {
+		DataSourceTransactionManager tx = (DataSourceTransactionManager) getBean("transactionManager");
+		tx.commit(status);
 	}
 
-	private void endTransaction() {
-//		try {
-//			projectDAO.getSqlMapClient().endTransaction();
-//		} catch (SQLException e) {
-//			throw new RuntimeException(e);
-//		}
+	private void endTransaction(TransactionStatus status) {
+		DataSourceTransactionManager tx = (DataSourceTransactionManager) getBean("transactionManager");
+		tx.rollback(status);
 
+	}
+	
+	@Override
+	public void backToApprove(String EPD_NID) {
+		
+		EpProjectDetailExample where = new EpProjectDetailExample();
+		where.createCriteria().andEPD_NIDEqualTo(BigDecimal.valueOf(Long.valueOf(EPD_NID)));
+		EpProjectDetail record=(EpProjectDetail) projectDetailDAO.selectByExample(where).get(0);
+		record.setEPD_SSTAT("1");
+		record.setEPD_SPURTYPE(null);
+		
+		projectDetailDAO.updateByExample(record, where);
+		
 	}
 
 	@Override
@@ -144,9 +168,9 @@ public class ProjectServiceImpl implements ProjectService {
 
 	public void splitPackage(String[] EPD_NIDs) {
 
-		startTransaction();
+		TransactionStatus ts = startTransaction();
 		try {
-			projectDetailDAO.getSqlMapClient().startTransaction();
+
 			EpProjectDetailExample projectDetailExample = new EpProjectDetailExample();
 			projectDetailExample.createCriteria().andEPD_NIDIn(toList(EPD_NIDs));
 
@@ -166,37 +190,18 @@ public class ProjectServiceImpl implements ProjectService {
 			packageDAO.insertSelective(epPackage);
 
 			for (EpProjectDetail projectDetail : projectdDetails) {
-				EpPackageList epPackageList = new EpPackageList();
-				String packageListId = UUID.randomUUID().toString();
+				EpPackageList epPackageList = projectDetail.toPackageList();
+				// EpPackageList epPackageList = new EpPackageList();
+				// String packageListId = UUID.randomUUID().toString();
 				epPackageList.setEP_SNO(projectDetail.getEP_SNO());
 				epPackageList.setBG_SNO(packageId);
 				epPackageList.setEPD_NID(projectDetail.getEPD_NID());
-				epPackageList.setPL_NTYPE("2");
 
-				epPackageList.setPL_NNUM(projectDetail.getEPD_NNUM());
-				epPackageList.setPL_SNAME(projectDetail.getEPD_SNAME());
-
-				epPackageList.setPL_SBRAND(projectDetail.getEPD_SBRAND());
-				epPackageList.setPL_SSPEC(projectDetail.getEPD_SSPEC());
-				epPackageList.setPL_SMODEL(projectDetail.getEPD_SMODEL());
-				epPackageList.setPL_SUNIT(projectDetail.getEPD_SUNIT());
-				epPackageList.setPL_NNUM(projectDetail.getEPD_NNUM());
-				epPackageList.setPL_NPRICE(projectDetail.getEPD_NNUM());
-				epPackageList.setPL_NTOTAL(projectDetail.getEPD_NTOTAL());
-				epPackageList.setPL_NNUMSONG(projectDetail.getEPD_NNUMSONG());
-				epPackageList.setPL_NPRICESONG(projectDetail.getEPD_NPRICESONG());
-				epPackageList.setPL_NTOTALSONG(projectDetail.getEPD_NTOTALSONG());
-				epPackageList.setPL_NNUMJIAN(projectDetail.getEPD_NNUMJIAN());
-				epPackageList.setPL_NPRICEJIAN(projectDetail.getEPD_NPRICEJIAN());
-				epPackageList.setPL_NTOTALJIAN(projectDetail.getEPD_NTOTALJIAN());
-				epPackageList.setPL_NCANNOT(projectDetail.getEPD_NCANNOT());
-				epPackageList.setPL_SAPPROVENOTE(projectDetail.getEPD_SAPPROVENOTE());
 				packageListDAO.insertSelective(epPackageList);
 			}
-			projectDetailDAO.getSqlMapClient().commitTransaction();
-			commitTransaction();
+			commitTransaction(ts);
 		} catch (Exception e) {
-			endTransaction();
+			endTransaction(ts);
 		}
 
 	}
@@ -204,7 +209,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List findAllBidPackages(String EP_SNO) {
 		EpPackageExample packageExample = new EpPackageExample();
-		packageExample.createCriteria().andEP_SNOEqualTo(EP_SNO).andBG_STYPEEqualTo("1");
+		packageExample.createCriteria().andEP_SNOEqualTo(EP_SNO).andBG_STYPEEqualTo("1").andBG_NPURTYPEEqualTo("0");
 		List<EpPackage> packages = packageDAO.selectByExample(packageExample);
 		for (EpPackage package1 : packages) {
 
@@ -220,7 +225,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public void deletePackage(String BG_SNO) {
-		startTransaction();
+		TransactionStatus ts = startTransaction();
 		try {
 			EpPackageListExample packageListExample = new EpPackageListExample();
 			packageListExample.createCriteria().andBG_SNOEqualTo(BG_SNO);
@@ -239,16 +244,16 @@ public class ProjectServiceImpl implements ProjectService {
 			EpProjectDetail record = new EpProjectDetail();
 			record.setEPD_SSTAT("2");
 			projectDetailDAO.updateByExampleSelective(record, example);
-			commitTransaction();
+			commitTransaction(ts);
 		} catch (Exception e) {
-			endTransaction();
+			endTransaction(ts);
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
 	public void submitBidPackage(String BG_SNO) {
-		startTransaction();
+		TransactionStatus ts = startTransaction();
 		try {
 			EpPackage epPackage = new EpPackage();
 			epPackage.setBG_SNO(BG_SNO);
@@ -256,24 +261,22 @@ public class ProjectServiceImpl implements ProjectService {
 			packageDAO.updateByPrimaryKeySelective(epPackage);
 
 			epPackage = packageDAO.selectByPrimaryKey(BG_SNO);
+			EpSetting setting = new EpSetting();			
 
-			EpSetting setting = settingDAO.selectFirstStep("0");
 			EpProcessForm epProcess = new EpProcessForm();
 			epProcess.setEP_SNO(epPackage.getEP_SNO());
 			epProcess.setBG_SNO(epPackage.getBG_SNO());
 			epProcess.setSS_SPURTYPE(epPackage.getBG_NPURTYPE());
 			epProcess.setSS_SSTATE("0");
 
-//			epProcess.setSS_NNO(setting.getSET_NNO());
-			epProcess.setSS_NNO(setting.getSET_NID());
-			epProcess.setSS_SNAME(setting.getSET_SNAME());
-			epProcess.setSS_SPAGE(setting.getSET_SPAGE());
-			epProcess.setSS_NWORK(setting.getSET_NWORK());
+			epProcess.setSS_NNO(BigDecimal.valueOf(settingDAO.selectFirstStep("0")));
+			epProcess.setSS_SMAN("admin");
+			epProcess.setSS_TDATE(new Date(System.currentTimeMillis()));
 
 			processDAO.insertSelective(epProcess);
-			commitTransaction();
+			commitTransaction(ts);
 		} catch (Exception e) {
-			endTransaction();
+			endTransaction(ts);
 			throw new RuntimeException(e);
 		}
 	}
@@ -315,7 +318,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public void addPackageDetail(EpPackageListForm form) {
-		startTransaction();
+		TransactionStatus ts = startTransaction();
 		try {
 			EpPackageList epPackageList = form.toVO();
 			EpProjectDetailExample projectDetailExample = new EpProjectDetailExample();
@@ -347,9 +350,9 @@ public class ProjectServiceImpl implements ProjectService {
 			epPackageList.setPL_NTYPE("1");
 
 			packageListDAO.insertSelective(epPackageList);
-			commitTransaction();
+			commitTransaction(ts);
 		} catch (Exception e) {
-			endTransaction();
+			endTransaction(ts);
 			throw new RuntimeException(e);
 		}
 	}
@@ -434,69 +437,212 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public void submitCollect(String EP_SNO) {
-		startTransaction();
+		TransactionStatus ts = startTransaction();
 		try {
 
+			// /创建包
+			EpPackage epPackage;
 			EpPackageExample packageExample = new EpPackageExample();
 			packageExample.createCriteria().andEP_SNOEqualTo(EP_SNO).andBG_STYPEEqualTo("0");
-			EpPackage epPackage = (EpPackage) packageDAO.selectByExample(packageExample).get(0);
-			epPackage.setBG_SSTATUS("1");
-			packageDAO.updateByPrimaryKeySelective(epPackage);
-			int result = packageDAO.updateByExampleSelective(epPackage, packageExample);
-			if (result > 0) {
-				EpSetting setting = settingDAO.selectFirstStep("1");
-
-				EpProcessForm epProcess = new EpProcessForm();
-				epProcess.setEP_SNO(EP_SNO);
-				epProcess.setBG_SNO(epPackage.getBG_SNO());
-				epProcess.setSS_SPURTYPE(epPackage.getBG_NPURTYPE());
-				epProcess.setSS_SSTATE("0");
-
-				//epProcess.setSS_NNO(setting.getSET_NNO());
-				epProcess.setSS_NNO(setting.getSET_NID());
-				epProcess.setSS_SNAME(setting.getSET_SNAME());
-				epProcess.setSS_SPAGE(setting.getSET_SPAGE());
-				epProcess.setSS_NWORK(setting.getSET_NWORK());
-
-				processDAO.insertSelective(epProcess);
+			List<EpPackage> packages = packageDAO.selectByExample(packageExample);
+			if (packages.size() == 0) {
+				epPackage = new EpPackage();
+				String packageId = UUID.randomUUID().toString();
+				epPackage.setEP_SNO(EP_SNO);
+				epPackage.setBG_SNO(packageId);
+				epPackage.setBG_SNAME(packageId);
+				epPackage.setBG_STYPE("0");
+				epPackage.setBG_NPURTYPE("1");
+				epPackage.setBG_SSTATUS("1");
+				packageDAO.insertSelective(epPackage);
+				epPackage = packageDAO.selectByPrimaryKey(packageId);
+			} else {
+				epPackage = packages.get(0);
 			}
 
 			EpProjectDetailExample projectDetailExample = new EpProjectDetailExample();
+			projectDetailExample.createCriteria().andEP_SNOEqualTo(EP_SNO).andEPD_SPURTYPEEqualTo("1");
+			for (EpProjectDetail projectDetail : (List<EpProjectDetail>) projectDetailDAO.selectByExample(projectDetailExample)) {
+				EpPackageList epPackageList = projectDetail.toPackageList();
+				epPackageList.setEP_SNO(projectDetail.getEP_SNO());
+				epPackageList.setBG_SNO(epPackage.getBG_SNO());
+				epPackageList.setEPD_NID(projectDetail.getEPD_NID());
+				epPackageList.setPL_NTYPE("1");
+				packageListDAO.insertSelective(epPackageList);
+			}
+
+			
+			EpProcessForm epProcess = new EpProcessForm();
+			epProcess.setEP_SNO(EP_SNO);
+			epProcess.setBG_SNO(epPackage.getBG_SNO());
+			epProcess.setSS_SPURTYPE(epPackage.getBG_NPURTYPE());
+			epProcess.setSS_SSTATE("0");
+
+			// epProcess.setSS_NNO(setting.getSET_NNO());
+			epProcess.setSS_NNO(BigDecimal.valueOf(settingDAO.selectFirstStep("1")));
+			epProcess.setSS_SMAN("admin");
+			epProcess.setSS_TDATE(new Date(System.currentTimeMillis()));
+
+			processDAO.insertSelective(epProcess);
+
+			projectDetailExample.clear();
 			projectDetailExample.createCriteria().andEP_SNOEqualTo(EP_SNO).andEPD_SPURTYPEEqualTo("1");
 			List<EpProjectDetail> projectdDetails = projectDetailDAO.selectByExample(projectDetailExample);
 			EpProjectDetail projectDetail = new EpProjectDetail();
 			projectDetail.setEPD_SSTAT("3");
 			projectDetailDAO.updateByExampleSelective(projectDetail, projectDetailExample);
-			commitTransaction();
+
+			commitTransaction(ts);
 		} catch (Exception e) {
-			endTransaction();
+			endTransaction(ts);
 			throw new RuntimeException(e);
 		}
 	}
 
 	public void back(String BG_SNO) {
-		startTransaction();
+		TransactionStatus ts = startTransaction();
 		try {
 			EpPackage epPackage = packageDAO.selectByPrimaryKey(BG_SNO);
 			epPackage.setBG_SNO(BG_SNO);
 			epPackage.setBG_SSTATUS("0");
 			packageDAO.updateByPrimaryKeySelective(epPackage);
-			
+
 			EpPackageListExample packageListExample = new EpPackageListExample();
 			packageListExample.createCriteria().andBG_SNOEqualTo(BG_SNO);
 			List<EpPackageList> packageLists = packageListDAO.selectByExample(packageListExample);
 
-			EpProjectDetailExample projectDetailExample = new EpProjectDetailExample();
-			projectDetailExample.createCriteria().andEP_SNOEqualTo(epPackage.getEP_SNO()).andEPD_NIDIn(getEPD_NIDs(packageLists));
-			EpProjectDetail record = new EpProjectDetail();
-			record.setEPD_SSTAT("2");
-			projectDetailDAO.updateByExampleSelective(record, projectDetailExample);
-			commitTransaction();
+			//EpProjectDetailExample projectDetailExample = new EpProjectDetailExample();
+			//projectDetailExample.createCriteria().andEP_SNOEqualTo(epPackage.getEP_SNO()).andEPD_NIDIn(getEPD_NIDs(packageLists));
+			//EpProjectDetail record = new EpProjectDetail();
+			//record.setEPD_SSTAT("2");
+			//projectDetailDAO.updateByExampleSelective(record, projectDetailExample);
+			commitTransaction(ts);
 		} catch (Exception e) {
-			endTransaction();
+			endTransaction(ts);
 			throw new RuntimeException(e);
 		}
 
 	}
+
+	// ///////////////确定供应商/////////////////////
+
+	public List getListByBG(String BG_SNO) {
+
+		EpPackageListExample example = new EpPackageListExample();
+		example.createCriteria().andBG_SNOEqualTo(BG_SNO);
+		return packageListDAO.selectByExample(example);
+
+	}
+
+	@Override
+	public List getListByBG(String BG_SNO, String[] EPD_NIDs) {
+		EpPackageListExample example = new EpPackageListExample();
+		example.createCriteria().andBG_SNOEqualTo(BG_SNO).andEPD_NIDIn(toList(EPD_NIDs));
+		return packageListDAO.selectByExample(example);
+
+	}
+	
+	@Override
+	public void splitCollect(String EP_SNO, String BG_SNO, String AG_NID1, String[] EPD_NIDs, String[] nums,HttpServletRequest request,EpProcessForm process) {
+
+		TransactionStatus ts = startTransaction();
+		try {
+			List EPD_NID_list = toList(EPD_NIDs);
+			List nums_list = toList(nums);
+
+			EpPackage epPackage = new EpPackage();
+			String packageId = UUID.randomUUID().toString();
+			epPackage.setEP_SNO(EP_SNO);
+			epPackage.setBG_SNO(packageId);
+			epPackage.setBG_SNAME(packageId);
+			epPackage.setBG_STYPE("1");
+			epPackage.setBG_NPURTYPE("1");
+			epPackage.setBG_SSTATUS("1");
+			epPackage.setAG_NID1(BigDecimal.valueOf(Long.valueOf(AG_NID1)));
+			packageDAO.insertSelective(epPackage);
+
+			EpProjectDetailExample projectDetailExample = new EpProjectDetailExample();
+			projectDetailExample.createCriteria().andEPD_NIDIn(EPD_NID_list);
+			List<EpProjectDetail> projectdDetails = projectDetailDAO.selectByExample(projectDetailExample);
+
+			for (EpProjectDetail projectDetail : projectdDetails) {
+				EpPackageList epPackageList = projectDetail.toPackageList();
+				epPackageList.setEP_SNO(projectDetail.getEP_SNO());
+				epPackageList.setBG_SNO(packageId);
+				epPackageList.setEPD_NID(projectDetail.getEPD_NID());
+				epPackageList.setPL_NTYPE("2");// 项目
+				int index = EPD_NID_list.indexOf(epPackageList.getEPD_NID().toString());
+				BigDecimal num = BigDecimal.valueOf(Long.valueOf((String) nums_list.get(index)));
+				epPackageList.setPL_NNUM(num);
+				packageListDAO.insertSelective(epPackageList);
+			}
+
+			EpPackageListExample packageListExample = new EpPackageListExample();
+			packageListExample.createCriteria().andEPD_NIDIn(EPD_NID_list).andBG_SNOEqualTo(BG_SNO).andPL_NTYPEEqualTo("1");
+			List<EpPackageList> orglist = (List<EpPackageList>) packageListDAO.selectByExample(packageListExample);
+			for (EpPackageList epPackageList : orglist) {
+				int index = EPD_NID_list.indexOf(epPackageList.getEPD_NID().toString());
+				BigDecimal num = BigDecimal.valueOf(Long.valueOf((String) nums_list.get(index)));
+				epPackageList.setPL_NNUM(epPackageList.getPL_NNUM().subtract(num));
+				EpPackageListExample where = new EpPackageListExample();
+				where.createCriteria().andEPD_NIDEqualTo(epPackageList.getEPD_NID()).andBG_SNOEqualTo(BG_SNO).andPL_NTYPEEqualTo("1");
+				packageListDAO.updateByExampleSelective(epPackageList, where);
+
+			}
+			
+			PackageService pService = (PackageService)getBean("packageService");
+			
+			pService.submitCurrentProcess(request, process,epPackage.getBG_SNO());
+
+			commitTransaction(ts);
+
+		} catch (Exception e) {
+			endTransaction(ts);
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void backToSelect(HttpServletRequest request,EpProcessForm process) {
+		String BG_SNO = request.getParameter("bg_sno");
+		TransactionStatus ts = startTransaction();
+		try {
+
+			EpPackageListExample packageListExample = new EpPackageListExample();
+			packageListExample.createCriteria().andBG_SNOEqualTo(BG_SNO);
+			List<EpPackageList> packageLists = packageListDAO.selectByExample(packageListExample);
+			packageListDAO.deleteByExample(packageListExample);
+			packageListExample.clear();
+			packageListExample.createCriteria().andEPD_NIDIn(getEPD_NIDs(packageLists)).andPL_NTYPEEqualTo("1");
+			List<EpPackageList> oPackageLists = packageListDAO.selectByExample(packageListExample);
+			for (EpPackageList opackageList : oPackageLists) {
+				EpPackageList ta = getFromEPD_NID(packageLists, opackageList.getEPD_NID());				
+				opackageList.setPL_NNUM(ta.getPL_NNUM().add(opackageList.getPL_NNUM()));
+				
+				EpPackageListExample where = new EpPackageListExample();
+				where.createCriteria().andEPD_NIDEqualTo(opackageList.getEPD_NID()).andBG_SNOEqualTo(opackageList.getBG_SNO()).andPL_NTYPEEqualTo("1");
+				packageListDAO.updateByExampleSelective(opackageList, where);
+			}			
+			
+			packageDAO.deleteByPrimaryKey(BG_SNO);
+			processDAO.deleteByPackage(BG_SNO);
+			
+		
+			commitTransaction(ts);
+		} catch (Exception e) {
+			endTransaction(ts);
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	private EpPackageList getFromEPD_NID(List<EpPackageList> packageLists, BigDecimal EPD_NID) {
+		for (EpPackageList packageList : packageLists) {
+			if (packageList.getEPD_NID().longValue() == EPD_NID.longValue())
+				return packageList;
+		}
+		return null;
+	}
+
+	
 
 }

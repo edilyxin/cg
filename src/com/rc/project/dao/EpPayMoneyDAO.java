@@ -2,6 +2,7 @@ package com.rc.project.dao;
 
 import com.rc.project.form.EpPayMoneyForm;
 import com.rc.project.vo.EpPayMoney;
+import com.rc.project.vo.EpPaymoneyExample;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,11 +21,16 @@ public class EpPayMoneyDAO extends SqlMapClientDaoSupport {
         super();
     }
     
-    public List getListByPackage(String ep_sno,String bg_sno){
-    	EpPayMoneyForm form = new EpPayMoneyForm();
-    	form.setBG_SNO(bg_sno);
-    	form.setEP_SNO(ep_sno);
+    public List getListByPackage(EpPayMoneyForm form){    	
     	return getSqlMapClientTemplate().queryForList("EP_PAYMONEY_selectByPackage", form);
+    }
+    
+    /*
+     * 根据应收应付方式获取应收应付记录
+     * payType 0,应收;1应付
+     */
+    public List getListByPayType(String payType){
+    	return getSqlMapClientTemplate().queryForList("EP_PAYMONEY_selectByPayType", payType);
     }
 
 

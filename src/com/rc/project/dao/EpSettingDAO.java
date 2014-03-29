@@ -49,11 +49,11 @@ public class EpSettingDAO extends SqlMapClientDaoSupport {
 		return rows;
 	}
 	
-	public EpSetting selectFirstStep(String SET_SPURTYPE) {
+	public int selectFirstStep(String SET_SPURTYPE) {
         EpSettingForm key = new EpSettingForm();
         key.setSET_SPURTYPE(SET_SPURTYPE);
-        EpSetting record = (EpSetting) getSqlMapClientTemplate().queryForObject("EP_SETTING_selectFirstStep", key);
-        return record;
+        return (Integer) getSqlMapClientTemplate().queryForObject("EP_SETTING_selectFirstStep", key);
+        
     }
 
 	/**

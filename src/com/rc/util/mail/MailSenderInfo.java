@@ -1,5 +1,6 @@
 package com.rc.util.mail;
 
+import java.util.Arrays;
 import java.util.Properties;
 
 public class MailSenderInfo {
@@ -112,4 +113,14 @@ public class MailSenderInfo {
 	public void setContent(String textContent) {
 		this.content = textContent;
 	}
+	
+	public MailSenderInfo(){}
+
+	@Override
+	public String toString() {
+		return "MailSenderInfo [mailServerHost=" + mailServerHost + ", mailServerPort=" + mailServerPort + ", fromAddress=" + fromAddress + ", toAddress=" + toAddress + ", userName=" + userName
+				+ ", password=" + password + ", validate=" + validate + ", subject=" + subject + ", content=" + content + ", attachFileNames=" + Arrays.toString(attachFileNames) + "]";
+	}
+	
+	
 }

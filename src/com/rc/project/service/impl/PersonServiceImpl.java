@@ -3,8 +3,13 @@
  */
 package com.rc.project.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.rc.base.dao.EmpDAO;
+import com.rc.base.dao.UnitDepartDAO;
+import com.rc.base.vo.MngEmp;
+import com.rc.base.vo.MngUnitDepart;
 import com.rc.project.dao.EpPersonDAO;
 import com.rc.project.form.EpPersonForm;
 import com.rc.project.service.PersonService;
@@ -17,7 +22,27 @@ import com.rc.project.vo.EpPerson;
 public class PersonServiceImpl implements PersonService {
 	
 	private EpPersonDAO epPersonDAO;
+	private UnitDepartDAO unitDepartDAO;
+	private EmpDAO empDAO;
 	
+	
+	
+	public UnitDepartDAO getUnitDepartDAO() {
+		return unitDepartDAO;
+	}
+
+	public void setUnitDepartDAO(UnitDepartDAO unitDepartDAO) {
+		this.unitDepartDAO = unitDepartDAO;
+	}
+
+	public EmpDAO getEmpDAO() {
+		return empDAO;
+	}
+
+	public void setEmpDAO(EmpDAO empDAO) {
+		this.empDAO = empDAO;
+	}
+
 	public void setEpPersonDAO(EpPersonDAO epPersonDAO) {
 		this.epPersonDAO = epPersonDAO;
 	}
@@ -48,7 +73,34 @@ public class PersonServiceImpl implements PersonService {
 	@Override
 	public List findPage(EpPersonForm form) {
 		// TODO Auto-generated method stub
-		return epPersonDAO.findPage(form);
+		List list = epPersonDAO.findPage(form);
+		for (Object o : list) {
+			EpPerson p = (EpPerson)o;
+			setEmpAndDepart(p);
+		}
+		return list;
+	}
+	
+	private void setEmpAndDepart(EpPerson p){
+		MngEmp emp = this.empDAO.findByNo(p.getEMP_SNO());
+		MngUnitDepart depart = this.unitDepartDAO.findByNo(p.getUD_SNO());
+		p.setEmp(emp);
+		p.setDepart(depart);
+		String departName="";
+		String[] uds = p.getUD_SNO1().split(",");
+		List departList = new ArrayList();
+		for (int i = 0; i < uds.length; i++) {
+			MngUnitDepart depart1 = this.unitDepartDAO.findByNo(uds[i]);
+			if(i==uds.length-1){
+				departName += depart1.getUd_sname();
+			}
+			else{
+				departName += depart1.getUd_sname()+",";
+			}			
+			departList.add(depart1);
+		}
+		p.setDepart2(departList);
+		p.setDepartName(departName);
 	}
 
 	/* (non-Javadoc)
@@ -66,7 +118,11 @@ public class PersonServiceImpl implements PersonService {
 	@Override
 	public EpPerson findById(int id) {
 		// TODO Auto-generated method stub
-		return epPersonDAO.selectByPrimaryKey(id);
+		EpPerson p= epPersonDAO.selectByPrimaryKey(id);
+		if(p!=null){
+			setEmpAndDepart(p);
+		}
+		return p;
 	}
 
 	/* (non-Javadoc)
